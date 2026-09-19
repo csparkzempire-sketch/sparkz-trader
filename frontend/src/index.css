@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body, #root {
+    height: 100%;
+  }
+  body {
+    font-family: "Inter", system-ui, sans-serif;
+  }
+  .font-mono-nums {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  .panel {
+    @apply bg-base-panel border border-base-border rounded-lg;
+  }
+  .panel-header {
+    @apply px-4 py-3 border-b border-base-border text-xs uppercase tracking-wider text-base-muted font-semibold;
+  }
+  .stat-label {
+    @apply text-xs uppercase tracking-wider text-base-muted;
+  }
+  .stat-value {
+    @apply font-mono-nums text-lg text-base-text;
+  }
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold font-mono-nums;
+  }
+  .badge-buy { @apply bg-accent-buy/15 text-accent-buy; }
+  .badge-sell { @apply bg-accent-sell/15 text-accent-sell; }
+  .badge-hold { @apply bg-accent-hold/15 text-accent-hold; }
+}
