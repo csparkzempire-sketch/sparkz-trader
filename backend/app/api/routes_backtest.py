@@ -81,6 +81,7 @@ def run_backtest(req: BacktestRequest, session: Session = Depends(get_session_de
         take_profit_r=req.take_profit_r,
         spread_pips=req.spread_pips,
         slippage_pips=req.slippage_pips,
+        max_simultaneous_positions=req.max_simultaneous_positions,
     )
     engine = BacktestEngine(bt_config)
     result = engine.run(featured, signal_col="signal", probability_col=prob_col)

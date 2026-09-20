@@ -53,6 +53,9 @@ class BacktestRequest(BaseModel):
     spread_pips: float = Field(1.2, ge=0)
     slippage_pips: float = Field(0.3, ge=0)
     strategy: str = Field("baseline", description="'baseline' or a model_id for ML-driven signals")
+    max_simultaneous_positions: int | None = Field(
+        None, ge=1, description="Max concurrently open positions for this run. Defaults to the server-wide setting (1) if omitted."
+    )
 
 
 class BacktestResponse(BaseModel):

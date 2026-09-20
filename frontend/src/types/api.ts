@@ -43,6 +43,7 @@ export interface BacktestRequest {
   spread_pips: number;
   slippage_pips: number;
   strategy: string;
+  max_simultaneous_positions?: number; // omit to use the server default (1)
 }
 
 export interface PerformanceMetrics {

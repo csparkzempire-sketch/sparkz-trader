@@ -46,6 +46,7 @@ class BacktestConfig:
     slippage_pips: float = 0.3
     commission_per_trade: float = 0.0
     pip_size: float = 0.0001
+    max_simultaneous_positions: int | None = None  # None = use the global settings default (1)
 
     @classmethod
     def from_settings(cls, cfg: Settings, symbol: str, timeframe: str) -> "BacktestConfig":
@@ -60,6 +61,7 @@ class BacktestConfig:
             slippage_pips=cfg.slippage_pips,
             commission_per_trade=cfg.commission_per_trade,
             pip_size=cfg.pip_size,
+            max_simultaneous_positions=cfg.max_simultaneous_positions,
         )
 
 
@@ -83,7 +85,14 @@ class BacktestEngine:
 
     def __init__(self, config: BacktestConfig, risk_manager: RiskManager | None = None):
         self.config = config
-        self.risk_manager = risk_manager or RiskManager()
+        if risk_manager is not None:
+            self.risk_manager = risk_manager
+        elif config.max_simultaneous_positions is not None:
+            # Per-run override: everything else about risk stays on the
+            # global settings, only the position-count cap changes.
+            self.risk_manager = RiskManager(settings.model_copy(update={"max_simultaneous_positions": config.max_simultaneous_positions}))
+        else:
+            self.risk_manager = RiskManager()
         self.costs = ExecutionCosts(
             spread_pips=config.spread_pips,
             slippage_pips=config.slippage_pips,
@@ -119,11 +128,12 @@ class BacktestEngine:
                 risk_state.daily_loss = 0.0
             current_day = bar_day
 
-            # 1. Manage any open position first: check stop/target against
+            # 1. Manage any open positions first: check stop/target against
             # THIS bar's high/low (the bar has fully happened by the time we
-            # evaluate it in this loop — no look-ahead).
-            if portfolio.open_position is not None:
-                self._check_exit(portfolio, risk_state, row, ts)
+            # evaluate it in this loop — no look-ahead). Every open position
+            # is checked, not just one, since several can now be open at once.
+            if portfolio.open_positions:
+                self._check_exits(portfolio, risk_state, row, ts)
 
             # 2. Record equity mark-to-market at this bar's close.
             portfolio.record_equity(ts, row["close"])
@@ -136,18 +146,24 @@ class BacktestEngine:
                 break
 
             # 3. Consider a new entry using the EXECUTABLE (shifted) signal.
+            # A new position can be opened even while others are already
+            # open — RiskManager.check_new_trade (via max_simultaneous_positions,
+            # max_exposure_pct, etc.) is what actually gates this, not the
+            # portfolio itself.
             sig = executable_signal.iloc[i]
-            if portfolio.open_position is None and sig in ("BUY", "SELL") and not pd.isna(row.get("atr")):
+            if sig in ("BUY", "SELL") and not pd.isna(row.get("atr")):
                 self._try_enter(
                     portfolio, risk_state, row, ts, sig,
                     float(executable_probability.iloc[i]) if executable_probability is not None and not pd.isna(executable_probability.iloc[i]) else None,
                 )
 
-        # Close any position still open at the end of the data (mark at last close).
-        if portfolio.open_position is not None:
+        # Close any positions still open at the end of the data (mark at last close).
+        if portfolio.open_positions:
             last_row = df.iloc[-1]
-            exit_price = apply_exit_costs(last_row["close"], portfolio.open_position.direction, self.costs)
-            portfolio.close(last_row["timestamp"], exit_price, reason="END_OF_DATA")
+            for position_id, pos in list(portfolio.open_positions.items()):
+                exit_price = apply_exit_costs(last_row["close"], pos.direction, self.costs)
+                trade = portfolio.close(position_id, last_row["timestamp"], exit_price, reason="END_OF_DATA")
+                self._settle(risk_state, trade)
             portfolio.record_equity(last_row["timestamp"], last_row["close"])
 
         result = BacktestResult(
@@ -209,31 +225,36 @@ class BacktestEngine:
         risk_state.current_exposure += size_result.dollar_risk
         risk_state.bars_since_last_trade = 0
 
-    def _check_exit(self, portfolio: Portfolio, risk_state: RiskState, row, ts) -> None:
-        pos = portfolio.open_position
-        assert pos is not None
+    def _check_exits(self, portfolio: Portfolio, risk_state: RiskState, row, ts) -> None:
+        """Check every currently open position against this bar's high/low.
 
-        hit_stop = False
-        hit_target = False
-        if pos.direction == "BUY":
-            hit_stop = row["low"] <= pos.stop_price
-            hit_target = row["high"] >= pos.target_price
-        else:  # SELL
-            hit_stop = row["high"] >= pos.stop_price
-            hit_target = row["low"] <= pos.target_price
+        Iterates over a snapshot of the open positions so positions closed
+        during this pass don't disturb the dict being iterated, and so one
+        position's exit this bar has no effect on whether another position
+        (opened on a different bar) also exits this same bar.
+        """
+        for position_id, pos in list(portfolio.open_positions.items()):
+            hit_stop = False
+            hit_target = False
+            if pos.direction == "BUY":
+                hit_stop = row["low"] <= pos.stop_price
+                hit_target = row["high"] >= pos.target_price
+            else:  # SELL
+                hit_stop = row["high"] >= pos.stop_price
+                hit_target = row["low"] <= pos.target_price
 
-        # If both stop and target could technically be hit within the same
-        # bar, we conservatively assume the stop was hit first (this is the
-        # standard conservative assumption in backtesting since intra-bar
-        # order is unknown without tick data).
-        if hit_stop:
-            exit_price = apply_exit_costs(pos.stop_price, pos.direction, self.costs)
-            trade = portfolio.close(ts, exit_price, reason="STOP")
-            self._settle(risk_state, trade)
-        elif hit_target:
-            exit_price = apply_exit_costs(pos.target_price, pos.direction, self.costs)
-            trade = portfolio.close(ts, exit_price, reason="TARGET")
-            self._settle(risk_state, trade)
+            # If both stop and target could technically be hit within the
+            # same bar, we conservatively assume the stop was hit first
+            # (the standard conservative assumption in backtesting since
+            # intra-bar order is unknown without tick data).
+            if hit_stop:
+                exit_price = apply_exit_costs(pos.stop_price, pos.direction, self.costs)
+                trade = portfolio.close(position_id, ts, exit_price, reason="STOP")
+                self._settle(risk_state, trade)
+            elif hit_target:
+                exit_price = apply_exit_costs(pos.target_price, pos.direction, self.costs)
+                trade = portfolio.close(position_id, ts, exit_price, reason="TARGET")
+                self._settle(risk_state, trade)
 
     def _settle(self, risk_state: RiskState, trade) -> None:
         risk_state.open_positions = max(0, risk_state.open_positions - 1)

@@ -104,6 +104,72 @@ def test_rejects_unsorted_input():
         engine.run(df, signal_col="signal")
 
 
+def test_default_config_still_caps_at_one_open_position():
+    """
+    Regression check: with no max_simultaneous_positions override, behavior
+    must stay exactly as before this feature existed — a persisting BUY
+    signal across several bars must open only ONE position at a time, not
+    a new one every bar.
+    """
+    # Prices drift by a single pip per bar (well inside the ~20-40 pip
+    # stop/target distance given atr=0.0010) so nothing closes early —
+    # any extra trades in the count would only come from opening new
+    # positions while one is already open, which is exactly what this
+    # test checks is NOT happening by default.
+    rows = [
+        {"open": 1.1000, "high": 1.1005, "low": 1.0995, "close": 1.1000, "atr": 0.0010, "signal": "HOLD"},
+        {"open": 1.1000, "high": 1.1005, "low": 1.0995, "close": 1.1002, "atr": 0.0010, "signal": "BUY"},
+        {"open": 1.1001, "high": 1.1006, "low": 1.0996, "close": 1.1003, "atr": 0.0010, "signal": "BUY"},
+        {"open": 1.1002, "high": 1.1007, "low": 1.0997, "close": 1.1004, "atr": 0.0010, "signal": "BUY"},
+        {"open": 1.1003, "high": 1.1008, "low": 1.0998, "close": 1.1005, "atr": 0.0010, "signal": "HOLD"},
+        {"open": 1.1004, "high": 1.1009, "low": 1.0999, "close": 1.1006, "atr": 0.0010, "signal": "HOLD"},
+    ]
+    df = _make_df(rows)
+    config = BacktestConfig(
+        symbol="TEST", timeframe="1h", initial_capital=10_000, risk_per_trade=0.01,
+        stop_atr_multiplier=2.0, take_profit_r=2.0, spread_pips=0.0, slippage_pips=0.0, pip_size=0.0001,
+    )
+    engine = BacktestEngine(config)
+    result = engine.run(df, signal_col="signal")
+    # Only one position should ever have been open concurrently: the whole
+    # run produces exactly one closed trade (it closes at END_OF_DATA since
+    # no stop/target is hit), even though BUY fired on three different bars.
+    assert len(result.portfolio.closed_trades) == 1
+
+
+def test_max_simultaneous_positions_override_allows_concurrent_trades():
+    """
+    Raising max_simultaneous_positions on BacktestConfig must let the
+    engine hold multiple positions open at once — one opened per bar
+    while the signal persists, up to the configured cap.
+    """
+    rows = [
+        {"open": 1.1000, "high": 1.1005, "low": 1.0995, "close": 1.1000, "atr": 0.0010, "signal": "HOLD"},
+        {"open": 1.1000, "high": 1.1005, "low": 1.0995, "close": 1.1002, "atr": 0.0010, "signal": "BUY"},
+        {"open": 1.1001, "high": 1.1006, "low": 1.0996, "close": 1.1003, "atr": 0.0010, "signal": "BUY"},
+        {"open": 1.1002, "high": 1.1007, "low": 1.0997, "close": 1.1004, "atr": 0.0010, "signal": "BUY"},
+        {"open": 1.1003, "high": 1.1008, "low": 1.0998, "close": 1.1005, "atr": 0.0010, "signal": "HOLD"},
+        {"open": 1.1004, "high": 1.1009, "low": 1.0999, "close": 1.1006, "atr": 0.0010, "signal": "HOLD"},
+    ]
+    df = _make_df(rows)
+    config = BacktestConfig(
+        symbol="TEST", timeframe="1h", initial_capital=10_000, risk_per_trade=0.01,
+        stop_atr_multiplier=2.0, take_profit_r=2.0, spread_pips=0.0, slippage_pips=0.0, pip_size=0.0001,
+        max_simultaneous_positions=3,
+    )
+    engine = BacktestEngine(config)
+    result = engine.run(df, signal_col="signal")
+    # Three separate BUY signals (bars 1-3), each executable on the next
+    # bar -> three distinct positions opened, all eventually closed at
+    # END_OF_DATA with three different entry prices/times.
+    trades = result.portfolio.closed_trades
+    assert len(trades) == 3
+    entry_prices = {t.entry_price for t in trades}
+    assert len(entry_prices) == 3  # each position entered at a different bar's open
+    position_ids = {t.position_id for t in trades}
+    assert len(position_ids) == 3  # each trade traceable to a distinct position id
+
+
 def test_max_drawdown_metric_matches_manual_calc():
     rows = [
         {"open": 1.10, "high": 1.11, "low": 1.09, "close": 1.10, "atr": 0.001, "signal": "HOLD"},

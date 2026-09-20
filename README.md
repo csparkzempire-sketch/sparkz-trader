@@ -162,6 +162,13 @@ curl -X POST http://localhost:8000/backtest \
 
 Via the dashboard: go to **Backtesting**, adjust the config, click **Run Backtest**.
 
+By default the backtest engine, like paper trading, only holds one position
+open at a time (`MAX_SIMULTANEOUS_POSITIONS=1` in `.env`). To let a run hold
+several concurrent positions, pass `max_simultaneous_positions` on the
+`/backtest` request (or raise `MAX_SIMULTANEOUS_POSITIONS` globally) — the
+risk manager's `max_exposure_pct` and `max_drawdown_pct` limits still apply
+across all open positions combined.
+
 ### Training a model
 
 ```bash
@@ -254,27 +261,11 @@ the backtested trading metrics, not just accuracy/F1/ROC-AUC.
 
 - **No live broker integration** — by design, for this version. `LIVE_TRADING_ENABLED`
   is a hard-coded-false safety switch for a future adapter that doesn't exist yet.
-- **Paper trading has no automatic candle feed** — `/paper/*` endpoints let you
-  open/close positions and check stop/target hits against candles you supply
-  programmatically; there's no background scheduler polling live prices yet.
-  A production version would add a polling loop or websocket feed that calls
-  `PaperTradingSimulator.check_and_close_if_hit` on each new candle.
-  bars.
-- **Single-position-at-a-time assumption** in the backtest engine's `Portfolio`
-  class (`max_simultaneous_positions` beyond 1 is enforced at the risk-manager
-  level for entries, but the `Portfolio`/`BacktestEngine` classes themselves
-  currently model one open position at a time for simplicity). Multi-position
-  portfolios would need `Portfolio` extended to track a dict of positions like
-  `PaperAccountState` already does.
 - **4h timeframe** is listed in config but yfinance doesn't natively support a 4h
   interval — you'd need to resample from 1h data yourself (not implemented).
   This is called out in `app/data/downloader.py`.
 - **Walk-forward evaluation** uses fixed train/test bar counts, not fully
   configurable expanding windows (only rolling, non-overlapping by default).
-- **Frontend** covers the 7 dashboard sections but the Market page's chart is a
-  simplified price line rather than true OHLC candlesticks (recharts has no
-  native candlestick chart type) and doesn't yet plot RSI/MACD/ATR sub-panels
-  inline, even though that data is available from the `/market/{symbol}` API.
 - **No authentication** on the API — fine for local development, not
   production-ready as-is.
 - This was tested end-to-end with synthetic OHLCV data (since the development
@@ -283,17 +274,12 @@ the backtested trading metrics, not just accuracy/F1/ROC-AUC.
 
 ## What should be built next
 
-1. A scheduler/websocket loop to drive paper trading off live/near-live candles.
-2. Multi-position portfolio support in the backtest engine (extend `Portfolio`
-   the way `PaperAccountState` already handles multiple symbols).
-3. A real report-generation step that writes the JSON described in spec section
-   32 into `reports/` after each backtest (currently the API returns the same
-   data but doesn't persist a formatted report file).
-4. True OHLC candlestick charting and RSI/MACD/ATR sub-panels in the Market page.
-5. A broker adapter interface (behind `LIVE_TRADING_ENABLED`) with a mock/local
+1. A broker adapter interface (behind `LIVE_TRADING_ENABLED`) with a mock/local
    implementation first, real broker integration only after extensive paper
    trading validation and with explicit, separate user consent.
-6. Additional markets (GBP/USD, USD/JPY, crypto pairs) — the architecture
+2. Additional markets (GBP/USD, USD/JPY, crypto pairs) — the architecture
    supports this already via the `symbol`/`timeframe` parameters throughout,
    but each asset class's behavior (24/7 crypto markets vs. FX sessions, equity
    corporate actions, etc.) should be validated before assuming it "just works."
+3. Configurable expanding-window walk-forward evaluation, not just fixed rolling windows.
+4. Native 4h resampling from 1h data.
