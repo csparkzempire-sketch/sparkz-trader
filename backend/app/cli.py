@@ -115,7 +115,10 @@ def cmd_train_model(args) -> None:
     val_metrics = evaluate_classification(result.model, dataset.X_val, dataset.y_val)
     test_metrics = evaluate_classification(result.model, dataset.X_test, dataset.y_test)
     importances = feature_importance(result.model, dataset.feature_columns)
-    sweep = sweep_signal_thresholds(result.model, dataset.X_val, dataset.y_val)
+    sweep_thresholds = (
+        [float(t) for t in args.thresholds.split(",")] if getattr(args, "thresholds", None) else None
+    )
+    sweep = sweep_signal_thresholds(result.model, dataset.X_val, dataset.y_val, thresholds=sweep_thresholds)
 
     print(f"Trained model_id={result.model_id}")
     print(f"lookahead_period={cfg.lookahead_period} bars, target_return_threshold={cfg.target_return_threshold}")
@@ -239,6 +242,11 @@ def main() -> None:
     p.add_argument(
         "--target-return-threshold", type=float, default=None, dest="target_return_threshold",
         help=f"Min future return counted as 'up' (default from settings: {settings.target_return_threshold}).",
+    )
+    p.add_argument(
+        "--thresholds", type=str, default=None,
+        help="Comma-separated probability thresholds for the sweep, e.g. '0.15,0.20,0.25,0.30'. "
+             "Defaults to 0.30-0.75 in steps of 0.05.",
     )
     p.set_defaults(func=cmd_train_model)
 

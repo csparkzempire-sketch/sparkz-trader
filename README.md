@@ -198,9 +198,12 @@ watching for: `evaluate_classification`'s precision/recall use a fixed 0.5
 probability cutoff (`model.predict()`), so a model can have real ranking
 ability (a decent ROC AUC) while still showing 0.0 precision/recall simply
 because it never crosses 0.5 for a rare class. `train-model` also prints a
-**threshold sweep** (validation set only, thresholds 0.30–0.75) showing
-precision and signal count at each cutoff — check that before concluding a
-model with a reasonable AUC has "no signal."
+**threshold sweep** (validation set only, thresholds 0.30–0.75 by default)
+showing precision and signal count at each cutoff — check that before
+concluding a model with a reasonable AUC has "no signal." If the default
+range shows too few signals to be meaningful (e.g. n=3), narrow in with
+`--thresholds "0.15,0.20,0.25"` to see finer resolution wherever the
+model's probabilities are actually landing.
 
 To backtest a trained model's signals instead of the baseline, pass its
 `model_id` as the `strategy` field in a `/backtest` request.

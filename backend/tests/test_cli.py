@@ -59,6 +59,23 @@ def test_train_model_prints_threshold_sweep(capsys):
     out = capsys.readouterr().out
     assert "Threshold sweep" in out
     assert '"threshold": 0.3' in out  # confirms the widened below-0.5 range made it through
+
+
+def test_train_model_custom_thresholds_override(capsys):
+    args = argparse.Namespace(
+        symbol="TEST", timeframe="1h", model_type="random_forest",
+        lookahead_period=None, target_return_threshold=None,
+        thresholds="0.15,0.20,0.25",
+    )
+    cli_module.cmd_train_model(args)
+    out = capsys.readouterr().out
+    assert '"threshold": 0.15' in out
+    assert '"threshold": 0.2' in out
+    assert '"threshold": 0.25' in out
+    assert '"threshold": 0.5' not in out  # default range must NOT also appear
+
+
+def test_walk_forward_runs_and_prints_summary(capsys):
     args = argparse.Namespace(
         symbol="TEST", timeframe="1h", model_type="logistic_regression",
         train_bars=300, test_bars=100, step_bars=None,
