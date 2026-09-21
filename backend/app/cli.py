@@ -5,6 +5,10 @@ Usage:
     python -m app.cli download-data [--symbol EURUSD=X] [--timeframe 1h]
     python -m app.cli backtest [--symbol EURUSD=X] [--timeframe 1h] [--strategy baseline]
     python -m app.cli train-model [--symbol EURUSD=X] [--timeframe 1h] [--model-type random_forest]
+        [--lookahead-period N] [--target-return-threshold R]
+    python -m app.cli walk-forward [--symbol EURUSD=X] [--timeframe 1h] [--model-type random_forest]
+        [--train-bars N] [--test-bars N] [--step-bars N]
+        [--lookahead-period N] [--target-return-threshold R]
     python -m app.cli evaluate-model --model-id <id>
     python -m app.cli paper-trade [--symbol EURUSD=X]
     python -m app.cli system-status
@@ -28,6 +32,7 @@ from app.ml.dataset import LeakageError, build_dataset
 from app.ml.evaluate import evaluate_classification, feature_importance
 from app.ml.model_registry import load_model_artifact
 from app.ml.train import train_model
+from app.ml.walk_forward import run_walk_forward
 from app.strategy.rules import baseline_signal
 from app.utils.logging import get_logger
 
@@ -89,10 +94,19 @@ def cmd_backtest(args) -> None:
 
 
 def cmd_train_model(args) -> None:
+    cfg = settings
+    overrides = {}
+    if args.lookahead_period is not None:
+        overrides["lookahead_period"] = args.lookahead_period
+    if args.target_return_threshold is not None:
+        overrides["target_return_threshold"] = args.target_return_threshold
+    if overrides:
+        cfg = settings.model_copy(update=overrides)
+
     try:
         raw = download_ohlcv(symbol=args.symbol, timeframe=args.timeframe)
         clean, _ = validate_and_clean(raw, timeframe=args.timeframe)
-        dataset = build_dataset(clean)
+        dataset = build_dataset(clean, cfg=cfg)
     except (DownloadError, DataValidationError, LeakageError, ValueError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         sys.exit(1)
@@ -103,9 +117,66 @@ def cmd_train_model(args) -> None:
     importances = feature_importance(result.model, dataset.feature_columns)
 
     print(f"Trained model_id={result.model_id}")
+    print(f"lookahead_period={cfg.lookahead_period} bars, target_return_threshold={cfg.target_return_threshold}")
     print("Validation metrics:", json.dumps(val_metrics.as_dict(), indent=2))
     print("Test metrics:", json.dumps(test_metrics.as_dict(), indent=2))
     print("Top features:", json.dumps(importances[:10], indent=2))
+
+
+def cmd_walk_forward(args) -> None:
+    cfg = settings
+    overrides = {}
+    if args.lookahead_period is not None:
+        overrides["lookahead_period"] = args.lookahead_period
+    if args.target_return_threshold is not None:
+        overrides["target_return_threshold"] = args.target_return_threshold
+    if overrides:
+        cfg = settings.model_copy(update=overrides)
+
+    try:
+        raw = download_ohlcv(symbol=args.symbol, timeframe=args.timeframe)
+        clean, _ = validate_and_clean(raw, timeframe=args.timeframe)
+    except (DownloadError, DataValidationError) as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        sys.exit(1)
+
+    results = run_walk_forward(
+        clean,
+        symbol=args.symbol,
+        timeframe=args.timeframe,
+        model_type=args.model_type,
+        train_bars=args.train_bars,
+        test_bars=args.test_bars,
+        step_bars=args.step_bars,
+        cfg=cfg,
+    )
+
+    if not results:
+        print(
+            "ERROR: No windows produced -- not enough usable bars for the requested "
+            f"train_bars={args.train_bars} + test_bars={args.test_bars}. Try smaller windows "
+            "or download more history.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    print(f"lookahead_period={cfg.lookahead_period} bars, target_return_threshold={cfg.target_return_threshold}")
+    print(f"{len(results)} walk-forward windows (train_bars={args.train_bars}, test_bars={args.test_bars}):\n")
+    for r in results:
+        print(json.dumps(r.__dict__, indent=2))
+
+    returns = [r.total_return_pct for r in results]
+    profitable_windows = sum(1 for r in returns if r > 0)
+    avg_return = sum(returns) / len(returns)
+    print("\n--- Summary across windows ---")
+    print(json.dumps({
+        "windows": len(results),
+        "profitable_windows": profitable_windows,
+        "profitable_window_pct": round(100 * profitable_windows / len(results), 2),
+        "avg_total_return_pct": round(avg_return, 4),
+        "best_window_return_pct": round(max(returns), 4),
+        "worst_window_return_pct": round(min(returns), 4),
+    }, indent=2))
 
 
 def cmd_evaluate_model(args) -> None:
@@ -154,7 +225,26 @@ def main() -> None:
     p.add_argument("--symbol", default=settings.market_symbol)
     p.add_argument("--timeframe", default=settings.timeframe)
     p.add_argument("--model-type", default="random_forest", dest="model_type")
+    p.add_argument(
+        "--lookahead-period", type=int, default=None, dest="lookahead_period",
+        help=f"Bars ahead the label looks (default from settings: {settings.lookahead_period}).",
+    )
+    p.add_argument(
+        "--target-return-threshold", type=float, default=None, dest="target_return_threshold",
+        help=f"Min future return counted as 'up' (default from settings: {settings.target_return_threshold}).",
+    )
     p.set_defaults(func=cmd_train_model)
+
+    p = sub.add_parser("walk-forward", help="Slide a train/test window across history to check if a model's edge is consistent over time, not just one lucky split.")
+    p.add_argument("--symbol", default=settings.market_symbol)
+    p.add_argument("--timeframe", default=settings.timeframe)
+    p.add_argument("--model-type", default="random_forest", dest="model_type")
+    p.add_argument("--train-bars", type=int, default=2000, dest="train_bars")
+    p.add_argument("--test-bars", type=int, default=500, dest="test_bars")
+    p.add_argument("--step-bars", type=int, default=None, dest="step_bars", help="Defaults to test-bars (non-overlapping windows).")
+    p.add_argument("--lookahead-period", type=int, default=None, dest="lookahead_period")
+    p.add_argument("--target-return-threshold", type=float, default=None, dest="target_return_threshold")
+    p.set_defaults(func=cmd_walk_forward)
 
     p = sub.add_parser("evaluate-model")
     p.add_argument("--model-id", required=True, dest="model_id")

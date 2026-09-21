@@ -179,8 +179,37 @@ Or via the dashboard's **Model Lab** page. This trains on the chronological
 first 70% of the data, holds out 15% for validation (used for threshold
 selection) and 15% for test (touched only at the end, for reporting).
 
+The label ("did price go up enough to count as a win?") is controlled by two
+settings, overridable per-run:
+```bash
+python -m app.cli train-model --symbol "EURUSD=X" --timeframe 1h --model-type random_forest \
+  --lookahead-period 20 --target-return-threshold 0.003
+```
+- `--lookahead-period` (default `LOOKAHEAD_PERIOD`, 5): how many bars ahead
+  the label looks.
+- `--target-return-threshold` (default `TARGET_RETURN_THRESHOLD`, 0.0005):
+  the minimum future return counted as "up." The default is tuned for
+  next-bar noise, not a meaningful move — if your model can't beat chance at
+  predicting the very next candle, try widening this before concluding
+  there's no learnable signal at all.
+
 To backtest a trained model's signals instead of the baseline, pass its
 `model_id` as the `strategy` field in a `/backtest` request.
+
+### Checking if an edge is real, not a lucky split
+
+A single train/val/test split can look good (or bad) by chance. Walk-forward
+evaluation slides a train/test window across the full history and backtests
+each test segment separately, so you can see whether performance holds up
+across different time periods:
+```bash
+python -m app.cli walk-forward --symbol "EURUSD=X" --timeframe 1h --model-type random_forest \
+  --train-bars 2000 --test-bars 500
+```
+Prints per-window metrics plus a summary (`profitable_window_pct`,
+`avg_total_return_pct`, best/worst window). A strategy with real edge should
+be profitable in most windows, not just win big in one and lose everywhere
+else. `--lookahead-period` / `--target-return-threshold` work here too.
 
 ### Generating predictions
 
