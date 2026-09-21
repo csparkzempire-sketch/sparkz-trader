@@ -119,7 +119,7 @@ def sweep_signal_thresholds(
     """
     if not hasattr(model, "predict_proba"):
         return []
-    thresholds = thresholds or [0.50, 0.55, 0.60, 0.65, 0.70, 0.75]
+    thresholds = thresholds or [0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.75]
     proba = model.predict_proba(X_val)[:, 1]
     results = []
     for t in thresholds:

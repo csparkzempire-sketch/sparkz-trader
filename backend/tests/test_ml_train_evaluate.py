@@ -53,6 +53,29 @@ def test_threshold_sweep_uses_validation_not_test(synthetic_ohlcv, tmp_path, mon
         assert "threshold" in row and "n_signals" in row
 
 
+def test_threshold_sweep_default_range_includes_below_half(synthetic_ohlcv, tmp_path, monkeypatch):
+    """
+    Regression test: the default sweep used to start at 0.50, which is
+    useless when the positive class is rare and the model never predicts
+    a probability >= 0.5 for anything (evaluate_classification's precision/
+    recall, which use sklearn's fixed 0.5 cutoff via model.predict(), can
+    show 0.0/0.0 in exactly that case even when the model's probabilities
+    rank cases correctly -- the fix is being able to see thresholds below
+    0.5 too, not just above it.
+    """
+    import app.ml.model_registry as registry
+
+    monkeypatch.setattr(registry, "MODELS_DIR", tmp_path)
+
+    dataset = build_dataset(synthetic_ohlcv)
+    result = train_model(dataset, "random_forest", "TESTUSD", "1h")
+
+    sweep = sweep_signal_thresholds(result.model, dataset.X_val, dataset.y_val)
+    thresholds = [row["threshold"] for row in sweep]
+    assert min(thresholds) < 0.5
+    assert max(thresholds) > 0.5
+
+
 def test_model_never_trained_on_test_set(synthetic_ohlcv, tmp_path, monkeypatch):
     """
     Sanity check: refit an identical model manually only on X_train, and

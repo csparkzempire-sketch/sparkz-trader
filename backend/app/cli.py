@@ -29,7 +29,7 @@ from app.data.repository import save_processed
 from app.data.validator import DataValidationError, validate_and_clean
 from app.features.feature_engineering import build_feature_matrix
 from app.ml.dataset import LeakageError, build_dataset
-from app.ml.evaluate import evaluate_classification, feature_importance
+from app.ml.evaluate import evaluate_classification, feature_importance, sweep_signal_thresholds
 from app.ml.model_registry import load_model_artifact
 from app.ml.train import train_model
 from app.ml.walk_forward import run_walk_forward
@@ -115,11 +115,18 @@ def cmd_train_model(args) -> None:
     val_metrics = evaluate_classification(result.model, dataset.X_val, dataset.y_val)
     test_metrics = evaluate_classification(result.model, dataset.X_test, dataset.y_test)
     importances = feature_importance(result.model, dataset.feature_columns)
+    sweep = sweep_signal_thresholds(result.model, dataset.X_val, dataset.y_val)
 
     print(f"Trained model_id={result.model_id}")
     print(f"lookahead_period={cfg.lookahead_period} bars, target_return_threshold={cfg.target_return_threshold}")
     print("Validation metrics:", json.dumps(val_metrics.as_dict(), indent=2))
     print("Test metrics:", json.dumps(test_metrics.as_dict(), indent=2))
+    if sweep:
+        print(
+            "Threshold sweep (validation only -- precision if you only BUY when P(up) >= threshold; "
+            "n_signals is how many val-set bars would have fired at that threshold):"
+        )
+        print(json.dumps(sweep, indent=2))
     print("Top features:", json.dumps(importances[:10], indent=2))
 
 

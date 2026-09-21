@@ -193,6 +193,15 @@ python -m app.cli train-model --symbol "EURUSD=X" --timeframe 1h --model-type ra
   predicting the very next candle, try widening this before concluding
   there's no learnable signal at all.
 
+Widening the target usually makes the "up" class rarer, which is worth
+watching for: `evaluate_classification`'s precision/recall use a fixed 0.5
+probability cutoff (`model.predict()`), so a model can have real ranking
+ability (a decent ROC AUC) while still showing 0.0 precision/recall simply
+because it never crosses 0.5 for a rare class. `train-model` also prints a
+**threshold sweep** (validation set only, thresholds 0.30–0.75) showing
+precision and signal count at each cutoff — check that before concluding a
+model with a reasonable AUC has "no signal."
+
 To backtest a trained model's signals instead of the baseline, pass its
 `model_id` as the `strategy` field in a `/backtest` request.
 

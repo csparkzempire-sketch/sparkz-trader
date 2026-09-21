@@ -50,7 +50,15 @@ def test_train_model_lookahead_override_is_applied(capsys):
     assert "lookahead_period=20 bars, target_return_threshold=0.003" in out
 
 
-def test_walk_forward_runs_and_prints_summary(capsys):
+def test_train_model_prints_threshold_sweep(capsys):
+    args = argparse.Namespace(
+        symbol="TEST", timeframe="1h", model_type="random_forest",
+        lookahead_period=None, target_return_threshold=None,
+    )
+    cli_module.cmd_train_model(args)
+    out = capsys.readouterr().out
+    assert "Threshold sweep" in out
+    assert '"threshold": 0.3' in out  # confirms the widened below-0.5 range made it through
     args = argparse.Namespace(
         symbol="TEST", timeframe="1h", model_type="logistic_regression",
         train_bars=300, test_bars=100, step_bars=None,
