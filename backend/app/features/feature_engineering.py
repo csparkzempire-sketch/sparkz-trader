@@ -17,6 +17,9 @@ from app.indicators.momentum import add_momentum_indicators
 from app.indicators.trend import add_trend_indicators
 from app.indicators.volatility import add_volatility_indicators
 from app.indicators.volume import add_volume_indicators
+from app.utils.logging import get_logger, kv
+
+logger = get_logger(__name__)
 
 # Columns that must NEVER be used as ML features — they either are the raw
 # label ingredients or are only knowable in the future relative to a bar.
@@ -60,7 +63,24 @@ def build_feature_matrix(raw_df: pd.DataFrame, cfg=None) -> pd.DataFrame:
     df = add_trend_indicators(df, cfg.ema_fast, cfg.ema_slow, cfg.ema_long)
     df = add_momentum_indicators(df, cfg.rsi_period)
     df = add_volatility_indicators(df, cfg.atr_period)
-    df = add_volume_indicators(df)
+
+    # Yahoo Finance reports volume as a constant 0 for FX pairs (no real
+    # trade-volume data exists for spot forex there). Feeding that through
+    # volume_change (a pct_change) produces NaN for EVERY row via 0/0,
+    # which would otherwise poison the entire feature matrix once
+    # build_dataset's leak-guarded dropna runs. Rather than fabricate a
+    # fake "no change" signal for data that carries no real information,
+    # we skip volume-derived features entirely when volume is effectively
+    # constant/zero, and say so loudly.
+    if (df["volume"].fillna(0) == 0).all():
+        logger.warning(
+            "volume_features_skipped %s",
+            kv(reason="volume column is entirely zero/NaN (typical for FX pairs from Yahoo Finance); "
+                      "volume_change/volume_avg would be uninformative or all-NaN, so they are omitted"),
+        )
+    else:
+        df = add_volume_indicators(df)
+
     df = add_price_structure_features(df)
     df = add_ema_distance_features(df, cfg.ema_fast, cfg.ema_slow, cfg.ema_long)
 
