@@ -29,6 +29,25 @@ def _isolated_model_dir(monkeypatch, tmp_path):
     monkeypatch.setattr(registry, "MODELS_DIR", tmp_path / "models")
 
 
+@pytest.fixture(autouse=True)
+def _isolated_reports_dir(monkeypatch, tmp_path):
+    import app.backtest.report as report_mod
+    monkeypatch.setattr(report_mod, "REPORTS_DIR", tmp_path / "reports")
+
+
+@pytest.fixture
+def trained_model_id(synthetic_ohlcv):
+    """Train a real model against the shared synthetic fixture and return
+    its model_id, so cmd_backtest's model-strategy path can be exercised
+    without depending on train-model's CLI output."""
+    from app.ml.dataset import build_dataset
+    from app.ml.train import train_model as _train_model
+
+    dataset = build_dataset(synthetic_ohlcv)
+    result = _train_model(dataset, "logistic_regression", "TEST", "1h")
+    return result.model_id
+
+
 def test_train_model_default_lookahead(capsys):
     args = argparse.Namespace(
         symbol="TEST", timeframe="1h", model_type="logistic_regression",
@@ -91,6 +110,45 @@ def test_walk_forward_runs_and_prints_summary(capsys):
     assert summary["windows"] >= 1
     assert "avg_total_return_pct" in summary
     assert "profitable_window_pct" in summary
+
+
+def test_backtest_baseline_runs(capsys):
+    args = argparse.Namespace(symbol="TEST", timeframe="1h", strategy="baseline")
+    cli_module.cmd_backtest(args)
+    out = capsys.readouterr().out
+    assert "Report saved to" in out
+
+
+def test_backtest_model_strategy_default_threshold_may_fire_nothing(capsys, trained_model_id):
+    """
+    Regression context: with the default signal_buy_threshold (0.60), a
+    model can easily produce zero BUY/SELL signals over an entire dataset
+    if its probabilities never climb that high -- this used to fail
+    silently (the backtest would just run with an all-HOLD signal column
+    and report an empty-looking result with no explanation). Now it must
+    say so explicitly.
+    """
+    args = argparse.Namespace(
+        symbol="TEST", timeframe="1h", strategy=trained_model_id,
+        buy_threshold=0.99, sell_threshold=0.99,  # deliberately unreachable
+        lookahead_period=None, target_return_threshold=None,
+    )
+    cli_module.cmd_backtest(args)
+    out, err = capsys.readouterr()
+    assert "0 BUY, 0 SELL" in out
+    assert "zero signals fired" in err
+
+
+def test_backtest_model_strategy_custom_threshold_fires_signals(capsys, trained_model_id):
+    args = argparse.Namespace(
+        symbol="TEST", timeframe="1h", strategy=trained_model_id,
+        buy_threshold=0.3, sell_threshold=0.3,  # generous enough to fire on synthetic data
+        lookahead_period=None, target_return_threshold=None,
+    )
+    cli_module.cmd_backtest(args)
+    out = capsys.readouterr().out
+    assert "buy_threshold=0.3" in out
+    assert "Report saved to" in out
 
 
 def test_walk_forward_too_few_bars_errors_cleanly(capsys):

@@ -69,12 +69,45 @@ def cmd_backtest(args) -> None:
         from app.ml.dataset import add_labels
         from app.strategy.signals import signal_from_probability
 
-        labeled = add_labels(featured)
+        # Use the same lookahead/threshold the model was actually trained
+        # with, if given -- otherwise this only affects which trailing rows
+        # get dropped as unlabeled, not which feature columns are used, so
+        # it's a minor correctness nicety rather than a required match.
+        cfg = settings
+        overrides = {}
+        if getattr(args, "lookahead_period", None) is not None:
+            overrides["lookahead_period"] = args.lookahead_period
+        if getattr(args, "target_return_threshold", None) is not None:
+            overrides["target_return_threshold"] = args.target_return_threshold
+        if overrides:
+            cfg = settings.model_copy(update=overrides)
+
+        labeled = add_labels(featured, cfg.lookahead_period, cfg.target_return_threshold, cfg)
         feature_cols = get_feature_columns(labeled)
         mask = labeled[feature_cols].notna().all(axis=1)
         featured["signal"] = "HOLD"
         proba = model.predict_proba(labeled.loc[mask, feature_cols])[:, 1]
-        featured.loc[mask, "signal"] = [signal_from_probability(p).signal for p in proba]
+        buy_threshold = getattr(args, "buy_threshold", None)
+        sell_threshold = getattr(args, "sell_threshold", None)
+        featured.loc[mask, "signal"] = [
+            signal_from_probability(p, buy_threshold=buy_threshold, sell_threshold=sell_threshold, cfg=cfg).signal
+            for p in proba
+        ]
+        n_buy = int((featured["signal"] == "BUY").sum())
+        n_sell = int((featured["signal"] == "SELL").sum())
+        effective_buy = buy_threshold if buy_threshold is not None else cfg.signal_buy_threshold
+        effective_sell = sell_threshold if sell_threshold is not None else cfg.signal_sell_threshold
+        print(
+            f"Model signals: {n_buy} BUY, {n_sell} SELL out of {mask.sum()} scorable bars "
+            f"(buy_threshold={effective_buy}, sell_threshold={effective_sell})."
+        )
+        if n_buy == 0 and n_sell == 0:
+            print(
+                "WARNING: zero signals fired -- the model's probabilities never crossed these "
+                "thresholds. Check `train-model`'s threshold sweep output to find a threshold "
+                "the model's probabilities actually reach, then pass it via --buy-threshold.",
+                file=sys.stderr,
+            )
 
     bt_config = BacktestConfig.from_settings(settings, args.symbol, args.timeframe)
     engine = BacktestEngine(bt_config)
@@ -228,7 +261,24 @@ def main() -> None:
     p = sub.add_parser("backtest")
     p.add_argument("--symbol", default=settings.market_symbol)
     p.add_argument("--timeframe", default=settings.timeframe)
-    p.add_argument("--strategy", default="baseline")
+    p.add_argument("--strategy", default="baseline", help="'baseline' or a model_id from train-model.")
+    p.add_argument(
+        "--buy-threshold", type=float, default=None, dest="buy_threshold",
+        help=f"Model-strategy only: P(up) needed to fire a BUY (default from settings: {settings.signal_buy_threshold}). "
+             "Use train-model's threshold sweep to find a value the model's probabilities actually reach.",
+    )
+    p.add_argument(
+        "--sell-threshold", type=float, default=None, dest="sell_threshold",
+        help=f"Model-strategy only: P(down) needed to fire a SELL (default from settings: {settings.signal_sell_threshold}).",
+    )
+    p.add_argument(
+        "--lookahead-period", type=int, default=None, dest="lookahead_period",
+        help="Model-strategy only: should match what the model was trained with (train-model's --lookahead-period).",
+    )
+    p.add_argument(
+        "--target-return-threshold", type=float, default=None, dest="target_return_threshold",
+        help="Model-strategy only: should match what the model was trained with.",
+    )
     p.set_defaults(func=cmd_backtest)
 
     p = sub.add_parser("train-model")

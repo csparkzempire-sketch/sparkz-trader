@@ -206,7 +206,20 @@ range shows too few signals to be meaningful (e.g. n=3), narrow in with
 model's probabilities are actually landing.
 
 To backtest a trained model's signals instead of the baseline, pass its
-`model_id` as the `strategy` field in a `/backtest` request.
+`model_id` as the `strategy` field in a `/backtest` request, or via CLI:
+```bash
+python -m app.cli backtest --symbol "EURUSD=X" --timeframe 1h --strategy <model_id> \
+  --buy-threshold 0.22 --sell-threshold 0.22
+```
+The default `--buy-threshold`/`--sell-threshold` (`SIGNAL_BUY_THRESHOLD`/
+`SIGNAL_SELL_THRESHOLD`, 0.60) is unrelated to what the model actually
+found useful during training -- if the model's probabilities never reach
+0.60 (common with a rare positive class), the backtest will silently run
+with zero trades unless you pass a threshold from `train-model`'s sweep
+output. `cmd_backtest` prints how many BUY/SELL signals actually fired
+and warns loudly if that's zero, specifically so this doesn't go unnoticed.
+If the model was trained with custom `--lookahead-period`/
+`--target-return-threshold`, pass the same values here too.
 
 ### Checking if an edge is real, not a lucky split
 
