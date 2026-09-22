@@ -146,6 +146,16 @@ Yahoo Finance (`query1/query2.finance.yahoo.com`). If your environment blocks
 that, the command fails with a clear error rather than crashing — check your
 network/firewall settings.
 
+**Volume handling varies by symbol, and both cases are handled:** FX pairs
+(EURUSD=X) get 0 for every bar from Yahoo Finance (no real trade-volume data
+exists for spot forex there) — `volume_change`/`volume_avg` are skipped
+entirely for those, with a logged warning, rather than feeding the model a
+column that's NaN on every row. Other symbols (crypto, stocks) have real
+volume but can still have a sporadic exact 0 (an illiquid hour, a data gap)
+amid otherwise-real data — `volume_change` converts the resulting +inf (from
+0 -> nonzero) to NaN rather than letting it reach `model.fit()`, which
+sklearn rejects outright ("Input X contains infinity").
+
 ### Running a backtest
 
 Via CLI:

@@ -74,6 +74,38 @@ def test_nan_volume_column_also_treated_as_no_volume_data(synthetic_ohlcv: pd.Da
     assert "volume_avg" not in featured.columns
 
 
+def test_sporadic_zero_volume_does_not_produce_inf(synthetic_ohlcv: pd.DataFrame):
+    """
+    Regression test for a real crash found live on BTC-USD: mostly-nonzero
+    volume with an occasional exact 0 (a real, legitimate value -- an
+    illiquid hour, a data gap) makes plain pct_change() produce +inf on
+    the 0 -> nonzero transition, not NaN. Unlike NaN, inf sails straight
+    through dropna()-based leak guards and crashes sklearn training with
+    'Input X contains infinity'. This must never happen: any inf in
+    volume_change must become NaN, exactly like any other missing value.
+    """
+    df = synthetic_ohlcv.copy()
+    df.loc[df.index[10], "volume"] = 0.0  # a single zero amid otherwise-real nonzero volume
+    featured = build_feature_matrix(df)
+    assert "volume_change" in featured.columns  # NOT the all-zero skip path -- mostly real volume
+    assert not np.isinf(featured["volume_change"]).any()
+    # the bar right after the zero is exactly where a naive pct_change
+    # would have produced +inf -- confirm it's NaN there instead, not 0
+    # and not some fabricated finite number.
+    assert pd.isna(featured.loc[11, "volume_change"])
+
+
+def test_dataset_buildable_with_sporadic_zero_volume(synthetic_ohlcv: pd.DataFrame):
+    """The actual end-to-end regression: build_dataset must not crash (or
+    silently pass inf through to sklearn) when volume has occasional
+    zeros amid otherwise-real data."""
+    df = synthetic_ohlcv.copy()
+    df.loc[df.index[10], "volume"] = 0.0
+    dataset = build_dataset(df)
+    assert len(dataset.X_train) > 0
+    assert not np.isinf(dataset.X_train.to_numpy(dtype=float)).any()
+
+
 # --- Multi-timeframe features -----------------------------------------
 #
 # This is the highest-risk part of the whole feature pipeline for
