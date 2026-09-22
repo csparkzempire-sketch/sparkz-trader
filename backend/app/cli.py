@@ -60,19 +60,25 @@ def cmd_backtest(args) -> None:
         print(f"ERROR: {exc}", file=sys.stderr)
         sys.exit(1)
 
-    featured = build_feature_matrix(clean)
     if args.strategy == "baseline":
+        featured = build_feature_matrix(clean)
         featured["signal"] = baseline_signal(featured)
     else:
+        higher_timeframes = (
+            [t.strip() for t in args.multi_timeframe.split(",")] if getattr(args, "multi_timeframe", None) else None
+        )
+        featured = build_feature_matrix(clean, timeframe=args.timeframe, higher_timeframes=higher_timeframes)
         model = load_model_artifact(args.strategy)
         from app.features.feature_engineering import get_feature_columns
         from app.ml.dataset import add_labels
         from app.strategy.signals import signal_from_probability
 
-        # Use the same lookahead/threshold the model was actually trained
-        # with, if given -- otherwise this only affects which trailing rows
-        # get dropped as unlabeled, not which feature columns are used, so
-        # it's a minor correctness nicety rather than a required match.
+        # Use the same lookahead/threshold/multi-timeframe setup the model
+        # was actually trained with, if given -- for lookahead/threshold
+        # this only affects which trailing rows get dropped as unlabeled;
+        # for multi-timeframe, a mismatch here will make predict_proba
+        # fail outright on a feature-shape mismatch, since the model
+        # expects the exact columns it was trained on.
         cfg = settings
         overrides = {}
         if getattr(args, "lookahead_period", None) is not None:
@@ -91,7 +97,7 @@ def cmd_backtest(args) -> None:
         # numbers as a performance estimate.
         if not getattr(args, "full_history", False):
             from app.ml.dataset import build_dataset
-            ds = build_dataset(clean, cfg=cfg)
+            ds = build_dataset(clean, cfg=cfg, timeframe=args.timeframe, higher_timeframes=higher_timeframes)
             test_start = ds.test_period[0]
             n_before = len(featured)
             featured = featured[featured["timestamp"] >= test_start].reset_index(drop=True)
@@ -167,7 +173,10 @@ def cmd_train_model(args) -> None:
     try:
         raw = download_ohlcv(symbol=args.symbol, timeframe=args.timeframe)
         clean, _ = validate_and_clean(raw, timeframe=args.timeframe)
-        dataset = build_dataset(clean, cfg=cfg)
+        higher_timeframes = (
+            [t.strip() for t in args.multi_timeframe.split(",")] if getattr(args, "multi_timeframe", None) else None
+        )
+        dataset = build_dataset(clean, cfg=cfg, timeframe=args.timeframe, higher_timeframes=higher_timeframes)
     except (DownloadError, DataValidationError, LeakageError, ValueError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         sys.exit(1)
@@ -183,6 +192,7 @@ def cmd_train_model(args) -> None:
 
     print(f"Trained model_id={result.model_id}")
     print(f"lookahead_period={cfg.lookahead_period} bars, target_return_threshold={cfg.target_return_threshold}")
+    print(f"features={len(dataset.feature_columns)}, multi_timeframe={higher_timeframes or 'none'}")
     print("Validation metrics:", json.dumps(val_metrics.as_dict(), indent=2))
     print("Test metrics:", json.dumps(test_metrics.as_dict(), indent=2))
     if sweep:
@@ -313,6 +323,10 @@ def main() -> None:
              "training data, instead of just the held-out test period. This inflates results with "
              "memorization and is NOT a valid performance estimate -- for debugging/curiosity only.",
     )
+    p.add_argument(
+        "--multi-timeframe", type=str, default=None, dest="multi_timeframe",
+        help="Model-strategy only: must match what the model was trained with, e.g. '4h,1d'.",
+    )
     p.set_defaults(func=cmd_backtest)
 
     p = sub.add_parser("train-model")
@@ -331,6 +345,12 @@ def main() -> None:
         "--thresholds", type=str, default=None,
         help="Comma-separated probability thresholds for the sweep, e.g. '0.15,0.20,0.25,0.30'. "
              "Defaults to 0.30-0.75 in steps of 0.05.",
+    )
+    p.add_argument(
+        "--multi-timeframe", type=str, default=None, dest="multi_timeframe",
+        help="Comma-separated higher timeframes to add trend/momentum/volatility context from, "
+             "e.g. '4h,1d'. Leakage-safe: a higher-timeframe bar's indicators only become visible "
+             "once that bar has actually closed.",
     )
     p.set_defaults(func=cmd_train_model)
 

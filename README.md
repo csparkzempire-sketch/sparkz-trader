@@ -245,6 +245,29 @@ trustworthy precision on the BUY side, test that in isolation by setting
 `--sell-threshold` above 1.0 (e.g. `1.01`) so SELL can never fire, rather
 than assuming the same threshold is meaningful in both directions.
 
+### Adding higher-timeframe context
+
+By default a model only sees indicators computed on its own timeframe
+(e.g. 1h EMA/RSI/MACD/ATR). To add trend/momentum/volatility context from
+higher timeframes (e.g. "is the 4h and daily trend up or down right now"),
+pass `--multi-timeframe`:
+```bash
+python -m app.cli train-model --symbol "EURUSD=X" --timeframe 1h --model-type random_forest \
+  --multi-timeframe "4h,1d"
+```
+This adds columns like `ema_50_4h`, `rsi_1d`, `dist_from_ema_200_1d`, etc.
+It's leakage-safe by construction: a higher-timeframe bar's indicators
+only become visible starting at that bar's actual close time (open time +
+its duration), joined via `merge_asof(direction="backward")` so a base
+row only ever sees the most recently *closed* higher-timeframe candle,
+never one still forming (see `add_multi_timeframe_features` in
+`app.features.feature_engineering`, and its tests in
+`tests/test_feature_engineering.py` for the exact guarantee this makes).
+
+If you backtest a model trained this way, pass the same `--multi-timeframe`
+value to `backtest` too — the feature set must match exactly what the
+model was trained on, or `predict_proba` will fail on a shape mismatch.
+
 ### Checking if an edge is real, not a lucky split
 
 A single train/val/test split can look good (or bad) by chance. Walk-forward

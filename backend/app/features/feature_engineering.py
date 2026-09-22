@@ -18,6 +18,7 @@ from app.indicators.trend import add_trend_indicators
 from app.indicators.volatility import add_volatility_indicators
 from app.indicators.volume import add_volume_indicators
 from app.utils.logging import get_logger, kv
+from app.utils.time import timeframe_to_pandas_freq
 
 logger = get_logger(__name__)
 
@@ -51,11 +52,87 @@ def add_ema_distance_features(df: pd.DataFrame, ema_fast: int, ema_slow: int, em
     return df
 
 
-def build_feature_matrix(raw_df: pd.DataFrame, cfg=None) -> pd.DataFrame:
+def add_multi_timeframe_features(df: pd.DataFrame, base_timeframe: str, higher_timeframes: list[str], cfg=None) -> pd.DataFrame:
+    """
+    Adds higher-timeframe trend/momentum/volatility context (e.g. 4h, 1d
+    EMA/RSI/ATR) onto a lower-timeframe (e.g. 1h) feature matrix.
+
+    This is the one place in the pipeline where look-ahead bias is easiest
+    to introduce by accident: a naive resample-and-forward-fill join would
+    let a base-timeframe bar see a higher-timeframe candle's indicators
+    before that candle has actually closed (e.g. a 1h bar at 10:00 seeing
+    the 4h candle covering 08:00-12:00, when that candle doesn't close
+    until 12:00). To prevent that, a higher-timeframe bar's indicators are
+    only made available starting at that bar's CLOSE time (bar_open +
+    bar_duration), joined via merge_asof(direction="backward") so each
+    base row only ever sees the most recently CLOSED higher-timeframe bar.
+    """
+    cfg = cfg or settings
+    base_delta = pd.Timedelta(timeframe_to_pandas_freq(base_timeframe))
+
+    out = df.sort_values("timestamp").reset_index(drop=True)
+
+    for htf in higher_timeframes:
+        htf_freq = timeframe_to_pandas_freq(htf)
+        htf_delta = pd.Timedelta(htf_freq)
+        if htf_delta <= base_delta:
+            logger.warning(
+                "multi_timeframe_skip %s",
+                kv(reason=f"higher_timeframe '{htf}' is not strictly longer than base_timeframe '{base_timeframe}'; skipped"),
+            )
+            continue
+
+        ohlc = out.set_index("timestamp")[["open", "high", "low", "close", "volume"]]
+        resampled = (
+            ohlc.resample(htf_freq, label="left", closed="left")
+            .agg({"open": "first", "high": "max", "low": "min", "close": "last", "volume": "sum"})
+            .dropna(subset=["open", "high", "low", "close"])
+            .reset_index()  # "timestamp" here is each higher-timeframe bar's OPEN time
+        )
+
+        htf_feat = add_trend_indicators(resampled, cfg.ema_fast, cfg.ema_slow, cfg.ema_long)
+        htf_feat = add_momentum_indicators(htf_feat, cfg.rsi_period)
+        htf_feat = add_volatility_indicators(htf_feat, cfg.atr_period)
+        htf_feat = add_ema_distance_features(htf_feat, cfg.ema_fast, cfg.ema_slow, cfg.ema_long)
+
+        # A bar's indicator values are computed from its own close, so they
+        # cannot be known/used until the bar has actually closed.
+        htf_feat["available_at"] = htf_feat["timestamp"] + htf_delta
+
+        feature_cols = get_feature_columns(htf_feat)
+        suffix = f"_{htf}"
+        htf_feat = (
+            htf_feat[["available_at"] + feature_cols]
+            .rename(columns={c: f"{c}{suffix}" for c in feature_cols})
+            .sort_values("available_at")
+        )
+
+        out = pd.merge_asof(
+            out.sort_values("timestamp"),
+            htf_feat,
+            left_on="timestamp",
+            right_on="available_at",
+            direction="backward",
+        ).drop(columns=["available_at"])
+
+    return out
+
+
+def build_feature_matrix(
+    raw_df: pd.DataFrame,
+    cfg=None,
+    timeframe: str | None = None,
+    higher_timeframes: list[str] | None = None,
+) -> pd.DataFrame:
     """
     Full feature pipeline: raw OHLCV -> indicators -> price structure ->
-    EMA-distance features. Input must already be validated/cleaned and
-    sorted chronologically (see app.data.validator).
+    EMA-distance features -> (optional) higher-timeframe context. Input
+    must already be validated/cleaned and sorted chronologically (see
+    app.data.validator).
+
+    `higher_timeframes` (e.g. ["4h", "1d"]) adds leakage-safe multi-
+    timeframe context columns -- see add_multi_timeframe_features. It
+    requires `timeframe` (the base timeframe of raw_df) to be given too.
     """
     cfg = cfg or settings
     df = raw_df.copy()
@@ -83,6 +160,11 @@ def build_feature_matrix(raw_df: pd.DataFrame, cfg=None) -> pd.DataFrame:
 
     df = add_price_structure_features(df)
     df = add_ema_distance_features(df, cfg.ema_fast, cfg.ema_slow, cfg.ema_long)
+
+    if higher_timeframes:
+        if not timeframe:
+            raise ValueError("build_feature_matrix: `timeframe` is required when `higher_timeframes` is given.")
+        df = add_multi_timeframe_features(df, timeframe, higher_timeframes, cfg)
 
     return df
 

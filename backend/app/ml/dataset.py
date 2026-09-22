@@ -81,14 +81,21 @@ def _assert_no_leakage(feature_columns: list[str]) -> None:
 def build_dataset(
     raw_df: pd.DataFrame,
     cfg: Settings | None = None,
+    timeframe: str | None = None,
+    higher_timeframes: list[str] | None = None,
 ) -> DatasetSplit:
     """
     Full pipeline: raw OHLCV -> features -> labels -> drop warmup/unlabeled
     rows -> chronological train/val/test split.
+
+    `higher_timeframes` (e.g. ["4h", "1d"]) adds leakage-safe multi-
+    timeframe context features -- see app.features.feature_engineering.
+    add_multi_timeframe_features. Requires `timeframe` (raw_df's own
+    timeframe) to also be given.
     """
     cfg = cfg or settings
 
-    featured = build_feature_matrix(raw_df, cfg)
+    featured = build_feature_matrix(raw_df, cfg, timeframe=timeframe, higher_timeframes=higher_timeframes)
     labeled = add_labels(featured, cfg.lookahead_period, cfg.target_return_threshold, cfg)
 
     feature_columns = get_feature_columns(labeled)

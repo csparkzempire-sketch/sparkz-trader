@@ -48,6 +48,46 @@ def trained_model_id(synthetic_ohlcv):
     return result.model_id
 
 
+def test_train_model_multi_timeframe_adds_features(capsys):
+    args_plain = argparse.Namespace(
+        symbol="TEST", timeframe="1h", model_type="logistic_regression",
+        lookahead_period=None, target_return_threshold=None, multi_timeframe=None,
+    )
+    cli_module.cmd_train_model(args_plain)
+    out_plain = capsys.readouterr().out
+    plain_features = int(out_plain.split("features=")[1].split(",")[0])
+
+    args_mtf = argparse.Namespace(
+        symbol="TEST", timeframe="1h", model_type="logistic_regression",
+        lookahead_period=None, target_return_threshold=None, multi_timeframe="4h",
+    )
+    cli_module.cmd_train_model(args_mtf)
+    out_mtf = capsys.readouterr().out
+    mtf_features = int(out_mtf.split("features=")[1].split(",")[0])
+
+    assert "multi_timeframe=['4h']" in out_mtf
+    assert mtf_features > plain_features
+
+
+def test_backtest_model_strategy_matching_multi_timeframe_runs(capsys):
+    from app.ml.dataset import build_dataset
+    from app.ml.train import train_model as _train_model
+
+    synthetic = cli_module.download_ohlcv(symbol="TEST", timeframe="1h")
+    dataset = build_dataset(synthetic, timeframe="1h", higher_timeframes=["4h"])
+    result = _train_model(dataset, "logistic_regression", "TEST", "1h")
+
+    args = argparse.Namespace(
+        symbol="TEST", timeframe="1h", strategy=result.model_id,
+        buy_threshold=0.3, sell_threshold=0.3,
+        lookahead_period=None, target_return_threshold=None,
+        full_history=False, multi_timeframe="4h",
+    )
+    cli_module.cmd_backtest(args)  # must not raise a feature-shape mismatch
+    out = capsys.readouterr().out
+    assert "Report saved to" in out
+
+
 def test_train_model_default_lookahead(capsys):
     args = argparse.Namespace(
         symbol="TEST", timeframe="1h", model_type="logistic_regression",
