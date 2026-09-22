@@ -151,6 +151,45 @@ def test_backtest_model_strategy_custom_threshold_fires_signals(capsys, trained_
     assert "Report saved to" in out
 
 
+def test_backtest_model_strategy_restricts_to_test_period_by_default(capsys, trained_model_id):
+    """
+    Regression test for a real bug found in session: without this
+    restriction, cmd_backtest scored the model across its own TRAINING
+    data too, which can produce wildly inflated (memorized, not real)
+    performance. By default it must trade only the held-out test period.
+    """
+    args = argparse.Namespace(
+        symbol="TEST", timeframe="1h", strategy=trained_model_id,
+        buy_threshold=0.3, sell_threshold=0.3,
+        lookahead_period=None, target_return_threshold=None,
+        full_history=False,
+    )
+    cli_module.cmd_backtest(args)
+    out = capsys.readouterr().out
+    assert "Restricting backtest to the model's held-out TEST period" in out
+    # the synthetic fixture is 1500 rows; the test split is ~15% of that,
+    # so far fewer than 1500 bars should have been used.
+    import re
+    m = re.search(r"onward, (\d+) of (\d+) total bars", out)
+    assert m is not None
+    used, total = int(m.group(1)), int(m.group(2))
+    assert used < total
+    assert used < total * 0.3  # roughly the 15% test slice, with slack
+
+
+def test_backtest_model_strategy_full_history_warns_explicitly(capsys, trained_model_id):
+    args = argparse.Namespace(
+        symbol="TEST", timeframe="1h", strategy=trained_model_id,
+        buy_threshold=0.3, sell_threshold=0.3,
+        lookahead_period=None, target_return_threshold=None,
+        full_history=True,
+    )
+    cli_module.cmd_backtest(args)
+    out, err = capsys.readouterr()
+    assert "Restricting backtest to the model's held-out TEST period" not in out
+    assert "do not treat this as a performance estimate" in err
+
+
 def test_walk_forward_too_few_bars_errors_cleanly(capsys):
     """With windows larger than the whole dataset, there should be a clear
     error, not a silent empty result or a crash."""

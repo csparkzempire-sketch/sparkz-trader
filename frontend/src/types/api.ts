@@ -44,6 +44,11 @@ export interface BacktestRequest {
   slippage_pips: number;
   strategy: string;
   max_simultaneous_positions?: number; // omit to use the server default (1)
+  buy_threshold?: number; // model-strategy only; omit for SIGNAL_BUY_THRESHOLD default
+  sell_threshold?: number; // model-strategy only; omit for SIGNAL_SELL_THRESHOLD default
+  lookahead_period?: number; // model-strategy only; should match how the model was trained
+  target_return_threshold?: number; // model-strategy only; should match how the model was trained
+  full_history?: boolean; // model-strategy only; true includes the model's own training data (NOT a valid performance estimate) -- default false restricts to the held-out test period
 }
 
 export interface PerformanceMetrics {

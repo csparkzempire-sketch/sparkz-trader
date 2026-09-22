@@ -221,6 +221,30 @@ and warns loudly if that's zero, specifically so this doesn't go unnoticed.
 If the model was trained with custom `--lookahead-period`/
 `--target-return-threshold`, pass the same values here too.
 
+**Model-strategy backtests default to the held-out TEST period only.**
+A fitted model can perform far better than its real skill on rows it was
+trained on (memorization, not prediction) -- so by default, backtesting a
+`model_id` strategy restricts to the same chronological test split
+`train-model` reported at the end (the last ~15% of the data), not the
+full downloaded history. The CLI/API both print how many bars that left.
+`--full-history` overrides this and includes the training data too, but
+the result is then **not a valid performance estimate** -- it's there for
+debugging only, and both interfaces say so loudly if you use it. This
+applies only to model strategies; `baseline` never trains on anything, so
+there's no held-out split to restrict to.
+
+**A single up-probability model's SELL side is not a real bearish
+prediction, and treating it as one can wreck a backtest.** `signal_from_
+probability` defines `probability_down = 1 - probability_up`, so `--sell-
+threshold 0.22` fires SELL whenever `P(up) <= 0.78`. If the model's "up"
+class is rare (common after widening `--target-return-threshold`),
+"not confidently up" describes most bars regardless of what actually
+happens next -- you end up effectively shorting most of the dataset, not
+acting on a real bearish signal. If a model's threshold sweep only shows
+trustworthy precision on the BUY side, test that in isolation by setting
+`--sell-threshold` above 1.0 (e.g. `1.01`) so SELL can never fire, rather
+than assuming the same threshold is meaningful in both directions.
+
 ### Checking if an edge is real, not a lucky split
 
 A single train/val/test split can look good (or bad) by chance. Walk-forward

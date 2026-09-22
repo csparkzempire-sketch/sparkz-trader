@@ -56,6 +56,16 @@ class BacktestRequest(BaseModel):
     max_simultaneous_positions: int | None = Field(
         None, ge=1, description="Max concurrently open positions for this run. Defaults to the server-wide setting (1) if omitted."
     )
+    buy_threshold: float | None = Field(None, ge=0, le=1, description="Model-strategy only: P(up) needed to fire a BUY. Defaults to SIGNAL_BUY_THRESHOLD.")
+    sell_threshold: float | None = Field(None, ge=0, le=1, description="Model-strategy only: P(down) needed to fire a SELL. Defaults to SIGNAL_SELL_THRESHOLD.")
+    lookahead_period: int | None = Field(None, ge=1, description="Model-strategy only: should match what the model was trained with.")
+    target_return_threshold: float | None = Field(None, description="Model-strategy only: should match what the model was trained with.")
+    full_history: bool = Field(
+        False,
+        description="Model-strategy only: if true, backtest the ENTIRE downloaded history including the model's own "
+                    "training data instead of just its held-out test period. This inflates results with memorization "
+                    "and is NOT a valid performance estimate -- for debugging/curiosity only.",
+    )
 
 
 class BacktestResponse(BaseModel):

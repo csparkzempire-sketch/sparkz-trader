@@ -82,6 +82,34 @@ def cmd_backtest(args) -> None:
         if overrides:
             cfg = settings.model_copy(update=overrides)
 
+        # CRITICAL: without this, the backtest runs across the model's own
+        # TRAINING data too, and a fitted model can perform far better than
+        # its real skill on rows it has already seen -- that's not a
+        # backtest result, it's leakage. Restrict to the same chronological
+        # test split build_dataset used at training time, unless the caller
+        # explicitly opts out (--full-history) knowing that invalidates the
+        # numbers as a performance estimate.
+        if not getattr(args, "full_history", False):
+            from app.ml.dataset import build_dataset
+            ds = build_dataset(clean, cfg=cfg)
+            test_start = ds.test_period[0]
+            n_before = len(featured)
+            featured = featured[featured["timestamp"] >= test_start].reset_index(drop=True)
+            print(
+                f"Restricting backtest to the model's held-out TEST period only "
+                f"({test_start} onward, {len(featured)} of {n_before} total bars) -- "
+                "trading on the model's own training data would inflate results with "
+                "memorization, not real skill. Pass --full-history to override (NOT a "
+                "valid performance estimate if you do)."
+            )
+        else:
+            print(
+                "WARNING: --full-history includes bars the model was TRAINED on. Any "
+                "profit shown here may reflect memorization of the training data rather "
+                "than real predictive skill -- do not treat this as a performance estimate.",
+                file=sys.stderr,
+            )
+
         labeled = add_labels(featured, cfg.lookahead_period, cfg.target_return_threshold, cfg)
         feature_cols = get_feature_columns(labeled)
         mask = labeled[feature_cols].notna().all(axis=1)
@@ -278,6 +306,12 @@ def main() -> None:
     p.add_argument(
         "--target-return-threshold", type=float, default=None, dest="target_return_threshold",
         help="Model-strategy only: should match what the model was trained with.",
+    )
+    p.add_argument(
+        "--full-history", action="store_true", dest="full_history",
+        help="Model-strategy only: backtest the ENTIRE downloaded history including the model's own "
+             "training data, instead of just the held-out test period. This inflates results with "
+             "memorization and is NOT a valid performance estimate -- for debugging/curiosity only.",
     )
     p.set_defaults(func=cmd_backtest)
 

@@ -84,6 +84,54 @@ def test_backtest_endpoint_rejects_unknown_model_strategy(client):
     assert resp.status_code == 404
 
 
+def test_backtest_endpoint_model_strategy_restricts_to_test_period_by_default(client):
+    """
+    Regression test: the /backtest route used to score a model strategy
+    across the ENTIRE downloaded history, training data included, which
+    can badly inflate results with memorization rather than real skill
+    (found live against real EUR/USD data with a random forest model).
+    By default it must warn that it restricted to the held-out test period.
+    """
+    train_resp = client.post(
+        "/models/train",
+        json={"symbol": "EURUSD=X", "timeframe": "1h", "model_type": "logistic_regression"},
+    )
+    assert train_resp.status_code == 200, train_resp.text
+    model_id = train_resp.json()["model_id"]
+
+    resp = client.post(
+        "/backtest",
+        json={
+            "symbol": "EURUSD=X", "timeframe": "1h", "strategy": model_id,
+            "buy_threshold": 0.3, "sell_threshold": 0.3,
+        },
+    )
+    assert resp.status_code == 200, resp.text
+    warnings = resp.json()["warnings"]
+    assert any("held-out TEST period" in w for w in warnings)
+    assert not any("full_history=true" in w for w in warnings)
+
+
+def test_backtest_endpoint_model_strategy_full_history_warns_explicitly(client):
+    train_resp = client.post(
+        "/models/train",
+        json={"symbol": "EURUSD=X", "timeframe": "1h", "model_type": "logistic_regression"},
+    )
+    model_id = train_resp.json()["model_id"]
+
+    resp = client.post(
+        "/backtest",
+        json={
+            "symbol": "EURUSD=X", "timeframe": "1h", "strategy": model_id,
+            "buy_threshold": 0.3, "sell_threshold": 0.3, "full_history": True,
+        },
+    )
+    assert resp.status_code == 200, resp.text
+    warnings = resp.json()["warnings"]
+    assert any("not a valid performance estimate" in w for w in warnings)
+    assert not any("held-out TEST period" in w for w in warnings)
+
+
 def test_train_and_predict_flow(client):
     train_resp = client.post(
         "/models/train",

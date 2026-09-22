@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.api.schemas import BacktestRequest, BacktestResponse
 from app.backtest.engine import BacktestConfig, BacktestEngine
+from app.config import settings
 from app.backtest.metrics import (
     compare_to_buy_and_hold,
     compute_metrics,
@@ -41,6 +42,7 @@ def run_backtest(req: BacktestRequest, session: Session = Depends(get_session_de
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     featured = build_feature_matrix(clean)
+    extra_warnings: list[str] = []
 
     if req.strategy == "baseline":
         featured["signal"] = baseline_signal(featured)
@@ -57,17 +59,54 @@ def run_backtest(req: BacktestRequest, session: Session = Depends(get_session_de
         from app.ml.dataset import add_labels
         from app.features.feature_engineering import get_feature_columns
 
-        labeled = add_labels(featured)
+        cfg = settings
+        overrides = {}
+        if req.lookahead_period is not None:
+            overrides["lookahead_period"] = req.lookahead_period
+        if req.target_return_threshold is not None:
+            overrides["target_return_threshold"] = req.target_return_threshold
+        if overrides:
+            cfg = settings.model_copy(update=overrides)
+
+        # CRITICAL: without this, the backtest scores the model on its own
+        # TRAINING data too, and a fitted model can perform far better than
+        # its real skill on rows it has already seen -- see cmd_backtest in
+        # app.cli for the same fix and the incident that found this.
+        if not req.full_history:
+            from app.ml.dataset import build_dataset
+            ds = build_dataset(clean, cfg=cfg)
+            test_start = ds.test_period[0]
+            n_before = len(featured)
+            featured = featured[featured["timestamp"] >= test_start].reset_index(drop=True)
+            extra_warnings.append(
+                f"Restricted to the model's held-out TEST period only ({test_start.isoformat()} onward, "
+                f"{len(featured)} of {n_before} total bars) to avoid scoring on training data."
+            )
+        else:
+            extra_warnings.append(
+                "full_history=true: this backtest includes bars the model was TRAINED on. Any profit shown "
+                "may reflect memorization rather than real predictive skill -- not a valid performance estimate."
+            )
+
+        labeled = add_labels(featured, cfg.lookahead_period, cfg.target_return_threshold, cfg)
         feature_cols = get_feature_columns(labeled)
         usable_mask = labeled[feature_cols].notna().all(axis=1)
         proba_up = pd_series_full_nan(len(featured))
         proba_up.loc[usable_mask[usable_mask].index] = model.predict_proba(labeled.loc[usable_mask, feature_cols])[:, 1]
         featured["probability_up"] = proba_up
         featured["signal"] = [
-            signal_from_probability(p).signal if p == p else "HOLD"  # NaN check without importing math
+            signal_from_probability(p, buy_threshold=req.buy_threshold, sell_threshold=req.sell_threshold, cfg=cfg).signal
+            if p == p else "HOLD"  # NaN check without importing math
             for p in proba_up
         ]
         prob_col = "probability_up"
+        n_buy = int((featured["signal"] == "BUY").sum())
+        n_sell = int((featured["signal"] == "SELL").sum())
+        if n_buy == 0 and n_sell == 0:
+            extra_warnings.append(
+                "Zero BUY/SELL signals fired at these thresholds -- check the model's threshold sweep "
+                "(from training) to find a threshold its probabilities actually reach."
+            )
 
     if len(featured.dropna(subset=["atr"])) < 50:
         raise HTTPException(status_code=400, detail="Insufficient historical data after indicator warmup to run a meaningful backtest.")
@@ -139,7 +178,7 @@ def run_backtest(req: BacktestRequest, session: Session = Depends(get_session_de
         drawdown_curve=drawdown_curve_as_records(result.portfolio),
         monthly_returns=monthly_returns(result.portfolio),
         trades=trade_distribution(result.portfolio),
-        warnings=result.warnings,
+        warnings=extra_warnings + result.warnings,
     )
 
 
