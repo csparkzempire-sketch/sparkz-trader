@@ -97,7 +97,12 @@ def add_multi_timeframe_features(df: pd.DataFrame, base_timeframe: str, higher_t
 
         # A bar's indicator values are computed from its own close, so they
         # cannot be known/used until the bar has actually closed.
-        htf_feat["available_at"] = htf_feat["timestamp"] + htf_delta
+        # `+ htf_delta` can upcast the timestamp's datetime64 resolution
+        # (e.g. [s] -> [us], found live against real yfinance data), which
+        # merge_asof then refuses as a dtype mismatch against `out`'s own
+        # timestamp column -- realign explicitly so this is robust to
+        # whatever resolution either side happens to be in.
+        htf_feat["available_at"] = (htf_feat["timestamp"] + htf_delta).astype(out["timestamp"].dtype)
 
         feature_cols = get_feature_columns(htf_feat)
         suffix = f"_{htf}"

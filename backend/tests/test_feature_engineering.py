@@ -137,6 +137,23 @@ def test_multi_timeframe_skips_htf_not_longer_than_base(synthetic_ohlcv: pd.Data
     assert not [c for c in out.columns if c.endswith("_1h") and c not in synthetic_ohlcv.columns]
 
 
+def test_multi_timeframe_handles_second_resolution_timestamps(synthetic_ohlcv: pd.DataFrame):
+    """
+    Regression test for a real crash found live on BTC-USD: real
+    downloaded data can have second-resolution timestamps
+    (datetime64[s, UTC]), but `timestamp + htf_delta` upcasts the result
+    to microsecond resolution (datetime64[us, UTC]) -- pandas then refuses
+    merge_asof outright ('incompatible merge keys ... must be the same
+    type') instead of silently coercing. The synthetic_ohlcv fixture uses
+    pd.date_range, which doesn't happen to trigger this, so this test
+    forces second resolution explicitly to cover the real-data case.
+    """
+    df = synthetic_ohlcv.copy()
+    df["timestamp"] = df["timestamp"].astype("datetime64[s, UTC]")
+    out = add_multi_timeframe_features(df, "1h", ["4h"])  # must not raise
+    assert any(c.endswith("_4h") for c in out.columns)
+
+
 def test_multi_timeframe_no_lookahead_via_truncation(synthetic_ohlcv: pd.DataFrame):
     """
     The definitive leakage test, mirroring test_indicators.py's pattern:
