@@ -9,6 +9,9 @@ these separate makes each step independently testable.
 
 from __future__ import annotations
 
+import re
+from datetime import datetime, timedelta, timezone
+
 import pandas as pd
 
 from app.config import settings
@@ -75,6 +78,88 @@ def _normalize_columns(df: pd.DataFrame) -> pd.DataFrame:
     return df[REQUIRED_COLUMNS]
 
 
+# If a single long-period request comes back empty (Yahoo has tightened how
+# much intraday history one request may return before), we retry in windows
+# of this many days -- comfortably under the smallest limit we've seen work.
+_CHUNK_DAYS = 55
+_MAX_CONSECUTIVE_EMPTY_WINDOWS = 2
+
+
+def _period_to_days(period: str | None) -> int | None:
+    """'730d' -> 730, '5y' -> 1825, '3mo' -> 90; None if it isn't a simple period."""
+    if not period:
+        return None
+    m = re.fullmatch(r"(\d+)(d|mo|y)", period.strip())
+    if not m:
+        return None
+    return int(m.group(1)) * {"d": 1, "mo": 30, "y": 365}[m.group(2)]
+
+
+def _download_in_chunks(yf, symbol: str, interval: str, lookback_days: int) -> pd.DataFrame | None:
+    """
+    Fetch `lookback_days` of history as a series of short start/end windows,
+    walking backwards from now, and stitch whatever succeeds together.
+
+    Stops early after a couple of consecutive empty windows -- that's what
+    hitting Yahoo's "no intraday data this far back" limit looks like, and
+    there's no point hammering it further. Returns None if nothing at all
+    came back. Whatever was collected is still returned even if older
+    windows failed, so a caller gets the most history Yahoo will give.
+    """
+    now = datetime.now(timezone.utc)
+    window_end = now + timedelta(days=1)  # yfinance's `end` is exclusive; +1d keeps today's bars
+    covered = 0
+    empty_streak = 0
+    frames: list[pd.DataFrame] = []
+    windows_tried = 0
+    windows_ok = 0
+
+    while covered < lookback_days:
+        span = min(_CHUNK_DAYS, lookback_days - covered)
+        window_start = window_end - timedelta(days=span)
+        windows_tried += 1
+        try:
+            raw = yf.download(
+                tickers=symbol,
+                interval=interval,
+                start=window_start.strftime("%Y-%m-%d"),
+                end=window_end.strftime("%Y-%m-%d"),
+                auto_adjust=False,
+                progress=False,
+            )
+        except Exception as exc:  # broad on purpose: yfinance raises many things
+            logger.warning("Chunk download failed %s", kv(symbol=symbol, error=str(exc)))
+            raw = None
+
+        if raw is None or raw.empty:
+            empty_streak += 1
+            if empty_streak >= _MAX_CONSECUTIVE_EMPTY_WINDOWS:
+                break
+        else:
+            empty_streak = 0
+            windows_ok += 1
+            frames.append(_normalize_columns(raw))
+
+        window_end = window_start
+        covered += span
+
+    if not frames:
+        return None
+
+    df = (
+        pd.concat(frames, ignore_index=True)
+        .drop_duplicates(subset="timestamp", keep="last")
+        .sort_values("timestamp")
+        .reset_index(drop=True)
+    )
+    logger.info(
+        "Chunked download %s",
+        kv(symbol=symbol, windows_tried=windows_tried, windows_ok=windows_ok, rows=len(df),
+           first=str(df["timestamp"].iloc[0]), last=str(df["timestamp"].iloc[-1])),
+    )
+    return df
+
+
 def download_ohlcv(
     symbol: str | None = None,
     timeframe: str | None = None,
@@ -124,6 +209,18 @@ def download_ohlcv(
         )
     except Exception as exc:  # network/library errors from yfinance are broad
         raise DownloadError(f"Failed to download data for {symbol}: {exc}") from exc
+
+    if (raw is None or raw.empty) and start is None and end is None and interval != "1d":
+        lookback_days = _period_to_days(period)
+        if lookback_days and lookback_days > _CHUNK_DAYS:
+            logger.warning(
+                "Period request returned no data; retrying in short windows %s",
+                kv(symbol=symbol, period=period, chunk_days=_CHUNK_DAYS),
+            )
+            chunked = _download_in_chunks(yf, symbol, interval, lookback_days)
+            if chunked is not None:
+                logger.info("Download complete %s", kv(symbol=symbol, rows=len(chunked), via="chunked"))
+                return chunked
 
     if raw is None or raw.empty:
         raise DownloadError(

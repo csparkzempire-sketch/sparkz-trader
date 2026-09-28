@@ -2,8 +2,8 @@
 SPARKZ TRADER command-line interface.
 
 Usage:
-    python -m app.cli download-data [--symbol EURUSD=X] [--timeframe 1h]
-    python -m app.cli backtest [--symbol EURUSD=X] [--timeframe 1h] [--strategy baseline]
+    python -m app.cli download-data [--symbol EURUSD=X] [--timeframe 1h]   (merges into the local cache)
+    python -m app.cli backtest [--symbol EURUSD=X] [--timeframe 1h] [--strategy baseline] [--use-cached]
     python -m app.cli train-model [--symbol EURUSD=X] [--timeframe 1h] [--model-type random_forest]
         [--lookahead-period N] [--target-return-threshold R]
     python -m app.cli walk-forward [--symbol EURUSD=X] [--timeframe 1h] [--model-type random_forest]
@@ -25,7 +25,7 @@ from app.backtest.metrics import compare_to_buy_and_hold, compute_metrics
 from app.backtest.report import generate_and_save_report
 from app.config import settings
 from app.data.downloader import DownloadError, download_ohlcv
-from app.data.repository import save_processed
+from app.data.repository import cache_exists, load_processed, merge_into_cache, processed_file_path
 from app.data.validator import DataValidationError, validate_and_clean
 from app.features.feature_engineering import build_feature_matrix
 from app.ml.dataset import LeakageError, build_dataset
@@ -39,6 +39,37 @@ from app.utils.logging import get_logger
 logger = get_logger("cli", settings.log_level)
 
 
+def _load_market_data(symbol: str, timeframe: str, use_cached: bool = False):
+    """
+    Return cleaned OHLCV for (symbol, timeframe): either straight from the
+    local cache written by `download-data` (use_cached=True -- no network,
+    so experiments keep working when Yahoo is down or rate-limiting), or
+    freshly downloaded and validated.
+
+    Raises DownloadError / DataValidationError / FileNotFoundError; callers
+    print those and exit.
+    """
+    if use_cached:
+        df = load_processed(symbol, timeframe)  # FileNotFoundError says which file is missing
+        print(
+            f"Using cached data: {len(df)} bars, {df['timestamp'].iloc[0]} -> {df['timestamp'].iloc[-1]} "
+            f"({processed_file_path(symbol, timeframe)})"
+        )
+        return df
+
+    try:
+        raw = download_ohlcv(symbol=symbol, timeframe=timeframe)
+    except DownloadError as exc:
+        if cache_exists(symbol, timeframe):
+            raise DownloadError(
+                f"{exc} A cached copy exists at {processed_file_path(symbol, timeframe)} -- "
+                "re-run with --use-cached to work offline from it."
+            ) from exc
+        raise
+    clean, _ = validate_and_clean(raw, timeframe=timeframe)
+    return clean
+
+
 def cmd_download_data(args) -> None:
     try:
         raw = download_ohlcv(symbol=args.symbol, timeframe=args.timeframe)
@@ -47,16 +78,20 @@ def cmd_download_data(args) -> None:
         print(f"ERROR: {exc}", file=sys.stderr)
         sys.exit(1)
 
-    path = save_processed(clean, args.symbol, args.timeframe)
-    print(f"Downloaded and saved {len(clean)} candles to {path}")
+    # Merge into the cache rather than overwrite it, so a short (or
+    # partial) download can never replace a longer history already saved.
+    merged, path, n_before = merge_into_cache(clean, args.symbol, args.timeframe)
+    print(
+        f"Downloaded {len(clean)} candles. Cache now holds {len(merged)} candles "
+        f"({merged['timestamp'].iloc[0]} -> {merged['timestamp'].iloc[-1]}), was {n_before}: {path}"
+    )
     print(json.dumps(report.as_dict(), indent=2, default=str))
 
 
 def cmd_backtest(args) -> None:
     try:
-        raw = download_ohlcv(symbol=args.symbol, timeframe=args.timeframe)
-        clean, _ = validate_and_clean(raw, timeframe=args.timeframe)
-    except (DownloadError, DataValidationError) as exc:
+        clean = _load_market_data(args.symbol, args.timeframe, getattr(args, "use_cached", False))
+    except (DownloadError, DataValidationError, FileNotFoundError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         sys.exit(1)
 
@@ -171,13 +206,12 @@ def cmd_train_model(args) -> None:
         cfg = settings.model_copy(update=overrides)
 
     try:
-        raw = download_ohlcv(symbol=args.symbol, timeframe=args.timeframe)
-        clean, _ = validate_and_clean(raw, timeframe=args.timeframe)
+        clean = _load_market_data(args.symbol, args.timeframe, getattr(args, "use_cached", False))
         higher_timeframes = (
             [t.strip() for t in args.multi_timeframe.split(",")] if getattr(args, "multi_timeframe", None) else None
         )
         dataset = build_dataset(clean, cfg=cfg, timeframe=args.timeframe, higher_timeframes=higher_timeframes)
-    except (DownloadError, DataValidationError, LeakageError, ValueError) as exc:
+    except (DownloadError, DataValidationError, LeakageError, ValueError, FileNotFoundError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         sys.exit(1)
 
@@ -215,9 +249,8 @@ def cmd_walk_forward(args) -> None:
         cfg = settings.model_copy(update=overrides)
 
     try:
-        raw = download_ohlcv(symbol=args.symbol, timeframe=args.timeframe)
-        clean, _ = validate_and_clean(raw, timeframe=args.timeframe)
-    except (DownloadError, DataValidationError) as exc:
+        clean = _load_market_data(args.symbol, args.timeframe, getattr(args, "use_cached", False))
+    except (DownloadError, DataValidationError, FileNotFoundError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         sys.exit(1)
 
@@ -327,6 +360,11 @@ def main() -> None:
         "--multi-timeframe", type=str, default=None, dest="multi_timeframe",
         help="Model-strategy only: must match what the model was trained with, e.g. '4h,1d'.",
     )
+    p.add_argument(
+        "--use-cached", action="store_true", dest="use_cached",
+        help="Read the local cache written by `download-data` instead of downloading. Works offline; "
+             "use it when Yahoo is down or rate-limiting.",
+    )
     p.set_defaults(func=cmd_backtest)
 
     p = sub.add_parser("train-model")
@@ -352,6 +390,11 @@ def main() -> None:
              "e.g. '4h,1d'. Leakage-safe: a higher-timeframe bar's indicators only become visible "
              "once that bar has actually closed.",
     )
+    p.add_argument(
+        "--use-cached", action="store_true", dest="use_cached",
+        help="Read the local cache written by `download-data` instead of downloading. Works offline; "
+             "use it when Yahoo is down or rate-limiting.",
+    )
     p.set_defaults(func=cmd_train_model)
 
     p = sub.add_parser("walk-forward", help="Slide a train/test window across history to check if a model's edge is consistent over time, not just one lucky split.")
@@ -363,6 +406,11 @@ def main() -> None:
     p.add_argument("--step-bars", type=int, default=None, dest="step_bars", help="Defaults to test-bars (non-overlapping windows).")
     p.add_argument("--lookahead-period", type=int, default=None, dest="lookahead_period")
     p.add_argument("--target-return-threshold", type=float, default=None, dest="target_return_threshold")
+    p.add_argument(
+        "--use-cached", action="store_true", dest="use_cached",
+        help="Read the local cache written by `download-data` instead of downloading. Works offline; "
+             "use it when Yahoo is down or rate-limiting.",
+    )
     p.set_defaults(func=cmd_walk_forward)
 
     p = sub.add_parser("evaluate-model")

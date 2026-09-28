@@ -30,6 +30,12 @@ def _isolated_model_dir(monkeypatch, tmp_path):
 
 
 @pytest.fixture(autouse=True)
+def _isolated_data_dir(monkeypatch, tmp_path):
+    import app.data.repository as repo
+    monkeypatch.setattr(repo, "DATA_DIR", tmp_path / "data")
+
+
+@pytest.fixture(autouse=True)
 def _isolated_reports_dir(monkeypatch, tmp_path):
     import app.backtest.report as report_mod
     monkeypatch.setattr(report_mod, "REPORTS_DIR", tmp_path / "reports")
@@ -242,3 +248,92 @@ def test_walk_forward_too_few_bars_errors_cleanly(capsys):
         cli_module.cmd_walk_forward(args)
     err = capsys.readouterr().err
     assert "No windows produced" in err
+
+
+# --- offline cache: download-data merging and --use-cached -------------------
+
+
+def _boom(*args, **kwargs):
+    raise AssertionError("download_ohlcv must not be called when --use-cached is set")
+
+
+def test_download_data_merges_into_cache_and_never_shrinks_it(capsys, monkeypatch, synthetic_ohlcv):
+    """A later, shorter download (all Yahoo will give now) must not overwrite
+    a longer cached history."""
+    from app.data.repository import load_processed
+
+    args = argparse.Namespace(symbol="TEST", timeframe="1h")
+    cli_module.cmd_download_data(args)  # autouse fixture serves the full synthetic set
+    full_len = len(load_processed("TEST", "1h"))
+
+    short = synthetic_ohlcv.tail(100).copy()
+    monkeypatch.setattr(cli_module, "download_ohlcv", lambda symbol=None, timeframe=None, **kw: short.copy())
+    cli_module.cmd_download_data(args)
+
+    assert len(load_processed("TEST", "1h")) >= full_len
+    assert "Cache now holds" in capsys.readouterr().out
+
+
+def test_train_model_use_cached_works_with_no_network(capsys, monkeypatch):
+    cli_module.cmd_download_data(argparse.Namespace(symbol="TEST", timeframe="1h"))  # populate cache
+    monkeypatch.setattr(cli_module, "download_ohlcv", _boom)  # network is now "down"
+
+    cli_module.cmd_train_model(argparse.Namespace(
+        symbol="TEST", timeframe="1h", model_type="logistic_regression",
+        lookahead_period=None, target_return_threshold=None, use_cached=True,
+    ))
+    out = capsys.readouterr().out
+    assert "Using cached data" in out
+    assert "Trained model_id=" in out
+
+
+def test_backtest_use_cached_works_with_no_network(capsys, monkeypatch):
+    cli_module.cmd_download_data(argparse.Namespace(symbol="TEST", timeframe="1h"))
+    monkeypatch.setattr(cli_module, "download_ohlcv", _boom)
+
+    cli_module.cmd_backtest(argparse.Namespace(symbol="TEST", timeframe="1h", strategy="baseline", use_cached=True))
+    out = capsys.readouterr().out
+    assert "Using cached data" in out
+    assert "Report saved to" in out
+
+
+def test_walk_forward_use_cached_works_with_no_network(capsys, monkeypatch):
+    cli_module.cmd_download_data(argparse.Namespace(symbol="TEST", timeframe="1h"))
+    monkeypatch.setattr(cli_module, "download_ohlcv", _boom)
+
+    cli_module.cmd_walk_forward(argparse.Namespace(
+        symbol="TEST", timeframe="1h", model_type="logistic_regression",
+        train_bars=300, test_bars=100, step_bars=None,
+        lookahead_period=None, target_return_threshold=None, use_cached=True,
+    ))
+    assert "Using cached data" in capsys.readouterr().out
+
+
+def test_use_cached_with_no_cache_file_exits_with_clear_message(capsys):
+    with pytest.raises(SystemExit):
+        cli_module.cmd_train_model(argparse.Namespace(
+            symbol="NEVER_DOWNLOADED", timeframe="1h", model_type="logistic_regression",
+            lookahead_period=None, target_return_threshold=None, use_cached=True,
+        ))
+    err = capsys.readouterr().err
+    assert "No processed data found" in err
+    assert "download" in err.lower()
+
+
+def test_failed_download_with_existing_cache_points_at_use_cached(capsys, monkeypatch):
+    """The exact situation that prompted this: Yahoo returns nothing, but a
+    cache exists -- the error must say so instead of leaving the user stuck."""
+    from app.data.downloader import DownloadError
+
+    cli_module.cmd_download_data(argparse.Namespace(symbol="TEST", timeframe="1h"))
+
+    def yahoo_down(symbol=None, timeframe=None, **kw):
+        raise DownloadError("No data returned for symbol='TEST' timeframe='1h'.")
+
+    monkeypatch.setattr(cli_module, "download_ohlcv", yahoo_down)
+    with pytest.raises(SystemExit):
+        cli_module.cmd_train_model(argparse.Namespace(
+            symbol="TEST", timeframe="1h", model_type="logistic_regression",
+            lookahead_period=None, target_return_threshold=None,
+        ))
+    assert "--use-cached" in capsys.readouterr().err

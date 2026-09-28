@@ -57,6 +57,45 @@ def load_processed(symbol: str, timeframe: str) -> pd.DataFrame:
     return df.sort_values("timestamp").reset_index(drop=True)
 
 
+def cache_exists(symbol: str, timeframe: str) -> bool:
+    return processed_file_path(symbol, timeframe).exists()
+
+
+def merge_into_cache(new_df: pd.DataFrame, symbol: str, timeframe: str) -> tuple[pd.DataFrame, Path, int]:
+    """
+    Merge freshly downloaded, already-cleaned candles into the cached file
+    instead of overwriting it, and save the result.
+
+    Why this exists: Yahoo Finance limits how much intraday history a
+    single request may return, and that limit has tightened before. If a
+    later download only succeeds for a short window, overwriting the cache
+    would silently replace years of history with a few weeks. Merging
+    means history only ever grows. On duplicate timestamps the NEW row
+    wins (a freshly downloaded bar supersedes a cached copy of the same
+    bar).
+
+    Returns (merged_df, path, n_rows_previously_cached).
+    """
+    new_df = new_df.copy()
+    new_df["timestamp"] = pd.to_datetime(new_df["timestamp"], utc=True)
+
+    n_before = 0
+    if cache_exists(symbol, timeframe):
+        existing = load_processed(symbol, timeframe)
+        n_before = len(existing)
+        combined = pd.concat([existing, new_df], ignore_index=True)
+    else:
+        combined = new_df
+
+    merged = (
+        combined.drop_duplicates(subset="timestamp", keep="last")
+        .sort_values("timestamp")
+        .reset_index(drop=True)
+    )
+    path = save_processed(merged, symbol, timeframe)
+    return merged, path, n_before
+
+
 def upsert_candles(session: Session, df: pd.DataFrame, symbol: str, timeframe: str) -> int:
     """
     Replace all stored candles for (symbol, timeframe) with the given DataFrame.

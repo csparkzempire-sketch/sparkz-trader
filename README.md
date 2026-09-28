@@ -156,6 +156,32 @@ amid otherwise-real data — `volume_change` converts the resulting +inf (from
 0 -> nonzero) to NaN rather than letting it reach `model.fit()`, which
 sklearn rejects outright ("Input X contains infinity").
 
+### Working offline, and when Yahoo returns nothing
+
+`download-data` **merges** into the local cache (`data/<symbol>_<timeframe>.parquet`)
+rather than overwriting it, so history only ever grows: a later, shorter
+download can't replace a longer one already saved. Duplicate timestamps keep
+the newer download.
+
+`train-model`, `backtest` and `walk-forward` accept `--use-cached`, which
+reads that cache instead of calling Yahoo — no network needed:
+```bash
+python -m app.cli train-model --symbol "EURUSD=X" --timeframe 1h --use-cached
+```
+If a live download fails and a cache exists, the error message tells you to
+use `--use-cached`.
+
+**Yahoo's hourly-history limits change without notice.** On 2026-09-28
+requests for 300+ days of hourly data started returning nothing (60d still
+worked), even though 730d had worked days earlier; yfinance reports this as
+"possibly delisted; no price data found," which is misleading. If a long
+request comes back empty the downloader now retries in ~55-day windows and
+stitches together whatever Yahoo will serve, stopping after two consecutive
+empty windows. That fallback is tested against a simulated Yahoo, not the live
+service — check the row count and date range `download-data` prints. **Back
+up your `data/*.parquet` files:** if Yahoo only serves recent hourly data
+from now on, a cache holding two years of it can't be rebuilt.
+
 ### Running a backtest
 
 Via CLI:
