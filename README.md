@@ -146,6 +146,12 @@ Yahoo Finance (`query1/query2.finance.yahoo.com`). If your environment blocks
 that, the command fails with a clear error rather than crashing — check your
 network/firewall settings.
 
+**4h candles** are built for you: Yahoo has no 4h interval, so
+`--timeframe 4h` downloads 1h bars and resamples them (`app/data/resample.py`)
+into midnight-UTC-anchored 4h candles (00:00, 04:00, 08:00, ...). The newest
+4h candle is dropped if it hasn't closed yet, so nothing downstream ever
+treats a still-forming candle's price as its final close.
+
 **Volume handling varies by symbol, and both cases are handled:** FX pairs
 (EURUSD=X) get 0 for every bar from Yahoo Finance (no real trade-volume data
 exists for spot forex there) — `volume_change`/`volume_avg` are skipped
@@ -398,9 +404,6 @@ the backtested trading metrics, not just accuracy/F1/ROC-AUC.
 
 - **No live broker integration** — by design, for this version. `LIVE_TRADING_ENABLED`
   is a hard-coded-false safety switch for a future adapter that doesn't exist yet.
-- **4h timeframe** is listed in config but yfinance doesn't natively support a 4h
-  interval — you'd need to resample from 1h data yourself (not implemented).
-  This is called out in `app/data/downloader.py`.
 - **Walk-forward evaluation** uses fixed train/test bar counts, not fully
   configurable expanding windows (only rolling, non-overlapping by default).
 - **No authentication** on the API — fine for local development, not
@@ -419,4 +422,3 @@ the backtested trading metrics, not just accuracy/F1/ROC-AUC.
    but each asset class's behavior (24/7 crypto markets vs. FX sessions, equity
    corporate actions, etc.) should be validated before assuming it "just works."
 3. Configurable expanding-window walk-forward evaluation, not just fixed rolling windows.
-4. Native 4h resampling from 1h data.
