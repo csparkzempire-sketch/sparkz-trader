@@ -18,8 +18,8 @@ with EUR/USD). Built for C-Sparkz Empire.
 - **Not a guaranteed-profit system.** Nothing in this codebase claims otherwise.
 - **Not investment advice.**
 - **Not connected to any real broker.** `LIVE_TRADING_ENABLED` defaults to `false`
-  and no broker adapter exists in this codebase — the switch exists for a future
-  version that would need to fail closed without it.
+  and the only broker adapter in this codebase is a local mock
+  (`app/broker/`). Asking for any other broker fails closed.
 - **Not proof that any strategy works.** The included baseline strategy and the
   example ML models are demonstrations of the pipeline, not trading advice. On
   the synthetic/random-walk-like data used for local testing, the baseline
@@ -360,6 +360,30 @@ Then check `/paper/account`, `/paper/positions`, `/paper/trades`. There is no
 scheduler/loop wired up in this version to automatically feed live candles into
 the paper simulator — see "Known limitations" below.
 
+### Broker adapters
+
+`app/broker/` defines the interface any broker must implement
+(`BrokerAdapter`: `place_order`, `get_positions`, `get_account`,
+`close_position`) and ships one implementation, `MockBroker`: in-memory,
+instant fills at a quote you set, with the same spread/slippage/commission
+model as the backtester.
+
+```python
+from app.broker.factory import get_broker
+from app.broker.base import OrderRequest
+
+broker = get_broker("mock")
+broker.set_quote("EURUSD=X", 1.1000)
+broker.place_order(OrderRequest("EURUSD=X", "BUY", 10_000))
+```
+
+Safety is enforced in two places. `get_broker` refuses any name other than
+`"mock"` (with `LIVE_TRADING_ENABLED=false` it raises
+`LiveTradingDisabledError`; with it true it still raises, since no real adapter
+exists). And `BrokerAdapter.place_order` itself refuses to submit through any
+adapter marked `is_live` while the switch is off, so a future adapter can't
+skip the check.
+
 ### Running tests
 
 ```bash
@@ -414,8 +438,8 @@ the backtested trading metrics, not just accuracy/F1/ROC-AUC.
 
 ## Known limitations (v1)
 
-- **No live broker integration** — by design, for this version. `LIVE_TRADING_ENABLED`
-  is a hard-coded-false safety switch for a future adapter that doesn't exist yet.
+- **No live broker integration** — by design, for this version. There's a
+  broker interface and a local mock (see "Broker adapters"), but no real adapter.
 - **No authentication** on the API — fine for local development, not
   production-ready as-is.
 - This was tested end-to-end with synthetic OHLCV data (since the development
@@ -424,9 +448,9 @@ the backtested trading metrics, not just accuracy/F1/ROC-AUC.
 
 ## What should be built next
 
-1. A broker adapter interface (behind `LIVE_TRADING_ENABLED`) with a mock/local
-   implementation first, real broker integration only after extensive paper
-   trading validation and with explicit, separate user consent.
+1. A real broker adapter behind the existing `BrokerAdapter` interface — only
+   after extensive paper trading validation and with explicit, separate user
+   consent.
 2. Additional markets (GBP/USD, USD/JPY, crypto pairs) — the architecture
    supports this already via the `symbol`/`timeframe` parameters throughout,
    but each asset class's behavior (24/7 crypto markets vs. FX sessions, equity

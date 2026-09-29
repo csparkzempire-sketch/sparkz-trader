@@ -23,6 +23,7 @@ import sys
 from app.backtest.engine import BacktestConfig, BacktestEngine
 from app.backtest.metrics import compare_to_buy_and_hold, compute_metrics
 from app.backtest.report import generate_and_save_report
+from app.broker.factory import AVAILABLE_BROKERS
 from app.config import settings
 from app.data.downloader import DownloadError, download_ohlcv
 from app.data.repository import cache_exists, load_processed, merge_into_cache, processed_file_path
@@ -325,6 +326,7 @@ def cmd_system_status(args) -> None:
         "market_symbol": settings.market_symbol,
         "timeframe": settings.timeframe,
         "live_trading_enabled": settings.live_trading_enabled,
+        "available_brokers": list(AVAILABLE_BROKERS),
     }, indent=2))
 
 

@@ -5,10 +5,10 @@ Simulates account balance, positions, orders, fills, spread, slippage,
 stop-loss, take-profit, and PnL — entirely separate from any real broker.
 No broker credentials are required or accepted here.
 
-If a future version adds a real broker adapter, it must check
-`settings.live_trading_enabled` and fail closed when False (see
-app.config.Settings.live_trading_enabled, default False). This module
-never places real orders and contains no broker integration code.
+Broker order routing lives in app.broker (a BrokerAdapter interface, a
+local MockBroker, and a factory that fails closed for anything real while
+LIVE_TRADING_ENABLED is false). This module never places real orders and
+contains no broker integration code.
 """
 
 from __future__ import annotations
