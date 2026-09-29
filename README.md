@@ -325,6 +325,18 @@ Prints per-window metrics plus a summary (`profitable_window_pct`,
 be profitable in most windows, not just win big in one and lose everywhere
 else. `--lookahead-period` / `--target-return-threshold` work here too.
 
+Two window modes (`--window-mode`):
+- `rolling` (default): each window trains on the most recent `--train-bars`
+  bars, so old history drops out. Adapts faster to regime change.
+- `expanding`: each window trains on everything from the start of history up
+  to its test segment (`--train-bars` is only the first window's size). More
+  data per fit, slower to forget.
+
+Each train segment is followed by a **purge gap** of `--purge-bars` bars
+(default: the lookahead period) before its test segment. Without it, the last
+training rows' labels ("is price up N bars later?") would be computed from
+closes inside the test segment, leaking test-period moves into the model.
+
 ### Generating predictions
 
 ```bash
@@ -404,8 +416,6 @@ the backtested trading metrics, not just accuracy/F1/ROC-AUC.
 
 - **No live broker integration** — by design, for this version. `LIVE_TRADING_ENABLED`
   is a hard-coded-false safety switch for a future adapter that doesn't exist yet.
-- **Walk-forward evaluation** uses fixed train/test bar counts, not fully
-  configurable expanding windows (only rolling, non-overlapping by default).
 - **No authentication** on the API — fine for local development, not
   production-ready as-is.
 - This was tested end-to-end with synthetic OHLCV data (since the development
@@ -421,4 +431,3 @@ the backtested trading metrics, not just accuracy/F1/ROC-AUC.
    supports this already via the `symbol`/`timeframe` parameters throughout,
    but each asset class's behavior (24/7 crypto markets vs. FX sessions, equity
    corporate actions, etc.) should be validated before assuming it "just works."
-3. Configurable expanding-window walk-forward evaluation, not just fixed rolling windows.

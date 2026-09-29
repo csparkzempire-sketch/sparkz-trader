@@ -7,7 +7,7 @@ Usage:
     python -m app.cli train-model [--symbol EURUSD=X] [--timeframe 1h] [--model-type random_forest]
         [--lookahead-period N] [--target-return-threshold R]
     python -m app.cli walk-forward [--symbol EURUSD=X] [--timeframe 1h] [--model-type random_forest]
-        [--train-bars N] [--test-bars N] [--step-bars N]
+        [--train-bars N] [--test-bars N] [--step-bars N] [--window-mode rolling|expanding] [--purge-bars N]
         [--lookahead-period N] [--target-return-threshold R]
     python -m app.cli evaluate-model --model-id <id>
     python -m app.cli paper-trade [--symbol EURUSD=X]
@@ -254,6 +254,8 @@ def cmd_walk_forward(args) -> None:
         print(f"ERROR: {exc}", file=sys.stderr)
         sys.exit(1)
 
+    window_mode = getattr(args, "window_mode", "rolling")
+    purge_bars = getattr(args, "purge_bars", None)
     results = run_walk_forward(
         clean,
         symbol=args.symbol,
@@ -263,6 +265,8 @@ def cmd_walk_forward(args) -> None:
         test_bars=args.test_bars,
         step_bars=args.step_bars,
         cfg=cfg,
+        window_mode=window_mode,
+        purge_bars=purge_bars,
     )
 
     if not results:
@@ -275,7 +279,11 @@ def cmd_walk_forward(args) -> None:
         sys.exit(1)
 
     print(f"lookahead_period={cfg.lookahead_period} bars, target_return_threshold={cfg.target_return_threshold}")
-    print(f"{len(results)} walk-forward windows (train_bars={args.train_bars}, test_bars={args.test_bars}):\n")
+    purge = cfg.lookahead_period if purge_bars is None else purge_bars
+    print(
+        f"{len(results)} walk-forward windows (mode={window_mode}, train_bars={args.train_bars}, "
+        f"purge_bars={purge}, test_bars={args.test_bars}):\n"
+    )
     for r in results:
         print(json.dumps(r.__dict__, indent=2))
 
@@ -404,6 +412,16 @@ def main() -> None:
     p.add_argument("--train-bars", type=int, default=2000, dest="train_bars")
     p.add_argument("--test-bars", type=int, default=500, dest="test_bars")
     p.add_argument("--step-bars", type=int, default=None, dest="step_bars", help="Defaults to test-bars (non-overlapping windows).")
+    p.add_argument(
+        "--window-mode", choices=["rolling", "expanding"], default="rolling", dest="window_mode",
+        help="'rolling': every window trains on the last --train-bars bars. 'expanding': every window "
+             "trains on all history so far (--train-bars is the first window's size).",
+    )
+    p.add_argument(
+        "--purge-bars", type=int, default=None, dest="purge_bars",
+        help="Bars skipped between each train and test segment so no training label peeks into the "
+             "test period. Defaults to the lookahead period.",
+    )
     p.add_argument("--lookahead-period", type=int, default=None, dest="lookahead_period")
     p.add_argument("--target-return-threshold", type=float, default=None, dest="target_return_threshold")
     p.add_argument(
