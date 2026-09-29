@@ -60,6 +60,8 @@ export function SymbolTimeframePicker() {
         <option value="EURUSD=X">EUR/USD</option>
         <option value="GBPUSD=X">GBP/USD</option>
         <option value="USDJPY=X">USD/JPY</option>
+        <option value="BTC-USD">BTC/USD</option>
+        <option value="ETH-USD">ETH/USD</option>
       </select>
       <select
         value={timeframe}
@@ -67,6 +69,7 @@ export function SymbolTimeframePicker() {
         className="bg-base-bg border border-base-border rounded px-2 py-1.5 text-sm text-base-text"
       >
         <option value="1h">1H</option>
+        <option value="4h">4H</option>
         <option value="1d">1D</option>
         <option value="15m">15M</option>
       </select>

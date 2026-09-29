@@ -24,6 +24,7 @@ import pandas as pd
 from app.backtest.execution import ExecutionCosts, apply_entry_costs, apply_exit_costs
 from app.backtest.portfolio import OpenPosition, Portfolio
 from app.config import Settings, settings
+from app.markets.instruments import resolve_costs
 from app.risk.position_sizing import calculate_position_size
 from app.risk.risk_manager import RiskManager, RiskState
 from app.risk.stops import calculate_stop_and_target
@@ -50,6 +51,7 @@ class BacktestConfig:
 
     @classmethod
     def from_settings(cls, cfg: Settings, symbol: str, timeframe: str) -> "BacktestConfig":
+        costs = resolve_costs(symbol, cfg)
         return cls(
             symbol=symbol,
             timeframe=timeframe,
@@ -57,10 +59,10 @@ class BacktestConfig:
             risk_per_trade=cfg.risk_per_trade,
             stop_atr_multiplier=cfg.stop_atr_multiplier,
             take_profit_r=cfg.take_profit_r,
-            spread_pips=cfg.spread_pips,
-            slippage_pips=cfg.slippage_pips,
+            spread_pips=costs.spread_pips,
+            slippage_pips=costs.slippage_pips,
             commission_per_trade=cfg.commission_per_trade,
-            pip_size=cfg.pip_size,
+            pip_size=costs.pip_size,
             max_simultaneous_positions=cfg.max_simultaneous_positions,
         )
 

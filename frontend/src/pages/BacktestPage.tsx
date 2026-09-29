@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Area, CartesianGrid, ComposedChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { api } from "../services/api";
 import { useAppState } from "../hooks/useAppState";
@@ -14,6 +14,23 @@ export default function BacktestPage() {
   const [slippage, setSlippage] = useState(0.3);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Pips differ per market (0.0001 on EUR/USD, 0.01 on USD/JPY, $1 on BTC), so
+  // reset spread/slippage to the selected market's typical values.
+  useEffect(() => {
+    api
+      .listInstruments()
+      .then((instruments) => {
+        const inst = instruments.find((i) => i.symbol === symbol);
+        if (inst) {
+          setSpread(inst.spread_pips);
+          setSlippage(inst.slippage_pips);
+        }
+      })
+      .catch(() => {
+        /* keep current values if the instrument list is unavailable */
+      });
+  }, [symbol]);
 
   const run = () => {
     setLoading(true);

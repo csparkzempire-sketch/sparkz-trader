@@ -108,7 +108,7 @@ def run_walk_forward(
         bt_config = BacktestConfig.from_settings(cfg, symbol, timeframe)
         engine = BacktestEngine(bt_config)
         result = engine.run(test_slice, signal_col="signal")
-        metrics = compute_metrics(result.portfolio, timeframe)
+        metrics = compute_metrics(result.portfolio, timeframe, symbol)
 
         results.append(
             WalkForwardWindowResult(

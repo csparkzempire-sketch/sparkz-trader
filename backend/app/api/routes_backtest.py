@@ -23,6 +23,7 @@ from app.database.database import get_session_dep
 from app.database.models import Backtest as BacktestORM
 from app.database.models import BacktestTrade as BacktestTradeORM
 from app.features.feature_engineering import build_feature_matrix
+from app.markets.instruments import resolve_costs
 from app.ml.model_registry import load_model_artifact
 from app.ml.predict import ModelNotAvailableError
 from app.strategy.rules import baseline_signal
@@ -37,7 +38,7 @@ router = APIRouter()
 def run_backtest(req: BacktestRequest, session: Session = Depends(get_session_dep)) -> BacktestResponse:
     try:
         raw = download_ohlcv(symbol=req.symbol, timeframe=req.timeframe)
-        clean, _report = validate_and_clean(raw, timeframe=req.timeframe)
+        clean, _report = validate_and_clean(raw, timeframe=req.timeframe, symbol=req.symbol)
     except (DownloadError, DataValidationError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
@@ -111,6 +112,7 @@ def run_backtest(req: BacktestRequest, session: Session = Depends(get_session_de
     if len(featured.dropna(subset=["atr"])) < 50:
         raise HTTPException(status_code=400, detail="Insufficient historical data after indicator warmup to run a meaningful backtest.")
 
+    costs = resolve_costs(req.symbol)
     bt_config = BacktestConfig(
         symbol=req.symbol,
         timeframe=req.timeframe,
@@ -118,13 +120,14 @@ def run_backtest(req: BacktestRequest, session: Session = Depends(get_session_de
         risk_per_trade=req.risk_per_trade,
         stop_atr_multiplier=req.stop_atr_multiplier,
         take_profit_r=req.take_profit_r,
-        spread_pips=req.spread_pips,
-        slippage_pips=req.slippage_pips,
+        spread_pips=costs.spread_pips if req.spread_pips is None else req.spread_pips,
+        slippage_pips=costs.slippage_pips if req.slippage_pips is None else req.slippage_pips,
+        pip_size=costs.pip_size,
         max_simultaneous_positions=req.max_simultaneous_positions,
     )
     engine = BacktestEngine(bt_config)
     result = engine.run(featured, signal_col="signal", probability_col=prob_col)
-    metrics = compute_metrics(result.portfolio, req.timeframe)
+    metrics = compute_metrics(result.portfolio, req.timeframe, req.symbol)
     baseline_cmp = compare_to_buy_and_hold(featured, req.initial_capital)
 
     backtest_id = f"bt_{uuid.uuid4().hex[:10]}"

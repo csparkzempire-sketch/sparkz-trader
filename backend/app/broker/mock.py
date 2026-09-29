@@ -12,9 +12,10 @@ BrokerAdapter interface before any real adapter exists.
 
 from __future__ import annotations
 
-from app.backtest.execution import ExecutionCosts, apply_entry_costs
+from app.backtest.execution import apply_entry_costs
 from app.broker.base import AccountSnapshot, BrokerAdapter, BrokerPosition, OrderRequest, OrderResult
 from app.config import Settings
+from app.markets.instruments import execution_costs
 
 
 class MockBroker(BrokerAdapter):
@@ -24,12 +25,6 @@ class MockBroker(BrokerAdapter):
     def __init__(self, cfg: Settings | None = None, starting_balance: float | None = None):
         super().__init__(cfg)
         self.balance = float(starting_balance if starting_balance is not None else self.cfg.initial_capital)
-        self.costs = ExecutionCosts(
-            spread_pips=self.cfg.spread_pips,
-            slippage_pips=self.cfg.slippage_pips,
-            commission_per_trade=self.cfg.commission_per_trade,
-            pip_size=self.cfg.pip_size,
-        )
         self._quotes: dict[str, float] = {}
         self._positions: dict[str, tuple[float, float]] = {}  # symbol -> (net_size, avg_price)
         self.order_log: list[OrderResult] = []
@@ -44,7 +39,7 @@ class MockBroker(BrokerAdapter):
         if mid is None:
             return self._record(order, "REJECTED", None, f"No quote for {order.symbol}; call set_quote first.")
 
-        fill = apply_entry_costs(mid, order.side, self.costs)
+        fill = apply_entry_costs(mid, order.side, execution_costs(order.symbol, self.cfg))
         signed = order.size if order.side == "BUY" else -order.size
         net, avg = self._positions.get(order.symbol, (0.0, 0.0))
 
@@ -65,7 +60,7 @@ class MockBroker(BrokerAdapter):
             else:
                 new_avg = fill  # flipped: the leftover is a fresh position at this fill
 
-        self.balance -= self.costs.commission_per_trade
+        self.balance -= self.cfg.commission_per_trade
         if new_net == 0:
             self._positions.pop(order.symbol, None)
         else:

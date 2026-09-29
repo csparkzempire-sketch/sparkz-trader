@@ -1,6 +1,7 @@
 import type {
   BacktestRequest,
   BacktestResponse,
+  Instrument,
   LatestPriceResponse,
   MarketDataResponse,
   ModelSummary,
@@ -34,6 +35,8 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 
 export const api = {
   health: () => request<{ status: string; live_trading_enabled: boolean }>("/health"),
+
+  listInstruments: () => request<Instrument[]>("/instruments"),
 
   getMarketData: (symbol: string, timeframe: string, limit = 500) =>
     request<MarketDataResponse>(`/market/${encodeURIComponent(symbol)}?timeframe=${timeframe}&limit=${limit}`),

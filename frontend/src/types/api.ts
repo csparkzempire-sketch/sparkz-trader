@@ -182,3 +182,13 @@ export interface PaperTrade {
   closed_at: string;
   reason: string;
 }
+
+export interface Instrument {
+  symbol: string;
+  display_name: string;
+  asset_class: string;
+  pip_size: number;
+  spread_pips: number;
+  slippage_pips: number;
+  trades_24_7: boolean;
+}

@@ -67,14 +67,14 @@ def _load_market_data(symbol: str, timeframe: str, use_cached: bool = False):
                 "re-run with --use-cached to work offline from it."
             ) from exc
         raise
-    clean, _ = validate_and_clean(raw, timeframe=timeframe)
+    clean, _ = validate_and_clean(raw, timeframe=timeframe, symbol=symbol)
     return clean
 
 
 def cmd_download_data(args) -> None:
     try:
         raw = download_ohlcv(symbol=args.symbol, timeframe=args.timeframe)
-        clean, report = validate_and_clean(raw, timeframe=args.timeframe)
+        clean, report = validate_and_clean(raw, timeframe=args.timeframe, symbol=args.symbol)
     except (DownloadError, DataValidationError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         sys.exit(1)
@@ -182,7 +182,7 @@ def cmd_backtest(args) -> None:
     bt_config = BacktestConfig.from_settings(settings, args.symbol, args.timeframe)
     engine = BacktestEngine(bt_config)
     result = engine.run(featured, signal_col="signal")
-    metrics = compute_metrics(result.portfolio, args.timeframe)
+    metrics = compute_metrics(result.portfolio, args.timeframe, args.symbol)
     baseline_cmp = compare_to_buy_and_hold(featured, bt_config.initial_capital)
 
     print(json.dumps(metrics.as_dict(), indent=2))
