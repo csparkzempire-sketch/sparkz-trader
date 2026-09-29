@@ -13,6 +13,7 @@ from dataclasses import dataclass, field
 import numpy as np
 import pandas as pd
 
+from app.markets.instruments import trades_24_7
 from app.utils.logging import get_logger, kv
 from app.utils.time import timeframe_to_pandas_freq
 
@@ -55,6 +56,7 @@ def validate_and_clean(
     df: pd.DataFrame,
     timeframe: str | None = None,
     drop_invalid_ohlc: bool = True,
+    symbol: str | None = None,
 ) -> tuple[pd.DataFrame, ValidationReport]:
     """
     Validate and clean raw OHLCV data.
@@ -67,6 +69,10 @@ def validate_and_clean(
       5. handle missing volume (fill with 0)
       6. detect missing candles vs. the expected frequency (report only —
          we do NOT fabricate synthetic candles by default)
+
+    `symbol` only changes how detected gaps are described: for a 24/7
+    market (crypto, see app.markets.instruments) a missing candle is a real
+    data hole, not a weekend close.
 
     Returns (cleaned_df, ValidationReport). Raises DataValidationError for
     unrecoverable problems (missing required columns, empty input).
@@ -140,7 +146,12 @@ def validate_and_clean(
     notes = []
     if n_bad_ts:
         notes.append(f"Dropped {n_bad_ts} rows with unparseable timestamps.")
-    if missing_candles_detected:
+    if missing_candles_detected and trades_24_7(symbol):
+        notes.append(
+            f"Detected {missing_candles_detected} missing candles vs. expected frequency. "
+            f"{symbol} trades 24/7, so these are gaps in the data source, not market closures."
+        )
+    elif missing_candles_detected:
         notes.append(
             f"Detected {missing_candles_detected} missing candles vs. expected frequency "
             "(common for FX weekends/holidays — not necessarily an error)."

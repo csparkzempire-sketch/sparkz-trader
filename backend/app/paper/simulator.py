@@ -5,10 +5,10 @@ Simulates account balance, positions, orders, fills, spread, slippage,
 stop-loss, take-profit, and PnL — entirely separate from any real broker.
 No broker credentials are required or accepted here.
 
-If a future version adds a real broker adapter, it must check
-`settings.live_trading_enabled` and fail closed when False (see
-app.config.Settings.live_trading_enabled, default False). This module
-never places real orders and contains no broker integration code.
+Broker order routing lives in app.broker (a BrokerAdapter interface, a
+local MockBroker, and a factory that fails closed for anything real while
+LIVE_TRADING_ENABLED is false). This module never places real orders and
+contains no broker integration code.
 """
 
 from __future__ import annotations
@@ -18,6 +18,7 @@ from datetime import datetime
 
 from app.backtest.execution import ExecutionCosts, apply_entry_costs, apply_exit_costs
 from app.config import Settings, settings
+from app.markets.instruments import execution_costs
 from app.risk.position_sizing import calculate_position_size
 from app.risk.risk_manager import RiskManager, RiskState
 from app.risk.stops import calculate_stop_and_target
@@ -85,12 +86,10 @@ class PaperTradingSimulator:
     def __init__(self, cfg: Settings | None = None, risk_manager: RiskManager | None = None):
         self.cfg = cfg or settings
         self.risk_manager = risk_manager or RiskManager(self.cfg)
-        self.costs = ExecutionCosts(
-            spread_pips=self.cfg.spread_pips,
-            slippage_pips=self.cfg.slippage_pips,
-            commission_per_trade=self.cfg.commission_per_trade,
-            pip_size=self.cfg.pip_size,
-        )
+
+    def costs_for(self, symbol: str) -> ExecutionCosts:
+        """Spread/slippage in this symbol's own pip size (see app.markets.instruments)."""
+        return execution_costs(symbol, self.cfg)
 
     def start(self, account: PaperAccountState) -> None:
         account.is_active = True
@@ -115,7 +114,7 @@ class PaperTradingSimulator:
             return None  # one position per symbol at a time in v1
 
         timestamp = timestamp or utc_now()
-        entry_price = apply_entry_costs(raw_price, direction, self.costs)
+        entry_price = apply_entry_costs(raw_price, direction, self.costs_for(symbol))
         stop_target = calculate_stop_and_target(
             entry_price=entry_price,
             atr_value=atr_value,
@@ -176,7 +175,7 @@ class PaperTradingSimulator:
     ) -> PaperTradeRecord:
         pos = account.open_positions.pop(symbol)
         timestamp = timestamp or utc_now()
-        exit_price = apply_exit_costs(raw_price, pos.direction, self.costs)
+        exit_price = apply_exit_costs(raw_price, pos.direction, self.costs_for(symbol))
         direction_sign = 1 if pos.direction == "BUY" else -1
         pnl = direction_sign * (exit_price - pos.entry_price) * pos.size
 

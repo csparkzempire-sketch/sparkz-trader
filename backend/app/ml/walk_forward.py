@@ -7,6 +7,19 @@ slides a train/validate/test window forward across the full history and
 records performance in each window, so you can see whether a strategy's
 edge holds up across different periods rather than being an artifact of one
 lucky split.
+
+Two window modes:
+- "rolling" (default): every window trains on the same number of bars,
+  so old history drops out as the window moves -- adapts to regime change.
+- "expanding": every window trains on ALL bars from the start of history
+  up to the test segment -- more data per fit, slower to forget.
+
+Purging: a training row's label looks `lookahead_period` bars into the
+future, so the last few training rows' labels are computed from closes
+that sit inside the test segment. Training on those leaks test-period
+price moves into the model. A gap of `purge_bars` (default:
+lookahead_period) is left between each train segment and its test segment
+so no training label overlaps the test period.
 """
 
 from __future__ import annotations
@@ -24,9 +37,13 @@ from app.ml.train import build_model
 from app.strategy.signals import signal_from_probability
 
 
+WINDOW_MODES = ("rolling", "expanding")
+
+
 @dataclass
 class WalkForwardWindowResult:
     window: int
+    train_size: int
     train_start: str
     train_end: str
     test_start: str
@@ -47,15 +64,25 @@ def run_walk_forward(
     test_bars: int = 500,
     step_bars: int | None = None,
     cfg: Settings | None = None,
+    window_mode: str = "rolling",
+    purge_bars: int | None = None,
 ) -> list[WalkForwardWindowResult]:
     """
-    Slides a (train_bars -> test_bars) window forward by `step_bars`
+    Slides a (train -> purge gap -> test_bars) window forward by `step_bars`
     (default = test_bars, i.e. non-overlapping test windows) across the
-    full dataset. In each window: fit the model on train_bars only, predict
-    on test_bars, convert to signals, and backtest the test segment.
+    full dataset. In each window: fit the model on the train segment only,
+    predict on test_bars, convert to signals, and backtest the test segment.
+
+    `train_bars` is the fixed training size in "rolling" mode and the
+    MINIMUM (first window's) training size in "expanding" mode.
     """
     cfg = cfg or settings
+    if window_mode not in WINDOW_MODES:
+        raise ValueError(f"window_mode must be one of {WINDOW_MODES}, got {window_mode!r}")
     step_bars = step_bars or test_bars
+    purge_bars = cfg.lookahead_period if purge_bars is None else purge_bars
+    if purge_bars < 0:
+        raise ValueError("purge_bars must be >= 0")
 
     featured = build_feature_matrix(raw_df, cfg)
     labeled = add_labels(featured, cfg.lookahead_period, cfg.target_return_threshold, cfg)
@@ -65,9 +92,11 @@ def run_walk_forward(
     results: list[WalkForwardWindowResult] = []
     window_idx = 0
     start = 0
-    while start + train_bars + test_bars <= len(usable):
-        train_slice = usable.iloc[start:start + train_bars]
-        test_slice = usable.iloc[start + train_bars:start + train_bars + test_bars].copy()
+    while start + train_bars + purge_bars + test_bars <= len(usable):
+        train_from = 0 if window_mode == "expanding" else start
+        train_slice = usable.iloc[train_from:start + train_bars]
+        test_from = start + train_bars + purge_bars
+        test_slice = usable.iloc[test_from:test_from + test_bars].copy()
 
         model = build_model(model_type)
         model.fit(train_slice[feature_columns], train_slice["target"].astype(int))
@@ -79,11 +108,12 @@ def run_walk_forward(
         bt_config = BacktestConfig.from_settings(cfg, symbol, timeframe)
         engine = BacktestEngine(bt_config)
         result = engine.run(test_slice, signal_col="signal")
-        metrics = compute_metrics(result.portfolio, timeframe)
+        metrics = compute_metrics(result.portfolio, timeframe, symbol)
 
         results.append(
             WalkForwardWindowResult(
                 window=window_idx,
+                train_size=len(train_slice),
                 train_start=str(train_slice["timestamp"].iloc[0]),
                 train_end=str(train_slice["timestamp"].iloc[-1]),
                 test_start=str(test_slice["timestamp"].iloc[0]),

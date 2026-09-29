@@ -7,7 +7,7 @@ Usage:
     python -m app.cli train-model [--symbol EURUSD=X] [--timeframe 1h] [--model-type random_forest]
         [--lookahead-period N] [--target-return-threshold R]
     python -m app.cli walk-forward [--symbol EURUSD=X] [--timeframe 1h] [--model-type random_forest]
-        [--train-bars N] [--test-bars N] [--step-bars N]
+        [--train-bars N] [--test-bars N] [--step-bars N] [--window-mode rolling|expanding] [--purge-bars N]
         [--lookahead-period N] [--target-return-threshold R]
     python -m app.cli evaluate-model --model-id <id>
     python -m app.cli paper-trade [--symbol EURUSD=X]
@@ -23,6 +23,7 @@ import sys
 from app.backtest.engine import BacktestConfig, BacktestEngine
 from app.backtest.metrics import compare_to_buy_and_hold, compute_metrics
 from app.backtest.report import generate_and_save_report
+from app.broker.factory import AVAILABLE_BROKERS
 from app.config import settings
 from app.data.downloader import DownloadError, download_ohlcv
 from app.data.repository import cache_exists, load_processed, merge_into_cache, processed_file_path
@@ -66,14 +67,14 @@ def _load_market_data(symbol: str, timeframe: str, use_cached: bool = False):
                 "re-run with --use-cached to work offline from it."
             ) from exc
         raise
-    clean, _ = validate_and_clean(raw, timeframe=timeframe)
+    clean, _ = validate_and_clean(raw, timeframe=timeframe, symbol=symbol)
     return clean
 
 
 def cmd_download_data(args) -> None:
     try:
         raw = download_ohlcv(symbol=args.symbol, timeframe=args.timeframe)
-        clean, report = validate_and_clean(raw, timeframe=args.timeframe)
+        clean, report = validate_and_clean(raw, timeframe=args.timeframe, symbol=args.symbol)
     except (DownloadError, DataValidationError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         sys.exit(1)
@@ -181,7 +182,7 @@ def cmd_backtest(args) -> None:
     bt_config = BacktestConfig.from_settings(settings, args.symbol, args.timeframe)
     engine = BacktestEngine(bt_config)
     result = engine.run(featured, signal_col="signal")
-    metrics = compute_metrics(result.portfolio, args.timeframe)
+    metrics = compute_metrics(result.portfolio, args.timeframe, args.symbol)
     baseline_cmp = compare_to_buy_and_hold(featured, bt_config.initial_capital)
 
     print(json.dumps(metrics.as_dict(), indent=2))
@@ -254,6 +255,8 @@ def cmd_walk_forward(args) -> None:
         print(f"ERROR: {exc}", file=sys.stderr)
         sys.exit(1)
 
+    window_mode = getattr(args, "window_mode", "rolling")
+    purge_bars = getattr(args, "purge_bars", None)
     results = run_walk_forward(
         clean,
         symbol=args.symbol,
@@ -263,6 +266,8 @@ def cmd_walk_forward(args) -> None:
         test_bars=args.test_bars,
         step_bars=args.step_bars,
         cfg=cfg,
+        window_mode=window_mode,
+        purge_bars=purge_bars,
     )
 
     if not results:
@@ -275,7 +280,11 @@ def cmd_walk_forward(args) -> None:
         sys.exit(1)
 
     print(f"lookahead_period={cfg.lookahead_period} bars, target_return_threshold={cfg.target_return_threshold}")
-    print(f"{len(results)} walk-forward windows (train_bars={args.train_bars}, test_bars={args.test_bars}):\n")
+    purge = cfg.lookahead_period if purge_bars is None else purge_bars
+    print(
+        f"{len(results)} walk-forward windows (mode={window_mode}, train_bars={args.train_bars}, "
+        f"purge_bars={purge}, test_bars={args.test_bars}):\n"
+    )
     for r in results:
         print(json.dumps(r.__dict__, indent=2))
 
@@ -317,6 +326,7 @@ def cmd_system_status(args) -> None:
         "market_symbol": settings.market_symbol,
         "timeframe": settings.timeframe,
         "live_trading_enabled": settings.live_trading_enabled,
+        "available_brokers": list(AVAILABLE_BROKERS),
     }, indent=2))
 
 
@@ -404,6 +414,16 @@ def main() -> None:
     p.add_argument("--train-bars", type=int, default=2000, dest="train_bars")
     p.add_argument("--test-bars", type=int, default=500, dest="test_bars")
     p.add_argument("--step-bars", type=int, default=None, dest="step_bars", help="Defaults to test-bars (non-overlapping windows).")
+    p.add_argument(
+        "--window-mode", choices=["rolling", "expanding"], default="rolling", dest="window_mode",
+        help="'rolling': every window trains on the last --train-bars bars. 'expanding': every window "
+             "trains on all history so far (--train-bars is the first window's size).",
+    )
+    p.add_argument(
+        "--purge-bars", type=int, default=None, dest="purge_bars",
+        help="Bars skipped between each train and test segment so no training label peeks into the "
+             "test period. Defaults to the lookahead period.",
+    )
     p.add_argument("--lookahead-period", type=int, default=None, dest="lookahead_period")
     p.add_argument("--target-return-threshold", type=float, default=None, dest="target_return_threshold")
     p.add_argument(

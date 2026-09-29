@@ -27,7 +27,7 @@ def train(req: TrainModelRequest, session: Session = Depends(get_session_dep)) -
 
     try:
         raw = download_ohlcv(symbol=req.symbol, timeframe=req.timeframe)
-        clean, _report = validate_and_clean(raw, timeframe=req.timeframe)
+        clean, _report = validate_and_clean(raw, timeframe=req.timeframe, symbol=req.symbol)
     except (DownloadError, DataValidationError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
@@ -91,7 +91,7 @@ def train(req: TrainModelRequest, session: Session = Depends(get_session_dep)) -
 def predict(req: PredictRequest) -> PredictResponse:
     try:
         raw = download_ohlcv(symbol=req.symbol, timeframe=req.timeframe)
-        clean, _report = validate_and_clean(raw, timeframe=req.timeframe)
+        clean, _report = validate_and_clean(raw, timeframe=req.timeframe, symbol=req.symbol)
     except (DownloadError, DataValidationError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 

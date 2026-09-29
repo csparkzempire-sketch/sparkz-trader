@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 
 from app.backtest.portfolio import Portfolio
+from app.markets.instruments import trades_24_7
 
 TRADING_PERIODS_PER_YEAR = {
     "1m": 252 * 24 * 60,
@@ -18,6 +19,22 @@ TRADING_PERIODS_PER_YEAR = {
     "4h": 252 * 6,
     "1d": 252,
 }
+
+# 24/7 markets (crypto) trade every calendar day.
+CALENDAR_PERIODS_PER_YEAR = {
+    "1m": 365 * 24 * 60,
+    "5m": 365 * 24 * 12,
+    "15m": 365 * 24 * 4,
+    "30m": 365 * 24 * 2,
+    "1h": 365 * 24,
+    "4h": 365 * 6,
+    "1d": 365,
+}
+
+
+def periods_per_year(timeframe: str, symbol: str | None = None) -> int | None:
+    table = CALENDAR_PERIODS_PER_YEAR if trades_24_7(symbol) else TRADING_PERIODS_PER_YEAR
+    return table.get(timeframe)
 
 
 @dataclass
@@ -59,18 +76,18 @@ def _max_drawdown(equity: pd.Series) -> float:
     return float(drawdown.min()) if not drawdown.empty else 0.0
 
 
-def compute_metrics(portfolio: Portfolio, timeframe: str) -> PerformanceMetrics:
+def compute_metrics(portfolio: Portfolio, timeframe: str, symbol: str | None = None) -> PerformanceMetrics:
     equity = _equity_series(portfolio)
     initial = portfolio.initial_capital
     final = equity.iloc[-1] if not equity.empty else initial
 
     total_return_pct = (final / initial - 1.0) * 100 if initial > 0 else 0.0
 
-    periods_per_year = TRADING_PERIODS_PER_YEAR.get(timeframe)
+    n_per_year = periods_per_year(timeframe, symbol)
     cagr_pct = None
-    if periods_per_year and len(equity) > 1 and initial > 0 and final > 0:
+    if n_per_year and len(equity) > 1 and initial > 0 and final > 0:
         n_periods = len(equity)
-        years = n_periods / periods_per_year
+        years = n_periods / n_per_year
         if years > 0:
             cagr_pct = ((final / initial) ** (1 / years) - 1) * 100
 
@@ -102,12 +119,12 @@ def compute_metrics(portfolio: Portfolio, timeframe: str) -> PerformanceMetrics:
     sharpe_ratio = None
     sortino_ratio = None
     annualized_vol_pct = None
-    if periods_per_year and len(returns) > 1 and returns.std() > 0:
-        sharpe_ratio = float((returns.mean() / returns.std()) * np.sqrt(periods_per_year))
-        annualized_vol_pct = float(returns.std() * np.sqrt(periods_per_year) * 100)
+    if n_per_year and len(returns) > 1 and returns.std() > 0:
+        sharpe_ratio = float((returns.mean() / returns.std()) * np.sqrt(n_per_year))
+        annualized_vol_pct = float(returns.std() * np.sqrt(n_per_year) * 100)
         downside = returns[returns < 0]
         if len(downside) > 0 and downside.std() > 0:
-            sortino_ratio = float((returns.mean() / downside.std()) * np.sqrt(periods_per_year))
+            sortino_ratio = float((returns.mean() / downside.std()) * np.sqrt(n_per_year))
 
     total_bars = len(equity)
     bars_in_position = 0  # exact bar-level exposure requires the bar loop; approximate via trade duration below

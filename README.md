@@ -18,8 +18,8 @@ with EUR/USD). Built for C-Sparkz Empire.
 - **Not a guaranteed-profit system.** Nothing in this codebase claims otherwise.
 - **Not investment advice.**
 - **Not connected to any real broker.** `LIVE_TRADING_ENABLED` defaults to `false`
-  and no broker adapter exists in this codebase — the switch exists for a future
-  version that would need to fail closed without it.
+  and the only broker adapter in this codebase is a local mock
+  (`app/broker/`). Asking for any other broker fails closed.
 - **Not proof that any strategy works.** The included baseline strategy and the
   example ML models are demonstrations of the pipeline, not trading advice. On
   the synthetic/random-walk-like data used for local testing, the baseline
@@ -65,9 +65,11 @@ SPARKZ-TRADER/
 │   │   ├── backtest/       # engine, portfolio, execution, metrics
 │   │   ├── risk/           # position sizing, stops, risk manager
 │   │   ├── paper/          # paper trading simulator
+│   │   ├── broker/         # broker interface + local mock broker
+│   │   ├── markets/        # per-instrument pip sizes, costs, calendars
 │   │   ├── database/       # SQLAlchemy models + session
 │   │   └── utils/          # logging, time helpers
-│   ├── tests/               # pytest suite (59 tests)
+│   ├── tests/               # pytest suite (151 tests)
 │   ├── requirements.txt
 │   └── .env.example
 ├── frontend/                # React + Vite + TS + Tailwind + Recharts dashboard
@@ -145,6 +147,12 @@ This downloads via yfinance, validates/cleans the data, and saves it to
 Yahoo Finance (`query1/query2.finance.yahoo.com`). If your environment blocks
 that, the command fails with a clear error rather than crashing — check your
 network/firewall settings.
+
+**4h candles** are built for you: Yahoo has no 4h interval, so
+`--timeframe 4h` downloads 1h bars and resamples them (`app/data/resample.py`)
+into midnight-UTC-anchored 4h candles (00:00, 04:00, 08:00, ...). The newest
+4h candle is dropped if it hasn't closed yet, so nothing downstream ever
+treats a still-forming candle's price as its final close.
 
 **Volume handling varies by symbol, and both cases are handled:** FX pairs
 (EURUSD=X) get 0 for every bar from Yahoo Finance (no real trade-volume data
@@ -319,6 +327,18 @@ Prints per-window metrics plus a summary (`profitable_window_pct`,
 be profitable in most windows, not just win big in one and lose everywhere
 else. `--lookahead-period` / `--target-return-threshold` work here too.
 
+Two window modes (`--window-mode`):
+- `rolling` (default): each window trains on the most recent `--train-bars`
+  bars, so old history drops out. Adapts faster to regime change.
+- `expanding`: each window trains on everything from the start of history up
+  to its test segment (`--train-bars` is only the first window's size). More
+  data per fit, slower to forget.
+
+Each train segment is followed by a **purge gap** of `--purge-bars` bars
+(default: the lookahead period) before its test segment. Without it, the last
+training rows' labels ("is price up N bars later?") would be computed from
+closes inside the test segment, leaking test-period moves into the model.
+
 ### Generating predictions
 
 ```bash
@@ -342,6 +362,56 @@ Then check `/paper/account`, `/paper/positions`, `/paper/trades`. There is no
 scheduler/loop wired up in this version to automatically feed live candles into
 the paper simulator — see "Known limitations" below.
 
+### Markets
+
+`app/markets/instruments.py` holds a profile for each supported market:
+
+| Symbol     | Pip size | Default spread / slippage (pips) | Calendar |
+|------------|----------|----------------------------------|----------|
+| `EURUSD=X` | 0.0001   | 1.2 / 0.3                        | FX (24/5) |
+| `GBPUSD=X` | 0.0001   | 1.5 / 0.3                        | FX (24/5) |
+| `USDJPY=X` | 0.01     | 1.4 / 0.3                        | FX (24/5) |
+| `BTC-USD`  | 1.0 ($1) | 15 / 10                          | 24/7     |
+| `ETH-USD`  | 0.1      | 10 / 5                           | 24/7     |
+
+Why this matters: costs are charged in pips, and a pip is 0.01 on USD/JPY, not
+0.0001. With one global pip size, USD/JPY backtests charged 1/100th of the real
+spread. The backtester, paper simulator, mock broker and API all take costs from
+this table now. For 24/7 markets, Sharpe/CAGR annualize over 365 days instead of
+252, and the validator reports missing candles as data-source gaps rather than
+weekend closes.
+
+The spread/slippage figures are rough retail estimates, not any broker's
+quotes. Per-run overrides (the API's `spread_pips`/`slippage_pips`, or a
+`Settings` copy) take priority. The global `PIP_SIZE`/`SPREAD_PIPS`/`SLIPPAGE_PIPS`
+env vars now only apply to symbols not in the table. `GET /instruments` lists
+the profiles, and the dashboard's backtest form fills in the selected market's
+defaults.
+
+### Broker adapters
+
+`app/broker/` defines the interface any broker must implement
+(`BrokerAdapter`: `place_order`, `get_positions`, `get_account`,
+`close_position`) and ships one implementation, `MockBroker`: in-memory,
+instant fills at a quote you set, with the same spread/slippage/commission
+model as the backtester.
+
+```python
+from app.broker.factory import get_broker
+from app.broker.base import OrderRequest
+
+broker = get_broker("mock")
+broker.set_quote("EURUSD=X", 1.1000)
+broker.place_order(OrderRequest("EURUSD=X", "BUY", 10_000))
+```
+
+Safety is enforced in two places. `get_broker` refuses any name other than
+`"mock"` (with `LIVE_TRADING_ENABLED=false` it raises
+`LiveTradingDisabledError`; with it true it still raises, since no real adapter
+exists). And `BrokerAdapter.place_order` itself refuses to submit through any
+adapter marked `is_live` while the switch is off, so a future adapter can't
+skip the check.
+
 ### Running tests
 
 ```bash
@@ -349,7 +419,7 @@ cd backend
 pytest
 ```
 
-59 tests covering: data validation, indicator correctness (including an
+151 tests covering: data validation, indicator correctness (including an
 explicit look-ahead-bias check), signal rules, position sizing, stop/target
 calculations, the backtest engine's next-bar execution rule and cost model,
 ML dataset construction and chronological splitting, a synthetic leakage
@@ -396,13 +466,8 @@ the backtested trading metrics, not just accuracy/F1/ROC-AUC.
 
 ## Known limitations (v1)
 
-- **No live broker integration** — by design, for this version. `LIVE_TRADING_ENABLED`
-  is a hard-coded-false safety switch for a future adapter that doesn't exist yet.
-- **4h timeframe** is listed in config but yfinance doesn't natively support a 4h
-  interval — you'd need to resample from 1h data yourself (not implemented).
-  This is called out in `app/data/downloader.py`.
-- **Walk-forward evaluation** uses fixed train/test bar counts, not fully
-  configurable expanding windows (only rolling, non-overlapping by default).
+- **No live broker integration** — by design, for this version. There's a
+  broker interface and a local mock (see "Broker adapters"), but no real adapter.
 - **No authentication** on the API — fine for local development, not
   production-ready as-is.
 - This was tested end-to-end with synthetic OHLCV data (since the development
@@ -411,12 +476,10 @@ the backtested trading metrics, not just accuracy/F1/ROC-AUC.
 
 ## What should be built next
 
-1. A broker adapter interface (behind `LIVE_TRADING_ENABLED`) with a mock/local
-   implementation first, real broker integration only after extensive paper
-   trading validation and with explicit, separate user consent.
-2. Additional markets (GBP/USD, USD/JPY, crypto pairs) — the architecture
-   supports this already via the `symbol`/`timeframe` parameters throughout,
-   but each asset class's behavior (24/7 crypto markets vs. FX sessions, equity
-   corporate actions, etc.) should be validated before assuming it "just works."
-3. Configurable expanding-window walk-forward evaluation, not just fixed rolling windows.
-4. Native 4h resampling from 1h data.
+1. A real broker adapter behind the existing `BrokerAdapter` interface — only
+   after extensive paper trading validation and with explicit, separate user
+   consent.
+2. Equities/indices, which need handling this build doesn't have (corporate
+   actions, exchange sessions and holidays).
+3. Download real history for GBP/USD, USD/JPY, BTC and ETH and check the
+   default spread/slippage figures against your actual broker's quotes.

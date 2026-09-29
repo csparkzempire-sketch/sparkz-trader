@@ -20,7 +20,7 @@ def get_market_data(
 ) -> MarketDataResponse:
     try:
         raw = download_ohlcv(symbol=symbol, timeframe=timeframe)
-        clean, _report = validate_and_clean(raw, timeframe=timeframe)
+        clean, _report = validate_and_clean(raw, timeframe=timeframe, symbol=symbol)
     except (DownloadError, DataValidationError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
@@ -67,7 +67,7 @@ def get_market_data(
 def get_latest_price(symbol: str, timeframe: str = Query("1h")) -> LatestPriceResponse:
     try:
         raw = download_ohlcv(symbol=symbol, timeframe=timeframe)
-        clean, _report = validate_and_clean(raw, timeframe=timeframe)
+        clean, _report = validate_and_clean(raw, timeframe=timeframe, symbol=symbol)
     except (DownloadError, DataValidationError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 

@@ -15,6 +15,7 @@ from datetime import datetime, timedelta, timezone
 import pandas as pd
 
 from app.config import settings
+from app.data.resample import resample_ohlcv
 from app.utils.logging import get_logger, kv
 
 logger = get_logger(__name__, settings.log_level)
@@ -28,8 +29,13 @@ _TIMEFRAME_TO_YF_INTERVAL = {
     "15m": "15m",
     "30m": "30m",
     "1h": "60m",
-    "4h": "4h",  # not natively supported by yfinance; resample from 1h upstream if needed
     "1d": "1d",
+}
+
+# Timeframes Yahoo doesn't serve natively: downloaded at the source timeframe
+# and resampled (see app.data.resample). Yahoo's "4h" isn't a valid interval.
+_RESAMPLED_TIMEFRAMES = {
+    "4h": "1h",
 }
 
 # yfinance limits how far back intraday data goes depending on interval.
@@ -172,6 +178,8 @@ def download_ohlcv(
 
     Either `period` (e.g. "60d") or `start`/`end` dates may be supplied.
     If neither is given, a sensible default period for the timeframe is used.
+    Timeframes Yahoo lacks (4h) are downloaded at 1h and resampled, with any
+    still-forming trailing candle dropped.
 
     Returns a DataFrame with columns: timestamp, open, high, low, close, volume.
     Raises DownloadError on failure (network error, empty result, unsupported
@@ -186,6 +194,22 @@ def download_ohlcv(
 
     symbol = symbol or settings.market_symbol
     timeframe = timeframe or settings.timeframe
+
+    if timeframe in _RESAMPLED_TIMEFRAMES:
+        source_timeframe = _RESAMPLED_TIMEFRAMES[timeframe]
+        source = download_ohlcv(symbol=symbol, timeframe=source_timeframe, period=period, start=start, end=end)
+        resampled = resample_ohlcv(source, source_timeframe, timeframe)
+        if resampled.empty:
+            raise DownloadError(
+                f"Not enough {source_timeframe} data for symbol={symbol!r} to build even one complete "
+                f"{timeframe} candle."
+            )
+        logger.info(
+            "Resampled download %s",
+            kv(symbol=symbol, source_timeframe=source_timeframe, timeframe=timeframe,
+               source_rows=len(source), rows=len(resampled)),
+        )
+        return resampled
 
     if timeframe not in _TIMEFRAME_TO_YF_INTERVAL:
         raise DownloadError(f"Unsupported timeframe '{timeframe}'.")

@@ -50,8 +50,8 @@ class BacktestRequest(BaseModel):
     risk_per_trade: float = Field(0.01, gt=0, lt=1)
     stop_atr_multiplier: float = Field(2.0, gt=0)
     take_profit_r: float = Field(2.0, gt=0)
-    spread_pips: float = Field(1.2, ge=0)
-    slippage_pips: float = Field(0.3, ge=0)
+    spread_pips: float | None = Field(None, ge=0, description="In the symbol's own pips. Defaults to the instrument's typical spread.")
+    slippage_pips: float | None = Field(None, ge=0, description="In the symbol's own pips. Defaults to the instrument's typical slippage.")
     strategy: str = Field("baseline", description="'baseline' or a model_id for ML-driven signals")
     max_simultaneous_positions: int | None = Field(
         None, ge=1, description="Max concurrently open positions for this run. Defaults to the server-wide setting (1) if omitted."
@@ -164,3 +164,13 @@ class PaperTradeOut(BaseModel):
     opened_at: datetime
     closed_at: datetime
     reason: str
+
+
+class InstrumentOut(BaseModel):
+    symbol: str
+    display_name: str
+    asset_class: str
+    pip_size: float
+    spread_pips: float
+    slippage_pips: float
+    trades_24_7: bool
