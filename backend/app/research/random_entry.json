@@ -238,6 +238,58 @@
     }
    },
    "passed": true
+  },
+  {
+   "account": "gold_hourly_long",
+   "symbol": "GC=F",
+   "timeframe": "1h",
+   "strategy": "baseline_long_only",
+   "window": [
+    "2024-05-08 17:00:00+00:00",
+    "2026-09-30 06:00:00+00:00"
+   ],
+   "real_return_pct": 100.3106884568425,
+   "real_trades": 430,
+   "buy_and_hold_pct": 81.44032771649697,
+   "tests": {
+    "random_timing": {
+     "median_trades": 477.0,
+     "runs": 200,
+     "p5": -39.25430134862446,
+     "p50": -9.310660224595747,
+     "p95": 26.41001468392715,
+     "max": 68.50077239707953,
+     "real_percentile": 100.0,
+     "passed": true
+    }
+   },
+   "passed": true
+  },
+  {
+   "account": "usdjpy_hourly_long",
+   "symbol": "USDJPY=X",
+   "timeframe": "1h",
+   "strategy": "baseline_long_only",
+   "window": [
+    "2023-12-14 13:00:00+00:00",
+    "2026-09-30 06:00:00+00:00"
+   ],
+   "real_return_pct": 62.64477230834768,
+   "real_trades": 491,
+   "buy_and_hold_pct": 10.537709307923748,
+   "tests": {
+    "random_timing": {
+     "median_trades": 381.5,
+     "runs": 200,
+     "p5": -49.3341986918182,
+     "p50": -44.433173957152945,
+     "p95": -29.091248858788916,
+     "max": 10.940796356195182,
+     "real_percentile": 100.0,
+     "passed": true
+    }
+   },
+   "passed": true
   }
  ]
 }
