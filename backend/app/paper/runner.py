@@ -119,6 +119,13 @@ def load_state(path: Path) -> PaperRunState:
     )
 
 
+def list_states() -> list[PaperRunState]:
+    """All saved run-once paper accounts, sorted by name."""
+    if not PAPER_DIR.exists():
+        return []
+    return [load_state(p) for p in sorted(PAPER_DIR.glob("*.json"))]
+
+
 def init_state(config: PaperRunConfig) -> PaperRunState:
     if config.strategy not in RULE_STRATEGIES:
         raise ValueError(f"Paper runner supports rule strategies {RULE_STRATEGIES}, got {config.strategy!r}")

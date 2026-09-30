@@ -3,7 +3,7 @@ import { useAppState } from "../hooks/useAppState";
 
 export function PageHeader({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
-    <div className="px-6 pt-6 pb-4">
+    <div className="px-4 md:px-6 pt-6 pb-4">
       <h1 className="text-xl font-bold text-base-text">{title}</h1>
       {subtitle && <p className="text-sm text-base-muted mt-1">{subtitle}</p>}
     </div>
@@ -23,9 +23,9 @@ export function StatCard({
 }) {
   const toneClass = tone === "up" ? "text-accent-up" : tone === "down" ? "text-accent-down" : "text-base-text";
   return (
-    <div className="panel p-4">
+    <div className="panel p-3 md:p-4 min-w-0">
       <div className="stat-label">{label}</div>
-      <div className={`stat-value mt-1 ${toneClass}`}>{value}</div>
+      <div className={`stat-value mt-1 break-words ${toneClass}`}>{value}</div>
       {hint && <div className="text-[11px] text-base-muted mt-1">{hint}</div>}
     </div>
   );
@@ -51,7 +51,7 @@ export function RegimeBadge({ regime }: { regime: string | null }) {
 export function SymbolTimeframePicker() {
   const { symbol, setSymbol, timeframe, setTimeframe } = useAppState();
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex flex-wrap items-center gap-3">
       <select
         value={symbol}
         onChange={(e) => setSymbol(e.target.value)}

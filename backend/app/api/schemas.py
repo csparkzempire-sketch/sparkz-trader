@@ -174,3 +174,47 @@ class InstrumentOut(BaseModel):
     spread_pips: float
     slippage_pips: float
     trades_24_7: bool
+
+
+class PaperRunPosition(BaseModel):
+    symbol: str
+    direction: str
+    size: float
+    entry_price: float
+    stop_price: float
+    target_price: float
+    opened_at: datetime
+    unrealized_pnl: float | None = None
+    stop_distance_pct: float | None = None
+    target_distance_pct: float | None = None
+
+
+class PaperRunTrade(BaseModel):
+    symbol: str
+    direction: str
+    entry_price: float
+    exit_price: float
+    size: float
+    pnl: float
+    opened_at: datetime
+    closed_at: datetime
+    reason: str
+
+
+class PaperRunSummary(BaseModel):
+    account_name: str
+    symbol: str
+    timeframe: str
+    strategy: str
+    starting_balance: float
+    balance: float
+    equity: float
+    return_pct: float
+    last_processed: datetime | None
+    latest_price: float | None
+    latest_price_at: datetime | None
+    price_error: str | None = None
+    open_positions: list[PaperRunPosition]
+    closed_trades: list[PaperRunTrade]
+    winning_trades: int
+    log: list[str]

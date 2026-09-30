@@ -8,14 +8,14 @@ export default function TradesPage() {
   return (
     <div>
       <PageHeader title="Trades" subtitle="Trade log from the most recent backtest run" />
-      <div className="px-6 pb-8">
+      <div className="px-4 md:px-6 pb-8">
         {trades.length === 0 ? (
           <div className="panel p-6 text-sm text-base-muted">
             No trades yet — run a backtest from the Backtesting page first.
           </div>
         ) : (
-          <div className="panel overflow-hidden">
-            <table className="w-full text-sm">
+          <div className="panel overflow-x-auto">
+            <table className="w-full text-sm whitespace-nowrap">
               <thead>
                 <tr className="border-b border-base-border text-left text-base-muted text-xs uppercase tracking-wider">
                   <th className="px-4 py-2">Entry</th>
