@@ -165,3 +165,76 @@ def test_runs_endpoint_is_empty_without_accounts(tmp_path, monkeypatch):
 
     monkeypatch.setattr(runner, "PAPER_DIR", tmp_path / "none")
     assert TestClient(app).get("/paper/runs").json() == []
+
+
+# --- Drawdown halt ------------------------------------------------------------
+
+def _halt_setup(monkeypatch):
+    """An account with an open BUY whose tight stop the next candle hits, under a
+    0.5% drawdown limit, so the ~1% stop-out loss breaches it."""
+    from app.config import settings
+
+    cfg = settings.model_copy(update={"max_drawdown_pct": 0.005, "max_daily_loss_pct": 1.0})
+    _force_signal(monkeypatch, "BUY")
+    data = _daily()
+    s = _state()
+    s.last_processed = data["timestamp"].iloc[-3].to_pydatetime()
+    entry = float(data.close.iloc[-3])
+    PaperTradingSimulator(cfg).open_position(s.account, "BTC-USD", "BUY", entry, entry * 0.001,
+                                             timestamp=s.last_processed)
+    return s, data, cfg
+
+
+def test_drawdown_breach_halts_the_account_and_says_so_once(monkeypatch):
+    s, data, cfg = _halt_setup(monkeypatch)
+    now = pd.Timestamp("2026-01-01", tz="UTC")
+
+    res = run_step(s, candles=data.iloc[:-1], cfg=cfg, now=now)
+    assert s.account.trade_history[-1].reason == "STOP"
+    assert s.halted is not None and "drawdown" in s.halted
+    assert sum("HALTED" in e for e in res.events) == 1
+    assert "BTC-USD" not in s.account.open_positions  # BUY signal blocked
+
+    res2 = run_step(s, candles=data, cfg=cfg, now=now)  # one more candle, BUY again
+    assert res2.new_candles == 1
+    assert not any("HALTED" in e or "skipped" in e for e in res2.events)  # no repeat spam
+    assert "BTC-USD" not in s.account.open_positions
+
+
+def test_halt_survives_save_and_load(tmp_path, monkeypatch):
+    s, data, cfg = _halt_setup(monkeypatch)
+    run_step(s, candles=data.iloc[:-1], cfg=cfg, now=pd.Timestamp("2026-01-01", tz="UTC"))
+    back = load_state(save_state(s, tmp_path / "t.json"))
+    assert back.halted == s.halted
+
+
+def test_resume_lifts_the_halt_and_trading_restarts(monkeypatch):
+    from app.paper.runner import resume
+
+    s, data, cfg = _halt_setup(monkeypatch)
+    now = pd.Timestamp("2026-01-01", tz="UTC")
+    run_step(s, candles=data.iloc[:-1], cfg=cfg, now=now)
+    assert s.halted
+
+    event = resume(s, now.to_pydatetime())
+    assert "RESUMED" in event and s.halted is None
+    assert s.account.risk_state.peak_equity == pytest.approx(s.account.balance)
+
+    run_step(s, candles=data, cfg=cfg, now=now)
+    assert "BTC-USD" in s.account.open_positions
+
+
+def test_runs_endpoint_reports_halted_accounts(tmp_path, monkeypatch):
+    from fastapi.testclient import TestClient
+
+    import app.api.routes_paper as routes
+    from app.main import app
+
+    monkeypatch.setattr(runner, "PAPER_DIR", tmp_path)
+    s, data, cfg = _halt_setup(monkeypatch)
+    run_step(s, candles=data.iloc[:-1], cfg=cfg, now=pd.Timestamp("2026-01-01", tz="UTC"))
+    save_state(s, tmp_path / "t.json")
+    monkeypatch.setattr(routes, "_latest_price", lambda sym: (None, None, "offline"))
+
+    [acct] = TestClient(app).get("/paper/runs").json()
+    assert acct["halted"] == s.halted

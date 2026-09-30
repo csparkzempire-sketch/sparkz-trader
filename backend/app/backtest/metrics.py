@@ -9,6 +9,7 @@ import pandas as pd
 
 from app.backtest.portfolio import Portfolio
 from app.markets.instruments import trades_24_7
+from app.utils.time import timeframe_to_pandas_freq
 
 TRADING_PERIODS_PER_YEAR = {
     "1m": 252 * 24 * 60,
@@ -76,6 +77,13 @@ def _max_drawdown(equity: pd.Series) -> float:
     return float(drawdown.min()) if not drawdown.empty else 0.0
 
 
+def _bar_seconds(timeframe: str) -> float:
+    try:
+        return pd.Timedelta(timeframe_to_pandas_freq(timeframe)).total_seconds()
+    except ValueError:
+        return 3600.0  # unknown timeframe string: fall back to hourly, as before
+
+
 def compute_metrics(portfolio: Portfolio, timeframe: str, symbol: str | None = None) -> PerformanceMetrics:
     equity = _equity_series(portfolio)
     initial = portfolio.initial_capital
@@ -106,13 +114,11 @@ def compute_metrics(portfolio: Portfolio, timeframe: str, symbol: str | None = N
 
     max_dd_pct = _max_drawdown(equity) * 100
 
-    holding_bars = []
-    for t in trades:
-        # holding time expressed in number of bars is approximated via
-        # timeframe-aware duration; callers with bar-index data can refine this.
-        pass
+    # Durations are converted to bars of THIS backtest's timeframe (previously
+    # always hours, so a daily backtest reported holding times 24x too long).
+    bar_seconds = _bar_seconds(timeframe)
     average_holding_bars = float(
-        np.mean([(t.exit_time - t.entry_time).total_seconds() for t in trades])
+        np.mean([(t.exit_time - t.entry_time).total_seconds() / bar_seconds for t in trades])
     ) if trades else 0.0
 
     returns = equity.pct_change().dropna() if not equity.empty else pd.Series(dtype=float)
@@ -127,13 +133,13 @@ def compute_metrics(portfolio: Portfolio, timeframe: str, symbol: str | None = N
             sortino_ratio = float((returns.mean() / downside.std()) * np.sqrt(n_per_year))
 
     total_bars = len(equity)
-    bars_in_position = 0  # exact bar-level exposure requires the bar loop; approximate via trade duration below
     exposure_pct = 0.0
     if total_bars > 0 and trades:
-        approx_bars_per_trade = [
-            max(1, int((t.exit_time - t.entry_time).total_seconds() / 3600)) for t in trades  # rough, hourly-bar assumption
-        ]
-        exposure_pct = min(100.0, (sum(approx_bars_per_trade) / total_bars) * 100)
+        # Wall-clock time in position, in bars. An approximation: for FX/gold a
+        # position held over a weekend counts the closed hours too, so this can
+        # overstate exposure slightly; capped at 100%.
+        bars_per_trade = [max(1, round((t.exit_time - t.entry_time).total_seconds() / bar_seconds)) for t in trades]
+        exposure_pct = min(100.0, (sum(bars_per_trade) / total_bars) * 100)
 
     turnover = float(sum(abs(t.size * t.entry_price) for t in trades) / initial) if initial > 0 else 0.0
 
@@ -149,7 +155,7 @@ def compute_metrics(portfolio: Portfolio, timeframe: str, symbol: str | None = N
         expectancy=round(expectancy, 2),
         profit_factor=round(profit_factor, 3) if isinstance(profit_factor, float) and profit_factor != float("inf") else profit_factor,
         max_drawdown_pct=round(max_dd_pct, 4),
-        average_holding_bars=round(average_holding_bars / 3600, 2),  # hours, given hourly assumption above
+        average_holding_bars=round(average_holding_bars, 2),
         sharpe_ratio=round(sharpe_ratio, 3) if sharpe_ratio is not None else None,
         sortino_ratio=round(sortino_ratio, 3) if sortino_ratio is not None else None,
         annualized_volatility_pct=round(annualized_vol_pct, 3) if annualized_vol_pct is not None else None,

@@ -86,6 +86,9 @@ class PaperTradingSimulator:
     def __init__(self, cfg: Settings | None = None, risk_manager: RiskManager | None = None):
         self.cfg = cfg or settings
         self.risk_manager = risk_manager or RiskManager(self.cfg)
+        # Why the most recent open_position() returned None, if the risk
+        # manager rejected it (None otherwise). Lets callers report it.
+        self.last_rejection: str | None = None
 
     def costs_for(self, symbol: str) -> ExecutionCosts:
         """Spread/slippage in this symbol's own pip size (see app.markets.instruments)."""
@@ -113,6 +116,7 @@ class PaperTradingSimulator:
         if symbol in account.open_positions:
             return None  # one position per symbol at a time in v1
 
+        self.last_rejection = None
         timestamp = timestamp or utc_now()
         self._roll_day(account, timestamp)
         entry_price = apply_entry_costs(raw_price, direction, self.costs_for(symbol))
@@ -132,6 +136,7 @@ class PaperTradingSimulator:
         check = self.risk_manager.check_new_trade(account.risk_state, size_result.dollar_risk)
         if not check.allowed:
             logger.info("Paper trade rejected by risk manager %s", kv(symbol=symbol, reason=check.reason))
+            self.last_rejection = check.reason
             return None
 
         position = PaperPosition(
