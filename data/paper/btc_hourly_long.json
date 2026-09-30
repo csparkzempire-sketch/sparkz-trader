@@ -6,7 +6,7 @@
     "strategy": "baseline_long_only",
     "starting_balance": 10000.0
   },
-  "last_processed": "2026-09-30T14:00:00+00:00",
+  "last_processed": "2026-09-30T15:00:00+00:00",
   "account": {
     "balance": 9796.279118053255,
     "is_active": true,
