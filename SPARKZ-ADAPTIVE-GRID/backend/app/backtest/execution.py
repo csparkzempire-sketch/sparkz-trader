@@ -29,8 +29,8 @@ class ExecutionModel:
     def spread(self, row: pd.Series | dict | None = None) -> float:
         if self.cfg.spread_override is not None:
             base = self.cfg.spread_override
-        elif self.cfg.use_bar_spread and row is not None and pd.notna(_get(row, "spread")) and _get(row, "spread") > 0:
-            base = float(_get(row, "spread"))
+        elif self.cfg.use_bar_spread and row is not None and (sp := _get(row, "spread")) is not None and sp == sp and sp > 0:
+            base = float(sp)
         else:
             base = self.inst.spread
         return base * self.cfg.spread_multiplier
@@ -58,6 +58,8 @@ class ExecutionModel:
 
 
 def _get(row, key):
+    if isinstance(row, dict):
+        return row.get(key)
     try:
         return row[key]
     except (KeyError, IndexError):

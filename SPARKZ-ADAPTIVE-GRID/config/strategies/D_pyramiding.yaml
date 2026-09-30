@@ -1,0 +1,4 @@
+# D: adds only when the basket is IN PROFIT, every ATR x 0.5 in its favour.
+name: "D: Pyramiding"
+grid: {mode: ATR, atr_multiplier: 0.5}
+sizing: {mode: PYRAMID}

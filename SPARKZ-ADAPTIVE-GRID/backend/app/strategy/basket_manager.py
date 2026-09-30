@@ -16,6 +16,7 @@ is a fraction of a percent of the P&L.
 
 from __future__ import annotations
 
+import copy
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 
@@ -54,6 +55,12 @@ class Basket:
     max_margin: float = 0.0
     last_entry_index: int = 0
     adds_blocked: str | None = None   # why the grid stopped adding, if it did
+
+    def clone(self) -> "Basket":
+        """Copy for a what-if path. Positions never change once opened, so the list is copied, not them."""
+        c = copy.copy(self)
+        c.positions = list(self.positions)
+        return c
 
     @property
     def sign(self) -> int:

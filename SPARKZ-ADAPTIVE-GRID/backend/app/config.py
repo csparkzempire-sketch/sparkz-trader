@@ -278,3 +278,30 @@ def load_config(path: str | Path | None = None, env: Mapping[str, str] | None = 
     if overrides:
         data = deep_merge(data, overrides)
     return Settings.model_validate(data)
+
+
+STRATEGIES_DIR = CONFIG_DIR / "strategies"
+
+
+def list_presets() -> dict[str, str]:
+    """Preset key (file stem) -> display name, for the comparison lab."""
+    out = {}
+    for p in sorted(STRATEGIES_DIR.glob("*.yaml")):
+        out[p.stem] = (yaml.safe_load(p.read_text()) or {}).get("name", p.stem)
+    return out
+
+
+def load_preset(key: str, overrides: Mapping | None = None, env: Mapping[str, str] | None = None) -> Settings:
+    """default.yaml, then the preset file, then `overrides` (market, costs, risk shared across a comparison)."""
+    path = STRATEGIES_DIR / f"{key}.yaml"
+    if not path.exists():
+        raise ValueError(f"Unknown strategy preset {key!r}. Available: {', '.join(list_presets())}")
+    base = yaml.safe_load((CONFIG_DIR / "default.yaml").read_text()) or {}
+    merged = deep_merge(base, yaml.safe_load(path.read_text()) or {})
+    if overrides:
+        merged = deep_merge(merged, overrides)
+    env = {} if env is None else env
+    for k, dest in ENV_KEYS.items():
+        if k in env and env[k] != "":
+            _set(merged, dest, env[k])
+    return Settings.model_validate(merged)

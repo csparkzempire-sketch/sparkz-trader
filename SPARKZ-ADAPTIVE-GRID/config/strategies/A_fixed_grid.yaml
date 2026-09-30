@@ -1,0 +1,5 @@
+# A: fixed-size positions on a fixed price-distance grid.
+# 4.00 price units is about half the median 15m ATR of gold at ~$4,200 (Sept 2026).
+name: "A: Fixed-size grid"
+grid: {mode: PRICE, price_step: 4.0, step_growth: 0.0}
+sizing: {mode: FIXED}

@@ -32,7 +32,6 @@ likewise, gaps filled at the worse price. Targets fill at the target level.
 
 from __future__ import annotations
 
-import copy
 from dataclasses import dataclass, field
 from datetime import datetime
 
@@ -198,7 +197,7 @@ class GridEngine:
         raise RuntimeError("intrabar event loop did not settle")   # pragma: no cover - guarded by the bound
 
     def _run_path(self, basket: Basket, balance: float, path: list[float], ctx: dict) -> _Branch:
-        br = _Branch(balance=balance, basket=copy.deepcopy(basket))
+        br = _Branch(balance=balance, basket=basket.clone())
         for a, b in zip(path[:-1], path[1:]):
             if br.basket is None:
                 break
@@ -237,10 +236,18 @@ class GridEngine:
                         f"{rec.uid} lost {rec.pnl:.2f}: no new basket for {self.s.risk.cooldown_bars_after_loss} bars")
 
     # --------------------------------------------------------------- per bar
+    def _records(self, f: pd.DataFrame) -> list[dict]:
+        """Rows as plain dicts, built once per frame: pandas row access is far too slow per bar."""
+        key = (id(f), len(f), f["timestamp"].iloc[0], f["timestamp"].iloc[-1]) if len(f) else (id(f), 0)
+        if getattr(self, "_rec_key", None) != key:
+            self._rec_key, self._rec = key, f.to_dict("records")
+        return self._rec
+
     def process_bar(self, f: pd.DataFrame, i: int) -> None:
         st = self.state
-        row = f.iloc[i]
-        prev = f.iloc[i - 1] if i > 0 else row
+        rows = self._records(f)
+        row = rows[i]
+        prev = rows[i - 1] if i > 0 else row
         ts = row["timestamp"].to_pydatetime()
         o, c = row["open"], row["close"]
         st.tracker.update(self._equity(st.balance, st.basket, o, row, o), ts)
@@ -312,7 +319,7 @@ class GridEngine:
         """Close whatever is still open at the last bar's close (END_OF_DATA)."""
         st = self.state
         if st.basket is not None:
-            row = f.iloc[-1]
+            row = self._records(f)[-1]
             br = _Branch(st.balance, st.basket)
             self._close(br, row["close"], row["timestamp"].to_pydatetime(), len(f) - 1, "END_OF_DATA", row, row["open"])
             st.balance, st.basket = br.balance, None
