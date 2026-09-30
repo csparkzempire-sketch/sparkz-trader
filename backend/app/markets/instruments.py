@@ -28,6 +28,7 @@ from app.config import Settings, settings
 
 FX = "fx"
 CRYPTO = "crypto"
+METAL = "metal"
 
 
 @dataclass(frozen=True)
@@ -50,6 +51,10 @@ INSTRUMENTS: dict[str, Instrument] = {
         Instrument("EURUSD=X", "EUR/USD", FX, pip_size=0.0001, spread_pips=1.2, slippage_pips=0.3),
         Instrument("GBPUSD=X", "GBP/USD", FX, pip_size=0.0001, spread_pips=1.5, slippage_pips=0.3),
         Instrument("USDJPY=X", "USD/JPY", FX, pip_size=0.01, spread_pips=1.4, slippage_pips=0.3),
+        # Gold: Yahoo has no spot XAU/USD, so COMEX gold futures stand in for it.
+        # They track spot closely but jump slightly at each contract roll. A gold
+        # "pip" here is $0.10; 3 + 2 pips = $0.50 per side (~0.01% at $4,000).
+        Instrument("GC=F", "Gold (XAU/USD via futures)", METAL, pip_size=0.1, spread_pips=3.0, slippage_pips=2.0),
         # Crypto "pips" are whole price units: $1 on BTC, $0.10 on ETH.
         Instrument("BTC-USD", "BTC/USD", CRYPTO, pip_size=1.0, spread_pips=15.0, slippage_pips=10.0),
         Instrument("ETH-USD", "ETH/USD", CRYPTO, pip_size=0.1, spread_pips=10.0, slippage_pips=5.0),

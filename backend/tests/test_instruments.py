@@ -70,5 +70,14 @@ def test_instruments_endpoint_lists_profiles():
 
     body = TestClient(app).get("/instruments").json()
     symbols = {i["symbol"]: i for i in body}
-    assert {"EURUSD=X", "GBPUSD=X", "USDJPY=X", "BTC-USD", "ETH-USD"} <= set(symbols)
+    assert {"EURUSD=X", "GBPUSD=X", "USDJPY=X", "GC=F", "BTC-USD", "ETH-USD"} <= set(symbols)
+    assert symbols["GC=F"]["trades_24_7"] is False
     assert symbols["BTC-USD"]["trades_24_7"] is True
+
+
+def test_gold_costs_are_in_dollars_not_fx_pips():
+    """Without a profile, gold would get EUR/USD's 0.0001 pip and trade almost free."""
+    costs = resolve_costs("GC=F")
+    assert costs.pip_size == 0.1
+    assert (costs.spread_pips + costs.slippage_pips) * costs.pip_size == pytest.approx(0.5)
+    assert periods_per_year("1h", "GC=F") == 252 * 24  # not a 24/7 market
