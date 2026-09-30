@@ -9,6 +9,7 @@ each training run produces a new model_id.
 
 from __future__ import annotations
 
+import os
 import uuid
 from dataclasses import dataclass
 from datetime import datetime
@@ -21,7 +22,7 @@ from app.utils.logging import get_logger, kv
 
 logger = get_logger(__name__)
 
-MODELS_DIR = Path(__file__).resolve().parents[3] / "models"
+MODELS_DIR = Path(os.getenv("SPARKZ_MODELS_DIR") or Path(__file__).resolve().parents[3] / "models")
 
 
 @dataclass

@@ -77,8 +77,12 @@ class _Branch:
 
 
 class GridEngine:
-    def __init__(self, settings: Settings, inst: Instrument | None = None, state: EngineState | None = None):
+    def __init__(self, settings: Settings, inst: Instrument | None = None, state: EngineState | None = None,
+                 entry_fn=None):
+        """`entry_fn(row, entry_cfg) -> EntryDecision` replaces the entry rules; research only (random-entry
+        benchmarks). It sees exactly what evaluate_entry sees: the closed bar's row."""
         self.s = settings
+        self.entry_fn = entry_fn or evaluate_entry
         self.inst = inst or get_instrument(settings.market.symbol)
         self.ex = ExecutionModel(self.inst, settings.execution)
         self.state = state or EngineState(balance=settings.risk.initial_capital)
@@ -309,7 +313,7 @@ class GridEngine:
         execute_at = i + 1 + self.s.execution.entry_latency_bars
         if st.basket is None and st.pending is None and not self.risk.state.halted and i > st.last_close_index \
                 and execute_at >= self.risk.state.cooldown_until and ready(row):
-            dec = evaluate_entry(row, self.s.entry)
+            dec = self.entry_fn(row, self.s.entry)
             if dec.direction != "NONE":
                 st.pending = {"direction": dec.direction, "signal_index": i, "signal_ts": ts.isoformat(),
                               "execute_at": execute_at, "regime": row["regime"],

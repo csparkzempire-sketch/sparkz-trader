@@ -47,7 +47,8 @@ def prepare_features(candles: pd.DataFrame, settings: Settings) -> pd.DataFrame:
 
 
 def run_backtest(settings: Settings, candles: pd.DataFrame | None = None, features: pd.DataFrame | None = None,
-                 save: bool = False, name: str | None = None, kind: str = "backtest", db=None) -> BacktestResult:
+                 save: bool = False, name: str | None = None, kind: str = "backtest", db=None,
+                 entry_fn=None) -> BacktestResult:
     m = settings.market
     if features is None:
         if candles is None:
@@ -64,7 +65,7 @@ def run_backtest(settings: Settings, candles: pd.DataFrame | None = None, featur
     if start_i >= len(f):
         raise ValueError("No bars in the requested date range")
 
-    eng = GridEngine(settings)
+    eng = GridEngine(settings, entry_fn=entry_fn)
     for i in range(start_i, len(f)):
         eng.process_bar(f, i)
     eng.finish(f)

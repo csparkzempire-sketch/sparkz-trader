@@ -13,6 +13,8 @@ persisted.
 
 from __future__ import annotations
 
+import importlib.util
+import os
 from pathlib import Path
 
 import pandas as pd
@@ -25,7 +27,11 @@ from app.utils.logging import get_logger, kv
 
 logger = get_logger(__name__, settings.log_level)
 
-DATA_DIR = Path(__file__).resolve().parents[3] / "data"
+# SPARKZ_DATA_DIR moves the cache (and paper accounts) somewhere writable, e.g. /tmp on Vercel.
+DATA_DIR = Path(os.getenv("SPARKZ_DATA_DIR") or Path(__file__).resolve().parents[3] / "data")
+# Parquet needs pyarrow (~150 MB). Where it isn't installed (the Vercel function, to stay under
+# the bundle size limit) the cache is kept as pickle files instead.
+_PARQUET = importlib.util.find_spec("pyarrow") is not None
 
 
 def _safe_symbol(symbol: str) -> str:
@@ -34,13 +40,16 @@ def _safe_symbol(symbol: str) -> str:
 
 def processed_file_path(symbol: str, timeframe: str) -> Path:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
-    return DATA_DIR / f"{_safe_symbol(symbol)}_{timeframe}.parquet"
+    return DATA_DIR / f"{_safe_symbol(symbol)}_{timeframe}.{'parquet' if _PARQUET else 'pkl'}"
 
 
 def save_processed(df: pd.DataFrame, symbol: str, timeframe: str) -> Path:
     """Save a cleaned OHLCV DataFrame to a parquet file under data/."""
     path = processed_file_path(symbol, timeframe)
-    df.to_parquet(path, index=False)
+    if _PARQUET:
+        df.to_parquet(path, index=False)
+    else:
+        df.to_pickle(path)
     logger.info("Saved processed data %s", kv(symbol=symbol, timeframe=timeframe, rows=len(df), path=str(path)))
     return path
 
@@ -52,7 +61,7 @@ def load_processed(symbol: str, timeframe: str) -> pd.DataFrame:
             f"No processed data found for symbol={symbol!r} timeframe={timeframe!r} at {path}. "
             "Run the data download step first."
         )
-    df = pd.read_parquet(path)
+    df = pd.read_parquet(path) if _PARQUET else pd.read_pickle(path)
     df["timestamp"] = pd.to_datetime(df["timestamp"], utc=True)
     return df.sort_values("timestamp").reset_index(drop=True)
 
