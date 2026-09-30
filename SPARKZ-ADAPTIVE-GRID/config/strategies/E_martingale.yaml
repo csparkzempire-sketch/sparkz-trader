@@ -1,0 +1,5 @@
+# E: HIGH RISK. Averaging grid whose sizes double at each level (0.01, 0.02, 0.04, 0.08, 0.16).
+# Included only so its risk can be measured next to the others. Never enabled by default.
+name: "E: Martingale grid (HIGH RISK)"
+grid: {mode: ATR, atr_multiplier: 0.5}
+sizing: {mode: MARTINGALE, martingale_multiplier: 2.0, allow_martingale: true}

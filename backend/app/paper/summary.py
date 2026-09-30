@@ -13,6 +13,7 @@ import pandas as pd
 from app.api.schemas import PaperRunPosition, PaperRunSummary, PaperRunTrade
 from app.data.downloader import DownloadError, download_ohlcv
 from app.paper.evaluation import evaluate
+from app.paper.norms import norms_status
 from app.paper.runner import PaperRunState
 
 PriceResult = tuple[float | None, object, str | None]
@@ -66,6 +67,7 @@ def summarize(states: list[PaperRunState], price_fn: Callable[[str], PriceResult
             winning_trades=sum(1 for t in a.trade_history if t.pnl > 0),
             halted=s.halted,
             evaluation=evaluate(s),
+            norms=norms_status(s),
             log=list(reversed(s.log[-log_lines:])),
         ))
     return out

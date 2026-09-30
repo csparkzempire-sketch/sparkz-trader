@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { api } from "../services/api";
-import type { PaperEvaluation, PaperRunSummary } from "../types/api";
+import type { PaperEvaluation, PaperNorms, PaperRunSummary } from "../types/api";
 import { DisclaimerNote, ErrorBanner, LoadingBlock, PageHeader, StatCard } from "../components/ui";
 
 const money = (v: number) => v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -146,6 +146,8 @@ function AccountPanel({ run: r }: { run: PaperRunSummary }) {
 
         {r.evaluation && <EvaluationSection evaluation={r.evaluation} accountName={r.account_name} />}
 
+        {r.norms && <NormsSection norms={r.norms} />}
+
         <Section title="Open Position">
           {r.open_positions.length === 0 ? (
             <Empty>Flat: waiting for the next BUY signal.</Empty>
@@ -251,6 +253,46 @@ function EvaluationSection({ evaluation: e, accountName }: { evaluation: PaperEv
           <span className={`uppercase text-xs font-semibold ${STATUS_STYLE[c.status]}`}>{c.status}</span>,
         ])}
       />
+    </Section>
+  );
+}
+
+// An early warning, separate from the verdict: flags a bad patch worse than anything the
+// same backtest went through (app/paper/norms.py).
+function NormsSection({ norms: n }: { norms: PaperNorms }) {
+  const outside = n.verdict.startsWith("Outside");
+  const notes = n.items.filter((i) => i.note);
+  return (
+    <Section title="Normal-losses check">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+        <span className={`text-sm font-semibold ${outside ? "text-accent-down" : "text-accent-up"}`}>{n.verdict}</span>
+        <span className="text-[11px] text-base-muted">
+          Compared with the worst of {n.backtest_trades.toLocaleString()} backtest trades over {n.backtest_days.toLocaleString()} days
+        </span>
+      </div>
+      <Table
+        head={["Measure", "Paper so far", "Backtest worst", "Status"]}
+        rows={n.items.map((i) => [
+          i.name,
+          i.live,
+          <span className="text-base-muted">{i.backtest}</span>,
+          <span className={`uppercase text-xs font-semibold ${i.status === "outside" ? "text-accent-down" : "text-base-muted"}`}>
+            {i.status === "outside" ? "outside range" : "normal"}
+          </span>,
+        ])}
+      />
+      {notes.length > 0 && (
+        <ul className="mt-2 grid gap-0.5 text-xs text-base-muted">
+          {notes.map((i) => (
+            <li key={i.name}>
+              {i.name}: {i.note}.
+            </li>
+          ))}
+        </ul>
+      )}
+      <p className="mt-2 text-xs text-base-muted">
+        An early warning, not a verdict: it doesn't change the pass/fail targets above.
+      </p>
     </Section>
   );
 }

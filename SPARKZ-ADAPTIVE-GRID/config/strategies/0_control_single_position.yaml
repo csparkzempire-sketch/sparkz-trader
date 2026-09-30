@@ -1,0 +1,5 @@
+# CONTROL: same entries, targets and stops, but one position per basket (no grid).
+# If a grid variant can't beat this, the grid itself adds nothing.
+name: "Control: single position"
+grid: {mode: NONE}
+sizing: {mode: FIXED}
