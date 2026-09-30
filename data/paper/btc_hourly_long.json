@@ -6,23 +6,35 @@
     "strategy": "baseline_long_only",
     "starting_balance": 10000.0
   },
-  "last_processed": "2026-09-30T11:00:00+00:00",
+  "last_processed": "2026-09-30T12:00:00+00:00",
   "account": {
     "balance": 10000.0,
     "is_active": true,
-    "open_positions": [],
+    "open_positions": [
+      {
+        "symbol": "BTC-USD",
+        "direction": "BUY",
+        "entry_price": 85283.0703125,
+        "stop_price": 84306.90816547709,
+        "target_price": 87235.39460654583,
+        "size": 0.1024419972695915,
+        "opened_at": "2026-09-30T12:00:00+00:00"
+      }
+    ],
     "trade_history": [],
     "risk_state": {
       "equity": 10000.0,
       "peak_equity": 10000.0,
-      "open_positions": 0,
-      "current_exposure": 0.0,
+      "open_positions": 1,
+      "current_exposure": 100.0,
       "daily_loss": 0.0,
-      "current_day": null,
+      "current_day": "2026-09-30",
       "bars_since_last_trade": 10000
     }
   },
-  "log": [],
+  "log": [
+    "2026-09-30 12:00 OPEN BUY BTC-USD @ 85283.07, size 0.102442, stop 84306.91, target 87235.39"
+  ],
   "halted": null,
   "targets": {
     "source": "backtest 2024-10-01 to 2026-09-30",

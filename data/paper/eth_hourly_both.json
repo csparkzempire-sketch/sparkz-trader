@@ -6,34 +6,48 @@
     "strategy": "baseline",
     "starting_balance": 10000.0
   },
-  "last_processed": "2026-09-30T11:00:00+00:00",
+  "last_processed": "2026-09-30T12:00:00+00:00",
   "account": {
-    "balance": 10000.0,
+    "balance": 9895.023012283431,
     "is_active": true,
     "open_positions": [
       {
         "symbol": "ETH-USD",
-        "direction": "SELL",
-        "entry_price": 2672.409912109375,
-        "stop_price": 2702.54862422647,
-        "target_price": 2612.132487875185,
-        "size": 3.317991811046185,
-        "opened_at": "2026-09-30T05:00:00+00:00"
+        "direction": "BUY",
+        "entry_price": 2732.090087890625,
+        "stop_price": 2696.8228264740496,
+        "target_price": 2802.624610723776,
+        "size": 2.8057248039205107,
+        "opened_at": "2026-09-30T12:00:00+00:00"
       }
     ],
-    "trade_history": [],
+    "trade_history": [
+      {
+        "symbol": "ETH-USD",
+        "direction": "SELL",
+        "entry_price": 2672.409912109375,
+        "exit_price": 2704.04862422647,
+        "size": 3.317991811046185,
+        "pnl": -104.97698771656928,
+        "opened_at": "2026-09-30T05:00:00+00:00",
+        "closed_at": "2026-09-30T12:00:00+00:00",
+        "reason": "STOP"
+      }
+    ],
     "risk_state": {
-      "equity": 10000.0,
+      "equity": 9895.023012283431,
       "peak_equity": 10000.0,
       "open_positions": 1,
-      "current_exposure": 100.0,
-      "daily_loss": 0.0,
+      "current_exposure": 98.95023012283431,
+      "daily_loss": -104.97698771656928,
       "current_day": "2026-09-30",
       "bars_since_last_trade": 10000
     }
   },
   "log": [
-    "2026-09-30 05:00 OPEN SELL ETH-USD @ 2672.41, size 3.317992, stop 2702.55, target 2612.13"
+    "2026-09-30 05:00 OPEN SELL ETH-USD @ 2672.41, size 3.317992, stop 2702.55, target 2612.13",
+    "2026-09-30 12:00 CLOSE SELL ETH-USD STOP @ 2704.05, pnl -104.98, balance 9895.02",
+    "2026-09-30 12:00 OPEN BUY ETH-USD @ 2732.09, size 2.805725, stop 2696.82, target 2802.62"
   ],
   "halted": null,
   "targets": {
