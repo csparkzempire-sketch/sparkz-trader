@@ -234,5 +234,6 @@ export interface PaperRunSummary {
   open_positions: PaperRunPosition[];
   closed_trades: PaperRunTrade[];
   winning_trades: number;
+  halted: string | null;
   log: string[];
 }

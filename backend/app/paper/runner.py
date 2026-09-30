@@ -19,6 +19,13 @@ Per run:
      back-filled on missed candles: a trader who wasn't watching couldn't
      have taken them.
 
+Drawdown halt: if the account falls max_drawdown_pct below its peak, the
+risk manager blocks new entries. Nothing ever lifts that on its own (the
+account can't make back the loss without trading), so the runner marks
+the account HALTED -- saved in the state file, logged once, and shown by
+the CLI, API and dashboard -- until someone explicitly resumes it with
+`paper-trade --account NAME --resume`.
+
 No broker code: this drives app.paper.simulator only.
 """
 
@@ -58,6 +65,7 @@ class PaperRunState:
     account: PaperAccountState
     last_processed: datetime | None = None
     log: list[str] = field(default_factory=list)
+    halted: str | None = None  # why/when new entries stopped; None while trading normally
 
 
 def state_path(account_name: str) -> Path:
@@ -92,6 +100,7 @@ def save_state(state: PaperRunState, path: Path | None = None) -> Path:
             },
         },
         "log": state.log[-500:],
+        "halted": state.halted,
     }
     tmp = path.with_suffix(".tmp")
     tmp.write_text(json.dumps(payload, indent=2))
@@ -116,7 +125,32 @@ def load_state(path: Path) -> PaperRunState:
         account=account,
         last_processed=_dt(raw["last_processed"]),
         log=raw.get("log", []),
+        halted=raw.get("halted"),
     )
+
+
+def _halt(state: PaperRunState, events: list[str], ts: datetime, reason: str) -> None:
+    state.halted = f"{ts:%Y-%m-%d %H:%M} UTC: {reason}"
+    events.append(
+        f"{ts:%Y-%m-%d %H:%M} HALTED {state.config.symbol}: {reason}. No new trades until resumed "
+        f"(python -m app.cli paper-trade --account {state.config.account_name} --resume)."
+    )
+
+
+def resume(state: PaperRunState, now: datetime) -> str:
+    """Lift a drawdown halt: the current balance becomes the new peak, so the
+    max-drawdown limit is measured from here. An explicit, logged decision."""
+    rs = state.account.risk_state
+    old_peak = rs.peak_equity
+    rs.equity = state.account.balance
+    rs.peak_equity = state.account.balance
+    state.halted = None
+    event = (
+        f"{now:%Y-%m-%d %H:%M} RESUMED: drawdown limit now measured from balance "
+        f"{state.account.balance:.2f} (previous peak {old_peak:.2f})."
+    )
+    state.log.append(event)
+    return event
 
 
 def list_states() -> list[PaperRunState]:
@@ -173,6 +207,7 @@ def run_step(
 
     sim = PaperTradingSimulator(cfg)
     events: list[str] = []
+    limit = sim.risk_manager.cfg.max_drawdown_pct
     for row in new.itertuples(index=False):
         bar_ts = row.timestamp.to_pydatetime()
         trade = sim.check_and_close_if_hit(state.account, c.symbol, high=row.high, low=row.low, timestamp=bar_ts)
@@ -184,6 +219,13 @@ def run_step(
 
     latest = featured.iloc[-1]
     latest_ts = latest["timestamp"].to_pydatetime()
+
+    # Flag a breach as soon as a losing close causes it, not only when the
+    # next signal happens to be rejected.
+    if len(new) and state.halted is None:
+        drawdown = sim.risk_manager.status(state.account.risk_state)["current_drawdown_pct"]
+        if drawdown >= limit:
+            _halt(state, events, latest_ts, f"drawdown {drawdown:.1%} from peak (limit {limit:.0%})")
     signal = str(latest["signal"])
     if len(new) and c.symbol not in state.account.open_positions and signal in ("BUY", "SELL"):
         pos = sim.open_position(
@@ -195,8 +237,12 @@ def run_step(
                 f"{latest_ts:%Y-%m-%d %H:%M} OPEN {signal} {c.symbol} @ {pos.entry_price:.2f}, size {pos.size:.6f}, "
                 f"stop {pos.stop_price:.2f}, target {pos.target_price:.2f}"
             )
+        elif (sim.last_rejection or "").startswith("max_drawdown_pct"):
+            if state.halted is None:
+                _halt(state, events, latest_ts, sim.last_rejection)
+            # Already reported as HALTED: don't log every skipped signal again.
         else:
-            events.append(f"{latest_ts:%Y-%m-%d %H:%M} {signal} signal skipped by risk limits")
+            events.append(f"{latest_ts:%Y-%m-%d %H:%M} {signal} signal skipped: {sim.last_rejection}")
 
     if len(new):
         state.last_processed = latest_ts

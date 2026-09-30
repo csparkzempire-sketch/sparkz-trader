@@ -313,7 +313,8 @@ def cmd_evaluate_model(args) -> None:
 
 def cmd_paper_trade(args) -> None:
     """One paper-trading step for a saved account: run once per candle (e.g. daily via cron)."""
-    from app.paper.runner import PaperRunConfig, init_state, load_state, run_step, save_state, state_path
+    from app.paper.runner import PaperRunConfig, init_state, load_state, resume, run_step, save_state, state_path
+    from app.utils.time import utc_now
 
     path = state_path(args.account)
     if path.exists():
@@ -334,6 +335,14 @@ def cmd_paper_trade(args) -> None:
             sys.exit(1)
         print(f"Created paper account '{args.account}': {args.symbol} {args.timeframe} {args.strategy}, "
               f"starting balance {args.starting_balance:.2f}")
+
+    if getattr(args, "resume", False):
+        if state.halted is None:
+            print(f"Account '{args.account}' is not halted; nothing to resume.")
+        else:
+            print(f"Was halted: {state.halted}")
+            print(resume(state, utc_now()))
+            save_state(state, path)
 
     candles = None
     if args.use_cached:
@@ -364,6 +373,10 @@ def cmd_paper_trade(args) -> None:
     wins = sum(1 for t in closed if t.pnl > 0)
     print(f"Balance {acct.balance:.2f} (started {state.config.starting_balance:.2f}); "
           f"{len(closed)} closed trade(s), {wins} winning. State: {path}")
+    if state.halted:
+        print(f"HALTED since {state.halted}. Open positions still run to their stop/target, but no new "
+              f"trades open. To restart: python -m app.cli paper-trade --account {args.account} --resume",
+              file=sys.stderr)
 
 
 def cmd_system_status(args) -> None:
@@ -497,6 +510,9 @@ def main() -> None:
                    help="Only used when the account is first created.")
     p.add_argument("--use-cached", action="store_true", dest="use_cached",
                    help="Read the local cache instead of downloading (no network).")
+    p.add_argument("--resume", action="store_true",
+                   help="Restart an account halted by the max-drawdown limit: its current balance becomes the "
+                        "new peak the limit is measured from.")
     p.set_defaults(func=cmd_paper_trade)
 
     p = sub.add_parser("system-status")
