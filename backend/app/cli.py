@@ -313,10 +313,12 @@ def cmd_evaluate_model(args) -> None:
 
 def cmd_paper_trade(args) -> None:
     """One paper-trading step for a saved account: run once per candle (e.g. daily via cron)."""
+    from app.paper.evaluation import compute_targets, evaluate
     from app.paper.runner import PaperRunConfig, init_state, load_state, resume, run_step, save_state, state_path
     from app.utils.time import utc_now
 
     path = state_path(args.account)
+    created = not path.exists()
     if path.exists():
         state = load_state(path)
         c = state.config
@@ -344,13 +346,30 @@ def cmd_paper_trade(args) -> None:
             print(resume(state, utc_now()))
             save_state(state, path)
 
-    candles = None
-    if args.use_cached:
-        try:
-            candles = load_processed(state.config.symbol, state.config.timeframe)
-        except FileNotFoundError as exc:
-            print(f"ERROR: {exc}", file=sys.stderr)
-            sys.exit(1)
+    c = state.config
+    try:
+        # One download serves both the targets backtest and the trading step.
+        candles = _load_market_data(c.symbol, c.timeframe, getattr(args, "use_cached", False))
+    except (DownloadError, DataValidationError, FileNotFoundError) as exc:
+        print(f"ERROR: {exc} (state unchanged)", file=sys.stderr)
+        sys.exit(1)
+
+    want_targets = created or getattr(args, "set_targets", False)
+    if want_targets and state.targets is not None:
+        print(f"Targets for '{args.account}' were already set ({state.targets.get('source')}) and are kept: "
+              "they're fixed on purpose so results can't be judged against moved goalposts.")
+    elif want_targets:
+        from app.data.validator import closed_candles
+
+        state.targets = compute_targets(closed_candles(candles, c.timeframe), c.symbol, c.timeframe, c.strategy)
+        t = state.targets
+        print(f"Targets set from {t['source']} ({t['backtest_trades']} trades): profit factor "
+              f"{t['profit_factor']}, win rate {t['win_rate_pct']}%, max drawdown {t['max_drawdown_pct']}%, "
+              f"avg trade {t['avg_hold_bars']} bars.")
+    elif state.targets is None:
+        print(f"No pass/fail targets yet: add them once with "
+              f"python -m app.cli paper-trade --account {args.account} --set-targets")
+
     try:
         result = run_step(state, candles=candles)
     except (DownloadError, DataValidationError) as exc:
@@ -373,6 +392,8 @@ def cmd_paper_trade(args) -> None:
     wins = sum(1 for t in closed if t.pnl > 0)
     print(f"Balance {acct.balance:.2f} (started {state.config.starting_balance:.2f}); "
           f"{len(closed)} closed trade(s), {wins} winning. State: {path}")
+    if state.targets:
+        print(f"Evaluation vs backtest: {evaluate(state)['verdict']}")
     if state.halted:
         print(f"HALTED since {state.halted}. Open positions still run to their stop/target, but no new "
               f"trades open. To restart: python -m app.cli paper-trade --account {args.account} --resume",
@@ -510,6 +531,9 @@ def main() -> None:
                    help="Only used when the account is first created.")
     p.add_argument("--use-cached", action="store_true", dest="use_cached",
                    help="Read the local cache instead of downloading (no network).")
+    p.add_argument("--set-targets", action="store_true", dest="set_targets",
+                   help="Fix this account's pass/fail targets from a backtest of the same setup (only if none "
+                        "are set yet; new accounts get them automatically).")
     p.add_argument("--resume", action="store_true",
                    help="Restart an account halted by the max-drawdown limit: its current balance becomes the "
                         "new peak the limit is measured from.")

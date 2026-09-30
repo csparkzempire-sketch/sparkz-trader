@@ -218,4 +218,5 @@ class PaperRunSummary(BaseModel):
     closed_trades: list[PaperRunTrade]
     winning_trades: int
     halted: str | None = None
+    evaluation: dict | None = None
     log: list[str]
