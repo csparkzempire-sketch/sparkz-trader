@@ -84,6 +84,10 @@ export default function PaperTradingPage() {
             <StatCard
               label="Open Positions"
               value={String(runs.reduce((s, r) => s + r.open_positions.length, 0))}
+              hint={(() => {
+                const n = runs.filter((r) => r.halted).length;
+                return n ? `${n} account${n > 1 ? "s" : ""} halted` : undefined;
+              })()}
             />
             <StatCard
               label="Closed Trades"
@@ -111,10 +115,16 @@ function AccountPanel({ run: r }: { run: PaperRunSummary }) {
       <div className="panel-header flex flex-wrap items-center justify-between gap-2">
         <span>
           {r.account_name} · {r.symbol} · {r.timeframe} · {STRATEGY_LABELS[r.strategy] ?? r.strategy}
+          {r.halted && <span className="ml-2 badge badge-sell">HALTED</span>}
         </span>
         <span className="text-xs text-base-muted font-normal">Last candle processed: {when(r.last_processed)}</span>
       </div>
       <div className="p-4 space-y-4">
+        {r.halted && (
+          <ErrorBanner
+            message={`Halted by the max-drawdown limit since ${r.halted}. Open positions still run to their stop or target, but no new trades will open until you resume it: python -m app.cli paper-trade --account ${r.account_name} --resume`}
+          />
+        )}
         {r.price_error && (
           <ErrorBanner message={`Latest price unavailable, so open positions aren't marked to market: ${r.price_error}`} />
         )}

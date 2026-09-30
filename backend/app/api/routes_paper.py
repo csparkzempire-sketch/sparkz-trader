@@ -224,6 +224,7 @@ def list_paper_runs() -> list[PaperRunSummary]:
             last_processed=s.last_processed, latest_price=price, latest_price_at=price_at,
             price_error=price_error, open_positions=positions, closed_trades=trades,
             winning_trades=sum(1 for t in a.trade_history if t.pnl > 0),
+            halted=s.halted,
             log=list(reversed(s.log[-50:])),
         ))
     return out
