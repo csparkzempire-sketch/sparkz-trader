@@ -8,6 +8,7 @@ import type {
   PaperAccountResponse,
   PaperPosition,
   PaperRunSummary,
+  ResearchResults,
   PaperTrade,
   PredictResponse,
   TrainModelRequest,
@@ -75,6 +76,8 @@ export const api = {
 
   paperPositions: (account_name: string) =>
     request<PaperPosition[]>(`/paper/positions?account_name=${encodeURIComponent(account_name)}`),
+
+  getResearch: () => request<ResearchResults>("/research"),
 
   paperRuns: () => request<PaperRunSummary[]>("/paper/runs"),
 

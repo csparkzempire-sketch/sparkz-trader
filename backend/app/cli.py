@@ -400,6 +400,55 @@ def cmd_paper_trade(args) -> None:
               file=sys.stderr)
 
 
+def cmd_paper_snapshot(args) -> None:
+    """Write snapshot.json and history.json for the hosted status page (read-only: never trades)."""
+    from pathlib import Path
+
+    from app.paper import snapshot
+    from app.paper.runner import list_states
+    from app.paper.summary import summarize
+    from app.utils.time import utc_now
+
+    now = utc_now()
+    summaries = summarize(list_states())
+    if not summaries:
+        print("ERROR: no paper accounts found in data/paper/.", file=sys.stderr)
+        sys.exit(1)
+    out = Path(args.out_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    snapshot.append_history(summaries, now)
+    (out / "snapshot.json").write_text(json.dumps(snapshot.build_snapshot(summaries, now)))
+    (out / "history.json").write_text(json.dumps(snapshot.history_doc(now=now)))
+    sizes = {f: (out / f).stat().st_size for f in ("snapshot.json", "history.json")}
+    print(f"Wrote {out}/snapshot.json ({sizes['snapshot.json']:,} bytes) and history.json "
+          f"({sizes['history.json']:,} bytes); history point appended to {snapshot.HISTORY_PATH}")
+
+
+def cmd_research(args) -> None:
+    """Rerun the market and settings-sensitivity studies and save them for the dashboard."""
+    from app.research import studies
+
+    if not args.use_cached:
+        for symbol, _name, start in studies.MARKETS:
+            for timeframe, kw in (("1h", {}), ("1d", {"start": "2016-01-01"})):
+                try:
+                    raw = download_ohlcv(symbol=symbol, timeframe=timeframe, **kw)
+                    clean, _ = validate_and_clean(raw, timeframe=timeframe, symbol=symbol)
+                except (DownloadError, DataValidationError) as exc:
+                    print(f"ERROR: {exc} -- re-run with --use-cached to use the existing cache.", file=sys.stderr)
+                    sys.exit(1)
+                merged, _, _ = merge_into_cache(clean, symbol, timeframe)
+                print(f"{symbol} {timeframe}: {len(merged)} candles cached")
+    try:
+        results = studies.run_all(workers=args.workers)
+    except FileNotFoundError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        sys.exit(1)
+    path = studies.save(results)
+    print(f"Saved {len(results['markets'])} market results and {len(results['sensitivity'])} sensitivity "
+          f"studies to {path}")
+
+
 def cmd_system_status(args) -> None:
     print(json.dumps({
         "app": settings.app_name,
@@ -538,6 +587,16 @@ def main() -> None:
                    help="Restart an account halted by the max-drawdown limit: its current balance becomes the "
                         "new peak the limit is measured from.")
     p.set_defaults(func=cmd_paper_trade)
+
+    p = sub.add_parser("paper-snapshot", help="Write the paper accounts' status as JSON for the hosted status page.")
+    p.add_argument("--out-dir", required=True, dest="out_dir")
+    p.set_defaults(func=cmd_paper_snapshot)
+
+    p = sub.add_parser("research", help="Rerun the market and settings-sensitivity studies for the dashboard.")
+    p.add_argument("--use-cached", action="store_true", dest="use_cached",
+                   help="Skip downloading and use the local data cache as-is.")
+    p.add_argument("--workers", type=int, default=4)
+    p.set_defaults(func=cmd_research)
 
     p = sub.add_parser("system-status")
     p.set_defaults(func=cmd_system_status)
