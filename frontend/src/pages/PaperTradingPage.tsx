@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { api } from "../services/api";
-import type { PaperRunSummary } from "../types/api";
+import type { PaperEvaluation, PaperRunSummary } from "../types/api";
 import { DisclaimerNote, ErrorBanner, LoadingBlock, PageHeader, StatCard } from "../components/ui";
 
 const money = (v: number) => v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -144,6 +144,8 @@ function AccountPanel({ run: r }: { run: PaperRunSummary }) {
           />
         </div>
 
+        {r.evaluation && <EvaluationSection evaluation={r.evaluation} accountName={r.account_name} />}
+
         <Section title="Open Position">
           {r.open_positions.length === 0 ? (
             <Empty>Flat: waiting for the next BUY signal.</Empty>
@@ -205,6 +207,51 @@ function AccountPanel({ run: r }: { run: PaperRunSummary }) {
         )}
       </div>
     </div>
+  );
+}
+
+const STATUS_STYLE: Record<string, string> = {
+  pass: "text-accent-up",
+  fail: "text-accent-down",
+  pending: "text-base-muted",
+};
+
+function EvaluationSection({ evaluation: e, accountName }: { evaluation: PaperEvaluation; accountName: string }) {
+  const tone = e.verdict.startsWith("Failing")
+    ? "text-accent-down"
+    : e.verdict === "Passing"
+      ? "text-accent-up"
+      : "text-base-text";
+  if (e.checks.length === 0) {
+    return (
+      <Section title="Paper vs Backtest">
+        <Empty>
+          No pass/fail targets yet. Set them once with{" "}
+          <code className="text-base-text">python -m app.cli paper-trade --account {accountName} --set-targets</code>
+        </Empty>
+      </Section>
+    );
+  }
+  const progress = Math.min(100, (e.closed_trades / e.min_trades) * 100);
+  return (
+    <Section title="Paper vs Backtest">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+        <span className={`text-sm font-semibold ${tone}`}>{e.verdict}</span>
+        {e.targets_source && <span className="text-[11px] text-base-muted">Targets fixed from {e.targets_source}</span>}
+      </div>
+      <div className="h-1.5 bg-base-bg rounded overflow-hidden border border-base-border mb-3" title="Closed trades toward the evaluation point">
+        <div className="h-full bg-accent-brand" style={{ width: `${progress}%` }} />
+      </div>
+      <Table
+        head={["Check", "Target", "Paper so far", "Status"]}
+        rows={e.checks.map((c) => [
+          c.name,
+          <span className="text-base-muted">{c.target}</span>,
+          c.actual,
+          <span className={`uppercase text-xs font-semibold ${STATUS_STYLE[c.status]}`}>{c.status}</span>,
+        ])}
+      />
+    </Section>
   );
 }
 

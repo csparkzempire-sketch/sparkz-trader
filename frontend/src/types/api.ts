@@ -218,6 +218,21 @@ export interface PaperRunTrade {
   reason: string;
 }
 
+export interface PaperEvaluationCheck {
+  name: string;
+  target: string;
+  actual: string;
+  status: "pass" | "fail" | "pending";
+}
+
+export interface PaperEvaluation {
+  verdict: string;
+  closed_trades: number;
+  min_trades: number;
+  targets_source?: string | null;
+  checks: PaperEvaluationCheck[];
+}
+
 export interface PaperRunSummary {
   account_name: string;
   symbol: string;
@@ -235,5 +250,6 @@ export interface PaperRunSummary {
   closed_trades: PaperRunTrade[];
   winning_trades: number;
   halted: string | null;
+  evaluation: PaperEvaluation | null;
   log: string[];
 }

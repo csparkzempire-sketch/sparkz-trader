@@ -66,6 +66,9 @@ class PaperRunState:
     last_processed: datetime | None = None
     log: list[str] = field(default_factory=list)
     halted: str | None = None  # why/when new entries stopped; None while trading normally
+    # Pass/fail targets fixed from this setup's backtest (app.paper.evaluation).
+    # Set once and kept, so the goalposts can't move after results come in.
+    targets: dict | None = None
 
 
 def state_path(account_name: str) -> Path:
@@ -101,6 +104,7 @@ def save_state(state: PaperRunState, path: Path | None = None) -> Path:
         },
         "log": state.log[-500:],
         "halted": state.halted,
+        "targets": state.targets,
     }
     tmp = path.with_suffix(".tmp")
     tmp.write_text(json.dumps(payload, indent=2))
@@ -126,6 +130,7 @@ def load_state(path: Path) -> PaperRunState:
         last_processed=_dt(raw["last_processed"]),
         log=raw.get("log", []),
         halted=raw.get("halted"),
+        targets=raw.get("targets"),
     )
 
 
