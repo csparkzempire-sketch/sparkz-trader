@@ -6,34 +6,48 @@
     "strategy": "baseline_long_only",
     "starting_balance": 10000.0
   },
-  "last_processed": "2026-09-30T12:00:00+00:00",
+  "last_processed": "2026-09-30T13:00:00+00:00",
   "account": {
-    "balance": 10000.0,
+    "balance": 9895.746763599584,
     "is_active": true,
     "open_positions": [
       {
         "symbol": "ETH-USD",
         "direction": "BUY",
-        "entry_price": 2732.090087890625,
-        "stop_price": 2696.8228264740496,
-        "target_price": 2802.624610723776,
-        "size": 2.8354909336113265,
-        "opened_at": "2026-09-30T12:00:00+00:00"
+        "entry_price": 2710.080078125,
+        "stop_price": 2670.5433325908584,
+        "target_price": 2789.153569193283,
+        "size": 2.502923958436136,
+        "opened_at": "2026-09-30T13:00:00+00:00"
       }
     ],
-    "trade_history": [],
+    "trade_history": [
+      {
+        "symbol": "ETH-USD",
+        "direction": "BUY",
+        "entry_price": 2732.090087890625,
+        "exit_price": 2695.3228264740496,
+        "size": 2.8354909336113265,
+        "pnl": -104.253236400417,
+        "opened_at": "2026-09-30T12:00:00+00:00",
+        "closed_at": "2026-09-30T13:00:00+00:00",
+        "reason": "STOP"
+      }
+    ],
     "risk_state": {
-      "equity": 10000.0,
+      "equity": 9895.746763599584,
       "peak_equity": 10000.0,
       "open_positions": 1,
-      "current_exposure": 100.0,
-      "daily_loss": 0.0,
+      "current_exposure": 98.95746763599584,
+      "daily_loss": -104.253236400417,
       "current_day": "2026-09-30",
       "bars_since_last_trade": 10000
     }
   },
   "log": [
-    "2026-09-30 12:00 OPEN BUY ETH-USD @ 2732.09, size 2.835491, stop 2696.82, target 2802.62"
+    "2026-09-30 12:00 OPEN BUY ETH-USD @ 2732.09, size 2.835491, stop 2696.82, target 2802.62",
+    "2026-09-30 13:00 CLOSE BUY ETH-USD STOP @ 2695.32, pnl -104.25, balance 9895.75",
+    "2026-09-30 13:00 OPEN BUY ETH-USD @ 2710.08, size 2.502924, stop 2670.54, target 2789.15"
   ],
   "halted": null,
   "targets": {

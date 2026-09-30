@@ -6,19 +6,19 @@
     "strategy": "baseline",
     "starting_balance": 10000.0
   },
-  "last_processed": "2026-09-30T12:00:00+00:00",
+  "last_processed": "2026-09-30T13:00:00+00:00",
   "account": {
-    "balance": 9895.023012283431,
+    "balance": 9791.864194954716,
     "is_active": true,
     "open_positions": [
       {
         "symbol": "ETH-USD",
         "direction": "BUY",
-        "entry_price": 2732.090087890625,
-        "stop_price": 2696.8228264740496,
-        "target_price": 2802.624610723776,
-        "size": 2.8057248039205107,
-        "opened_at": "2026-09-30T12:00:00+00:00"
+        "entry_price": 2710.080078125,
+        "stop_price": 2670.5433325908584,
+        "target_price": 2789.153569193283,
+        "size": 2.47664901667211,
+        "opened_at": "2026-09-30T13:00:00+00:00"
       }
     ],
     "trade_history": [
@@ -32,14 +32,25 @@
         "opened_at": "2026-09-30T05:00:00+00:00",
         "closed_at": "2026-09-30T12:00:00+00:00",
         "reason": "STOP"
+      },
+      {
+        "symbol": "ETH-USD",
+        "direction": "BUY",
+        "entry_price": 2732.090087890625,
+        "exit_price": 2695.3228264740496,
+        "size": 2.8057248039205107,
+        "pnl": -103.15881732871507,
+        "opened_at": "2026-09-30T12:00:00+00:00",
+        "closed_at": "2026-09-30T13:00:00+00:00",
+        "reason": "STOP"
       }
     ],
     "risk_state": {
-      "equity": 9895.023012283431,
+      "equity": 9791.864194954716,
       "peak_equity": 10000.0,
       "open_positions": 1,
-      "current_exposure": 98.95023012283431,
-      "daily_loss": -104.97698771656928,
+      "current_exposure": 97.91864194954717,
+      "daily_loss": -208.13580504528437,
       "current_day": "2026-09-30",
       "bars_since_last_trade": 10000
     }
@@ -47,7 +58,9 @@
   "log": [
     "2026-09-30 05:00 OPEN SELL ETH-USD @ 2672.41, size 3.317992, stop 2702.55, target 2612.13",
     "2026-09-30 12:00 CLOSE SELL ETH-USD STOP @ 2704.05, pnl -104.98, balance 9895.02",
-    "2026-09-30 12:00 OPEN BUY ETH-USD @ 2732.09, size 2.805725, stop 2696.82, target 2802.62"
+    "2026-09-30 12:00 OPEN BUY ETH-USD @ 2732.09, size 2.805725, stop 2696.82, target 2802.62",
+    "2026-09-30 13:00 CLOSE BUY ETH-USD STOP @ 2695.32, pnl -103.16, balance 9791.86",
+    "2026-09-30 13:00 OPEN BUY ETH-USD @ 2710.08, size 2.476649, stop 2670.54, target 2789.15"
   ],
   "halted": null,
   "targets": {
