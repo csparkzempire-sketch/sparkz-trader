@@ -32,6 +32,11 @@ FORBIDDEN_FEATURE_COLUMNS = {
 }
 
 
+# Above this share of zero-volume bars, volume features are skipped (see
+# build_feature_matrix).
+MAX_ZERO_VOLUME_FRACTION = 0.05
+
+
 def add_price_structure_features(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
     df["pct_return"] = df["close"].pct_change()
@@ -146,19 +151,26 @@ def build_feature_matrix(
     df = add_momentum_indicators(df, cfg.rsi_period)
     df = add_volatility_indicators(df, cfg.atr_period)
 
-    # Yahoo Finance reports volume as a constant 0 for FX pairs (no real
-    # trade-volume data exists for spot forex there). Feeding that through
-    # volume_change (a pct_change) produces NaN for EVERY row via 0/0,
-    # which would otherwise poison the entire feature matrix once
-    # build_dataset's leak-guarded dropna runs. Rather than fabricate a
-    # fake "no change" signal for data that carries no real information,
-    # we skip volume-derived features entirely when volume is effectively
-    # constant/zero, and say so loudly.
-    if (df["volume"].fillna(0) == 0).all():
+    # Volume features are skipped when volume is too often zero to mean
+    # anything. Two real cases from Yahoo Finance:
+    # - FX pairs (EURUSD=X): volume is 0 on every bar -- spot FX has no real
+    #   trade volume there. volume_change (a pct_change) is then 0/0 = NaN on
+    #   every row, which would empty the dataset once build_dataset drops NaNs.
+    # - BTC-USD 1h: volume is 0 on ~50% of bars, month after month. Every
+    #   0 -> x and 0 -> 0 transition makes volume_change undefined, so build_dataset
+    #   silently threw away about half of all training rows (and not at random).
+    # Rather than fabricate values for data that isn't there, skip volume
+    # features entirely when more than MAX_ZERO_VOLUME_FRACTION of bars are
+    # zero, and say so loudly. A sporadic zero in otherwise real volume is
+    # still handled by volume_change (-> NaN for that one row).
+    zero_fraction = float((df["volume"].fillna(0) == 0).mean())
+    if zero_fraction > MAX_ZERO_VOLUME_FRACTION:
         logger.warning(
             "volume_features_skipped %s",
-            kv(reason="volume column is entirely zero/NaN (typical for FX pairs from Yahoo Finance); "
-                      "volume_change/volume_avg would be uninformative or all-NaN, so they are omitted"),
+            kv(zero_volume_fraction=round(zero_fraction, 3),
+               reason="volume is zero/NaN on too many bars (all of them for FX pairs on Yahoo Finance, about half "
+                      "for BTC-USD 1h); volume_change/volume_avg would be undefined on those rows and drop them "
+                      "from training, so they are omitted"),
         )
     else:
         df = add_volume_indicators(df)

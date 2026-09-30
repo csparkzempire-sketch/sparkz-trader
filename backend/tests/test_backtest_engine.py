@@ -181,3 +181,42 @@ def test_max_drawdown_metric_matches_manual_calc():
     # No trades -> flat equity curve -> 0 drawdown, 0 return
     assert metrics.max_drawdown_pct == pytest.approx(0.0)
     assert metrics.total_trades == 0
+
+
+def _losing_then_signals_df() -> pd.DataFrame:
+    """One BUY that gets stopped out, followed by more BUY signals."""
+    flat = {"open": 1.1000, "high": 1.1005, "low": 1.0995, "close": 1.1000, "atr": 0.0010}
+    rows = [dict(flat, signal="HOLD"), dict(flat, signal="BUY"), dict(flat, signal="HOLD")]  # entry at bar 2's open
+    rows.append({"open": 1.1000, "high": 1.1001, "low": 1.0900, "close": 1.0950, "atr": 0.0010, "signal": "HOLD"})  # stop hit
+    rows += [dict(flat, signal="BUY") for _ in range(10)]
+    return _make_df(rows)
+
+
+def _engine_with_drawdown_limit(limit: float) -> BacktestEngine:
+    from app.config import settings
+    from app.risk.risk_manager import RiskManager
+
+    cfg = settings.model_copy(update={"max_drawdown_pct": limit, "max_daily_loss_pct": 1.0})
+    config = BacktestConfig(
+        symbol="TEST", timeframe="1h", initial_capital=10_000, risk_per_trade=0.01,
+        stop_atr_multiplier=2.0, take_profit_r=2.0, spread_pips=0.0, slippage_pips=0.0, pip_size=0.0001,
+    )
+    return BacktestEngine(config, risk_manager=RiskManager(cfg))
+
+
+def test_permanent_drawdown_halt_is_reported_as_a_warning():
+    """Once the drawdown limit halts trading in a backtest, equity sits flat in
+    cash and never recovers to the peak, so trading never resumes. That has to
+    be surfaced, not left for the user to spot in a run of 0% months."""
+    result = _engine_with_drawdown_limit(0.005).run(_losing_then_signals_df())
+
+    assert len(result.portfolio.closed_trades) == 1
+    halt = [w for w in result.warnings if "never resumed" in w]
+    assert len(halt) == 1
+    assert "MAX_DRAWDOWN_PCT" in halt[0]
+
+
+def test_no_drawdown_warning_when_limit_is_not_hit():
+    result = _engine_with_drawdown_limit(0.5).run(_losing_then_signals_df())
+    assert not any("drawdown" in w.lower() for w in result.warnings)
+    assert len(result.portfolio.closed_trades) > 1
