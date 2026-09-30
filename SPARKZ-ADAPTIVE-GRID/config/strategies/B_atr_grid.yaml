@@ -1,0 +1,4 @@
+# B: fixed-size positions, grid distance = ATR x 0.5 (adapts to volatility).
+name: "B: ATR grid"
+grid: {mode: ATR, atr_multiplier: 0.5}
+sizing: {mode: FIXED}

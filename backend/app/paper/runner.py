@@ -69,6 +69,9 @@ class PaperRunState:
     # Pass/fail targets fixed from this setup's backtest (app.paper.evaluation).
     # Set once and kept, so the goalposts can't move after results come in.
     targets: dict | None = None
+    # Worst stretches of the same backtest (app.paper.norms): reference figures for the
+    # normal-losses check. Not pass/fail targets, so they may be added later.
+    norms: dict | None = None
 
 
 def state_path(account_name: str) -> Path:
@@ -105,6 +108,7 @@ def save_state(state: PaperRunState, path: Path | None = None) -> Path:
         "log": state.log[-500:],
         "halted": state.halted,
         "targets": state.targets,
+        "norms": state.norms,
     }
     tmp = path.with_suffix(".tmp")
     tmp.write_text(json.dumps(payload, indent=2))
@@ -131,6 +135,7 @@ def load_state(path: Path) -> PaperRunState:
         log=raw.get("log", []),
         halted=raw.get("halted"),
         targets=raw.get("targets"),
+        norms=raw.get("norms"),
     )
 
 

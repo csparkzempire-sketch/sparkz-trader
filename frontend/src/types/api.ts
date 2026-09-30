@@ -233,6 +233,22 @@ export interface PaperEvaluation {
   checks: PaperEvaluationCheck[];
 }
 
+export interface PaperNormsItem {
+  name: string;
+  live: string;
+  backtest: string;
+  note: string;
+  status: "normal" | "outside";
+}
+
+/** Normal-losses check: the live bad patch vs the worst stretches of the same backtest. */
+export interface PaperNorms {
+  verdict: string;
+  items: PaperNormsItem[];
+  backtest_days: number;
+  backtest_trades: number;
+}
+
 export interface PaperRunSummary {
   account_name: string;
   symbol: string;
@@ -251,6 +267,7 @@ export interface PaperRunSummary {
   winning_trades: number;
   halted: string | null;
   evaluation: PaperEvaluation | null;
+  norms?: PaperNorms | null;
   log: string[];
 }
 

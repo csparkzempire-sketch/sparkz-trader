@@ -1,0 +1,4 @@
+# C: ATR grid, but an add also needs the analysis to still back the basket's direction.
+name: "C: Signal-confirmed grid"
+grid: {mode: SIGNAL_CONFIRMED, atr_multiplier: 0.5}
+sizing: {mode: FIXED}

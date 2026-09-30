@@ -313,7 +313,8 @@ def cmd_evaluate_model(args) -> None:
 
 def cmd_paper_trade(args) -> None:
     """One paper-trading step for a saved account: run once per candle (e.g. daily via cron)."""
-    from app.paper.evaluation import compute_targets, evaluate
+    from app.paper.evaluation import compute_norms, compute_targets, evaluate, targets_end
+    from app.paper.norms import norms_status
     from app.paper.runner import PaperRunConfig, init_state, load_state, resume, run_step, save_state, state_path
     from app.utils.time import utc_now
 
@@ -370,6 +371,23 @@ def cmd_paper_trade(args) -> None:
         print(f"No pass/fail targets yet: add them once with "
               f"python -m app.cli paper-trade --account {args.account} --set-targets")
 
+    if state.targets and state.norms is None:
+        # Reference figures for the normal-losses check, from the same backtest window as the
+        # targets. Unlike the targets they don't judge anything, so adding them later is fine.
+        import pandas as pd
+
+        from app.data.validator import closed_candles
+
+        hist = closed_candles(candles, c.timeframe)
+        end = targets_end(state.targets)
+        if end is not None:
+            hist = hist[pd.to_datetime(hist["timestamp"], utc=True) < end + pd.Timedelta(days=1)]
+        state.norms = compute_norms(hist, c.symbol, c.timeframe, c.strategy)
+        n = state.norms
+        print(f"Normal-losses reference set from the same backtest: longest losing streak "
+              f"{n['max_losing_streak']}, daily loss limit hit on {n['daily_limit_days']} of {n['days']} days, "
+              f"worst week {n['worst_week_pct']}%.")
+
     try:
         result = run_step(state, candles=candles)
     except (DownloadError, DataValidationError) as exc:
@@ -394,6 +412,8 @@ def cmd_paper_trade(args) -> None:
           f"{len(closed)} closed trade(s), {wins} winning. State: {path}")
     if state.targets:
         print(f"Evaluation vs backtest: {evaluate(state)['verdict']}")
+    if state.norms:
+        print(f"Normal-losses check: {norms_status(state)['verdict']}")
     if state.halted:
         print(f"HALTED since {state.halted}. Open positions still run to their stop/target, but no new "
               f"trades open. To restart: python -m app.cli paper-trade --account {args.account} --resume",

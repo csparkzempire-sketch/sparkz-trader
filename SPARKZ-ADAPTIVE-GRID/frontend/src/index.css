@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Black-and-red palette as RGB channels (see tailwind.config.js). The dashboard sits on a dark
+   background image (src/assets/background.jpg), so there is one dark theme only. */
+:root {
+  --c-bg: 8 6 7;
+  --c-panel: 18 13 14;
+  --c-side: 12 9 10;
+  --c-tint: 34 20 22;
+  --c-line: 74 38 40;
+  --c-ink: 240 234 232;
+  --c-muted: 170 152 152;
+  --c-brand: 230 36 42;
+  --c-brass: 238 64 64;
+  --c-oxford: 255 99 99;
+  --c-up: 92 196 136;
+  --c-down: 255 112 104;
+  --c-warn: 224 166 74;
+  --chart-series-1: 255 99 99;
+  --chart-series-2: 240 234 232;
+  --chart-series-3: 214 160 90;
+  --chart-series-4: 120 190 210;
+  color-scheme: dark;
+}
+
+@layer base {
+  html, body, #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-base-bg text-base-text font-sans;
+    font-size: 15px;
+    /* The dark overlay keeps text readable over the brightest red lines of the image. */
+    background-image: linear-gradient(rgb(0 0 0 / 0.45), rgb(0 0 0 / 0.45)), url("./assets/background.jpg");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+  }
+  /* The source image is portrait; landscape screens get a copy rotated a quarter turn (16:9),
+     so the red bands stay in view instead of being cropped away. */
+  @media (orientation: landscape) {
+    body {
+      background-image: linear-gradient(rgb(0 0 0 / 0.45), rgb(0 0 0 / 0.45)), url("./assets/background-wide.jpg");
+    }
+  }
+  h1, h2, h3 {
+    @apply font-display font-normal;
+    text-wrap: balance;
+  }
+  .font-mono-nums {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+  button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible, summary:focus-visible {
+    outline: 2px solid rgb(var(--c-oxford));
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .panel {
+    @apply bg-base-panel/80 border border-base-border backdrop-blur-sm;
+  }
+  .panel-header {
+    @apply px-4 md:px-5 py-3 border-b border-base-border text-[11px] uppercase tracking-[0.09em] text-base-muted font-semibold;
+  }
+  .stat-label {
+    @apply text-[11px] uppercase tracking-[0.09em] text-base-muted font-semibold;
+  }
+  .stat-value {
+    @apply font-display text-2xl leading-tight text-base-text;
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+  .badge {
+    @apply inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.09em];
+  }
+  .badge::before {
+    content: "";
+    @apply inline-block w-1.5 h-1.5 rounded-full bg-current;
+  }
+  .badge-buy { @apply text-accent-buy; }
+  .badge-sell { @apply text-accent-sell; }
+  .badge-hold { @apply text-accent-hold; }
+  .btn-primary {
+    @apply bg-accent-brand text-white text-sm font-semibold px-4 py-2 hover:opacity-90 disabled:opacity-50;
+  }
+}

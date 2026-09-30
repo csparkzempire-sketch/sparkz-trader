@@ -39,17 +39,22 @@ WIN_RATE_TOLERANCE_PTS = 10.0
 HOLD_RATIO_RANGE = (0.5, 2.0)
 
 
-def compute_targets(candles: pd.DataFrame, symbol: str, timeframe: str, strategy: str,
-                    cfg: Settings | None = None) -> dict:
-    """Backtest this exact setup on `candles` (validated OHLCV, closed candles only)
-    and return the figures the paper account will be held to. The drawdown limit is
-    relaxed to 50% here so the backtest isn't cut short by a halt -- the targets
+def _backtest(candles: pd.DataFrame, symbol: str, timeframe: str, strategy: str, cfg: Settings | None = None):
+    """Backtest this exact setup on `candles` (validated OHLCV, closed candles only). The
+    drawdown limit is relaxed to 50% so the backtest isn't cut short by a halt: the figures
     should describe how the strategy trades, not where a safety stop kicked in."""
     cfg = (cfg or settings).model_copy(update={"max_drawdown_pct": 0.5})
     f = build_feature_matrix(candles, cfg)
     f["signal"] = rule_signal(f, strategy, cfg)
     f = f.dropna(subset=["atr"]).reset_index(drop=True)
     result = BacktestEngine(BacktestConfig.from_settings(cfg, symbol, timeframe), risk_manager=RiskManager(cfg)).run(f)
+    return result, f
+
+
+def compute_targets(candles: pd.DataFrame, symbol: str, timeframe: str, strategy: str,
+                    cfg: Settings | None = None) -> dict:
+    """The figures the paper account will be held to, from a backtest of the same setup."""
+    result, f = _backtest(candles, symbol, timeframe, strategy, cfg)
     m = compute_metrics(result.portfolio, timeframe, symbol)
     pf = m.profit_factor if isinstance(m.profit_factor, float) and m.profit_factor != float("inf") else None
     return {
@@ -62,6 +67,24 @@ def compute_targets(candles: pd.DataFrame, symbol: str, timeframe: str, strategy
         "max_drawdown_pct": m.max_drawdown_pct,  # negative, e.g. -24.0
         "avg_hold_bars": m.average_holding_bars,
     }
+
+
+def compute_norms(candles: pd.DataFrame, symbol: str, timeframe: str, strategy: str,
+                  cfg: Settings | None = None) -> dict:
+    """The worst stretches the same backtest went through (app.paper.norms). Reference
+    figures for the normal-losses check; they never affect the pass/fail verdict."""
+    from app.paper.norms import norms_from_backtest
+
+    result, f = _backtest(candles, symbol, timeframe, strategy, cfg)
+    return norms_from_backtest(result, f["timestamp"], cfg)
+
+
+def targets_end(targets: dict) -> pd.Timestamp | None:
+    """Last day of the backtest the targets came from ("backtest 2021-10-13 to 2026-09-29")."""
+    try:
+        return pd.Timestamp(targets["source"].rsplit(" to ", 1)[1], tz="UTC")
+    except (KeyError, IndexError, ValueError, AttributeError):
+        return None
 
 
 @dataclass
