@@ -4,6 +4,7 @@ import MarketPage from "./pages/MarketPage";
 import PredictionPage from "./pages/PredictionPage";
 import BacktestPage from "./pages/BacktestPage";
 import TradesPage from "./pages/TradesPage";
+import PaperTradingPage from "./pages/PaperTradingPage";
 import RiskPage from "./pages/RiskPage";
 import ModelLabPage from "./pages/ModelLabPage";
 import { AppStateProvider } from "./hooks/useAppState";
@@ -14,6 +15,7 @@ const NAV_ITEMS = [
   { to: "/prediction", label: "AI Prediction" },
   { to: "/backtest", label: "Backtesting" },
   { to: "/trades", label: "Trades" },
+  { to: "/paper", label: "Paper Trading" },
   { to: "/risk", label: "Risk" },
   { to: "/model-lab", label: "Model Lab" },
 ];
@@ -64,6 +66,7 @@ export default function App() {
               <Route path="/prediction" element={<PredictionPage />} />
               <Route path="/backtest" element={<BacktestPage />} />
               <Route path="/trades" element={<TradesPage />} />
+              <Route path="/paper" element={<PaperTradingPage />} />
               <Route path="/risk" element={<RiskPage />} />
               <Route path="/model-lab" element={<ModelLabPage />} />
             </Routes>

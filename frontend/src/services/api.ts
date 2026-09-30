@@ -7,6 +7,7 @@ import type {
   ModelSummary,
   PaperAccountResponse,
   PaperPosition,
+  PaperRunSummary,
   PaperTrade,
   PredictResponse,
   TrainModelRequest,
@@ -74,6 +75,8 @@ export const api = {
 
   paperPositions: (account_name: string) =>
     request<PaperPosition[]>(`/paper/positions?account_name=${encodeURIComponent(account_name)}`),
+
+  paperRuns: () => request<PaperRunSummary[]>("/paper/runs"),
 
   paperTrades: (account_name: string) =>
     request<PaperTrade[]>(`/paper/trades?account_name=${encodeURIComponent(account_name)}`),
