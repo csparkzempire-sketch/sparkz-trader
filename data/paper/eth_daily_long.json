@@ -35,5 +35,15 @@
   "log": [
     "2026-09-28 00:00 OPEN BUY ETH-USD @ 2690.17, size 0.548871, stop 2507.98, target 3054.55"
   ],
-  "halted": null
+  "halted": null,
+  "targets": {
+    "source": "backtest 2021-10-13 to 2026-09-29",
+    "set_at": "2026-09-30T08:52:40+00:00",
+    "backtest_trades": 52,
+    "backtest_return_pct": 9.3431,
+    "profit_factor": 1.295,
+    "win_rate_pct": 40.38,
+    "max_drawdown_pct": -8.504,
+    "avg_hold_bars": 14.37
+  }
 }

@@ -35,5 +35,15 @@
   "log": [
     "2026-09-30 05:00 OPEN SELL BTC-USD @ 83319.69, size 0.137564, stop 84046.62, target 81865.82"
   ],
-  "halted": null
+  "halted": null,
+  "targets": {
+    "source": "backtest 2024-10-01 to 2026-09-30",
+    "set_at": "2026-09-30T08:52:34+00:00",
+    "backtest_trades": 891,
+    "backtest_return_pct": 250.9221,
+    "profit_factor": 1.223,
+    "win_rate_pct": 39.28,
+    "max_drawdown_pct": -24.0255,
+    "avg_hold_bars": 17.28
+  }
 }

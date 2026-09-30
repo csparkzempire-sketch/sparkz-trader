@@ -23,5 +23,15 @@
     }
   },
   "log": [],
-  "halted": null
+  "halted": null,
+  "targets": {
+    "source": "backtest 2024-05-08 to 2026-09-30",
+    "set_at": "2026-09-30T08:52:58+00:00",
+    "backtest_trades": 398,
+    "backtest_return_pct": 91.8452,
+    "profit_factor": 1.266,
+    "win_rate_pct": 39.95,
+    "max_drawdown_pct": -22.0861,
+    "avg_hold_bars": 29.12
+  }
 }
