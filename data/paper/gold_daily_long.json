@@ -1,0 +1,26 @@
+{
+  "config": {
+    "account_name": "gold_daily_long",
+    "symbol": "GC=F",
+    "timeframe": "1d",
+    "strategy": "baseline_long_only",
+    "starting_balance": 10000.0
+  },
+  "last_processed": "2026-09-29T00:00:00+00:00",
+  "account": {
+    "balance": 10000.0,
+    "is_active": true,
+    "open_positions": [],
+    "trade_history": [],
+    "risk_state": {
+      "equity": 10000.0,
+      "peak_equity": 10000.0,
+      "open_positions": 0,
+      "current_exposure": 0.0,
+      "daily_loss": 0.0,
+      "current_day": null,
+      "bars_since_last_trade": 10000
+    }
+  },
+  "log": []
+}
