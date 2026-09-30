@@ -3,9 +3,10 @@ import { useAppState } from "../hooks/useAppState";
 
 export function PageHeader({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
-    <div className="px-4 md:px-6 pt-6 pb-4">
-      <h1 className="text-xl font-bold text-base-text">{title}</h1>
-      {subtitle && <p className="text-sm text-base-muted mt-1">{subtitle}</p>}
+    <div className="px-4 md:px-6 pt-6 md:pt-8 pb-5">
+      <h1 className="text-3xl md:text-[2rem] leading-tight text-base-text">{title}</h1>
+      {subtitle && <p className="text-sm text-base-muted mt-1.5">{subtitle}</p>}
+      <div className="mt-4 border-t border-base-text/80" aria-hidden="true" />
     </div>
   );
 }
@@ -42,8 +43,8 @@ export function RegimeBadge({ regime }: { regime: string | null }) {
     TRENDING_UP: "text-accent-up",
     TRENDING_DOWN: "text-accent-down",
     RANGING: "text-base-muted",
-    HIGH_VOLATILITY: "text-amber-400",
-    LOW_VOLATILITY: "text-sky-400",
+    HIGH_VOLATILITY: "text-accent-brass",
+    LOW_VOLATILITY: "text-accent-oxford",
   };
   return <span className={`text-xs font-mono-nums font-semibold ${colorMap[regime] ?? "text-base-text"}`}>{regime}</span>;
 }

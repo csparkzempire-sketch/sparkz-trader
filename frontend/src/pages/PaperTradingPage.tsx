@@ -46,7 +46,7 @@ export default function PaperTradingPage() {
           <button
             onClick={load}
             disabled={loading}
-            className="bg-accent-brand text-white text-sm px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+            className="btn-primary"
           >
             {loading ? "Refreshing…" : "Refresh prices"}
           </button>

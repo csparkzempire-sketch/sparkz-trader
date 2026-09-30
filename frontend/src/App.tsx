@@ -26,8 +26,9 @@ const NAV_ITEMS = [
 function Brand() {
   return (
     <div>
-      <div className="text-base font-bold tracking-tight text-base-text">SPARKZ TRADER</div>
-      <div className="text-[10px] uppercase tracking-widest text-base-muted mt-0.5">Quant Research Terminal</div>
+      <div className="font-display text-[1.35rem] leading-tight text-base-text">Sparkz Trader</div>
+      <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-accent-brass mt-1">Paper desk · research</div>
+      <div className="mt-4 h-[5px] border-t-2 border-b border-base-text" aria-hidden="true" />
     </div>
   );
 }
@@ -38,7 +39,7 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
   return (
     <>
       <div
-        className={`fixed inset-0 z-30 bg-black/60 md:hidden ${open ? "" : "hidden"}`}
+        className={`fixed inset-0 z-30 bg-base-text/50 md:hidden ${open ? "" : "hidden"}`}
         onClick={onClose}
         aria-hidden="true"
       />
@@ -46,7 +47,7 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
         id="app-nav"
         className={`fixed inset-y-0 left-0 z-40 w-64 max-w-[85vw] transform transition-transform duration-200
           md:static md:z-auto md:w-56 md:max-w-none md:translate-x-0 md:transition-none
-          shrink-0 border-r border-base-border bg-base-panel flex flex-col
+          shrink-0 border-r border-base-border bg-base-side flex flex-col
           ${open ? "translate-x-0" : "-translate-x-full"}`}
       >
         <div className="px-4 py-5 border-b border-base-border flex items-start justify-between">
@@ -70,8 +71,8 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
               className={({ isActive }) =>
                 `block px-4 py-2.5 md:py-2 text-sm border-l-2 transition-colors ${
                   isActive
-                    ? "border-accent-brand text-base-text bg-white/5"
-                    : "border-transparent text-base-muted hover:text-base-text hover:bg-white/5"
+                    ? "border-accent-brass text-base-text bg-base-panel font-semibold"
+                    : "border-transparent text-base-muted hover:text-base-text hover:bg-base-panel/70"
                 }`
               }
             >
@@ -92,7 +93,7 @@ function TopBar({ onMenu }: { onMenu: () => void }) {
   const { pathname } = useLocation();
   const current = NAV_ITEMS.find((i) => (i.exact ? pathname === i.to : pathname.startsWith(i.to)));
   return (
-    <header className="md:hidden sticky top-0 z-20 flex items-center gap-3 px-4 h-14 border-b border-base-border bg-base-panel">
+    <header className="md:hidden sticky top-0 z-20 flex items-center gap-3 px-4 h-14 border-b border-base-border bg-base-side">
       <button
         onClick={onMenu}
         className="-ml-1 p-1.5 text-base-text"
@@ -103,7 +104,7 @@ function TopBar({ onMenu }: { onMenu: () => void }) {
           <path d="M3 6h16M3 11h16M3 16h16" strokeLinecap="round" />
         </svg>
       </button>
-      <span className="text-sm font-bold tracking-tight">SPARKZ TRADER</span>
+      <span className="font-display text-lg leading-none">Sparkz Trader</span>
       {current && <span className="text-sm text-base-muted truncate">· {current.label}</span>}
     </header>
   );

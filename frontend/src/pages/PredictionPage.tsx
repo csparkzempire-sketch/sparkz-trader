@@ -58,7 +58,7 @@ export default function PredictionPage() {
         <button
           onClick={runPredict}
           disabled={loading}
-          className="bg-accent-brand text-white text-sm px-4 py-1.5 rounded hover:bg-blue-600 disabled:opacity-50"
+          className="btn-primary"
         >
           {loading ? "Running…" : "Get Prediction"}
         </button>

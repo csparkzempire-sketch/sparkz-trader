@@ -1,3 +1,4 @@
+import { chart } from "../theme";
 import { Bar, CartesianGrid, ComposedChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 interface CandleDatum {
@@ -25,7 +26,7 @@ function CandleShape(props: any) {
   const { x, y, width, height, payload } = props;
   const { open, close, high, low } = payload as CandleDatum;
   const isUp = close >= open;
-  const color = isUp ? "#26a969" : "#e5484d";
+  const color = isUp ? chart().up : chart().down;
 
   const priceToY = (price: number) => {
     if (high === low) return y + height / 2;
@@ -49,22 +50,23 @@ function CandleShape(props: any) {
 }
 
 export default function CandlestickChart({ data }: { data: CandleDatum[] }) {
+  const c = chart();
   return (
     <ResponsiveContainer width="100%" height="100%">
       <ComposedChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-        <CartesianGrid stroke="#1c2532" strokeDasharray="3 3" />
-        <XAxis dataKey="time" stroke="#6e7681" fontSize={11} minTickGap={50} />
-        <YAxis stroke="#6e7681" fontSize={11} domain={["auto", "auto"]} width={70} />
+        <CartesianGrid stroke={c.grid} strokeDasharray="3 3" />
+        <XAxis dataKey="time" stroke={c.axis} fontSize={11} minTickGap={50} />
+        <YAxis stroke={c.axis} fontSize={11} domain={["auto", "auto"]} width={70} />
         <Tooltip
-          contentStyle={{ background: "#0f1520", border: "1px solid #1c2532", fontSize: 12 }}
-          labelStyle={{ color: "#c9d1d9" }}
+          contentStyle={c.tooltip}
+          labelStyle={{ color: c.text }}
           formatter={(value: any, name: string) =>
             typeof value === "number" ? [value.toFixed(5), name] : [value, name]
           }
         />
         <Bar dataKey={(d: CandleDatum) => [d.low, d.high]} fill="transparent" shape={<CandleShape />} isAnimationActive={false} name="OHLC" />
-        <Line type="monotone" dataKey="ema_20" stroke="#3b82f6" strokeWidth={1} dot={false} name="EMA 20" />
-        <Line type="monotone" dataKey="ema_50" stroke="#f59e0b" strokeWidth={1} dot={false} name="EMA 50" />
+        <Line type="monotone" dataKey="ema_20" stroke={c.series1} strokeWidth={1} dot={false} name="EMA 20" />
+        <Line type="monotone" dataKey="ema_50" stroke={c.series2} strokeWidth={1} dot={false} name="EMA 50" />
       </ComposedChart>
     </ResponsiveContainer>
   );
