@@ -6,11 +6,21 @@
     "strategy": "baseline",
     "starting_balance": 10000.0
   },
-  "last_processed": "2026-09-30T13:00:00+00:00",
+  "last_processed": "2026-09-30T14:00:00+00:00",
   "account": {
     "balance": 9898.383442098788,
     "is_active": true,
-    "open_positions": [],
+    "open_positions": [
+      {
+        "symbol": "GC=F",
+        "direction": "SELL",
+        "entry_price": 4199.39990234375,
+        "stop_price": 4234.085377138847,
+        "target_price": 4130.028952753556,
+        "size": 2.8537546337690207,
+        "opened_at": "2026-09-30T14:00:00+00:00"
+      }
+    ],
     "trade_history": [
       {
         "symbol": "GC=F",
@@ -27,8 +37,8 @@
     "risk_state": {
       "equity": 9898.383442098788,
       "peak_equity": 10000.0,
-      "open_positions": 0,
-      "current_exposure": 0.0,
+      "open_positions": 1,
+      "current_exposure": 98.98383442098788,
       "daily_loss": -101.61655790121145,
       "current_day": "2026-09-30",
       "bars_since_last_trade": 10000
@@ -36,7 +46,8 @@
   },
   "log": [
     "2026-09-30 12:00 OPEN BUY GC=F @ 4240.70, size 3.233116, stop 4209.77, target 4302.56",
-    "2026-09-30 13:00 CLOSE BUY GC=F STOP @ 4209.27, pnl -101.62, balance 9898.38"
+    "2026-09-30 13:00 CLOSE BUY GC=F STOP @ 4209.27, pnl -101.62, balance 9898.38",
+    "2026-09-30 14:00 OPEN SELL GC=F @ 4199.40, size 2.853755, stop 4234.09, target 4130.03"
   ],
   "halted": null,
   "targets": {
