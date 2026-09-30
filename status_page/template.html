@@ -1,0 +1,431 @@
+<title>Sparkz Paper Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+/* Layout: a private-bank statement. Masthead with a double rule, a ledger of totals, a hairline
+   equity chart, then one statement card per account and the research record. Design: Figma
+   "Sparkz Paper Desk — Classic redesign". */
+:root {
+  --bg: #f3f3ef;
+  --panel: #ffffff;
+  --tint: #f1f3f6;
+  --ink: #13233a;
+  --muted: #5e6878;
+  --line: #d8dbe0;
+  --brass: #9c7a3c;
+  --oxford: #1f3a5f;
+  --up: #1e6b4a;
+  --down: #9b2c2c;
+  --font-display: "Libre Caslon Text", "Baskerville", "Georgia", serif;
+  --font-figures: "Source Serif 4", "Georgia", serif;
+  --font-body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1726; --panel: #142033; --tint: #1a2840; --ink: #ece9e1; --muted: #9aa4b2; --line: #2a3850;
+    --brass: #c9a75e; --oxford: #8fb3dc; --up: #5fb38a; --down: #e07a73; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1726; --panel: #142033; --tint: #1a2840; --ink: #ece9e1; --muted: #9aa4b2; --line: #2a3850;
+  --brass: #c9a75e; --oxford: #8fb3dc; --up: #5fb38a; --down: #e07a73; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 400 15px/1.5 var(--font-body); }
+.wrap { max-width: 1180px; margin: 0 auto; padding-inline: 16px; padding-block: 36px 56px; display: grid; gap: 28px; }
+@media (min-width: 720px) { .wrap { padding-inline: 32px; } }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 400; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(2.1rem, 5vw, 2.75rem); line-height: 1.1; letter-spacing: -0.005em; }
+h2 { font-size: clamp(1.35rem, 3vw, 1.6rem); }
+h3 { font-size: 1.25rem; }
+.num { font-family: var(--font-figures); font-variant-numeric: tabular-nums lining-nums; }
+.muted { color: var(--muted); }
+.label { font: 600 11px/1.3 var(--font-body); text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); }
+.up { color: var(--up); } .down { color: var(--down); }
+
+.masthead { display: grid; gap: 12px; }
+.masthead .eyebrow { color: var(--brass); }
+.mast-row { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 32px; }
+.mast-meta { display: grid; gap: 2px; justify-items: end; text-align: right; }
+@media (max-width: 640px) { .mast-meta { justify-items: start; text-align: left; } }
+.asof { font: 400 14px var(--font-figures); }
+.fresh { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; color: var(--muted); }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); flex: none; }
+.dot.live { background: var(--up); } .dot.stale { background: var(--brass); }
+.double-rule { border-top: 2px solid var(--ink); border-bottom: 1px solid var(--ink); height: 5px; }
+.lede { margin: 0; color: var(--muted); max-width: 70ch; }
+
+.ledger { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); background: var(--panel); border: 1px solid var(--line); }
+.ledger > div { padding: 18px 22px; border-right: 1px solid var(--line); min-width: 0; display: grid; gap: 4px; align-content: start; }
+.ledger > div:last-child { border-right: 0; }
+.ledger .v { font: 400 1.65rem/1.2 var(--font-display); }
+.ledger .lead .v { font-size: 1.9rem; }
+.ledger .s { font-size: 12px; color: var(--muted); }
+@media (max-width: 900px) {
+  .ledger { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ledger > div { border-right: 0; border-bottom: 1px solid var(--line); }
+  .ledger > div:nth-child(odd):not(.lead) { border-right: 1px solid var(--line); }
+  .ledger .lead { grid-column: 1 / -1; }
+  .ledger > div:last-child { border-bottom: 0; }
+  .ledger .v { font-size: 1.4rem; }
+}
+
+.panel { background: var(--panel); border: 1px solid var(--line); }
+.panel-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; padding: 20px 24px 0; }
+.panel-head .muted { font-size: 12px; }
+.chart { padding: 10px 16px 16px; }
+.chart svg { display: block; width: 100%; height: auto; }
+.chart .empty { padding: 40px 16px; text-align: center; color: var(--muted); font: italic 400 15px var(--font-display); }
+
+.section-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 10px 20px; }
+.section-head p { margin: 4px 0 0; font-size: 13px; color: var(--muted); }
+.filters { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+.filter { font: 400 13px var(--font-body); color: var(--muted); background: none; border: 0; border-bottom: 1px solid transparent; padding: 4px 0; cursor: pointer; }
+.filter[aria-pressed="true"] { color: var(--ink); font-weight: 600; border-bottom-color: var(--brass); }
+.filter:hover { color: var(--ink); }
+.filter:focus-visible, .tab:focus-visible, summary:focus-visible { outline: 2px solid var(--oxford); outline-offset: 3px; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; align-items: start; }
+@media (max-width: 420px) { .cards { grid-template-columns: 1fr; } }
+.card { background: var(--panel); border: 1px solid var(--line); display: grid; align-content: start; gap: 14px; padding: 18px 20px 16px; min-width: 0; }
+.card.attn { border-color: var(--brass); border-top-width: 3px; padding-top: 16px; }
+.card.fail, .card.halted { border-color: var(--down); border-top-width: 3px; padding-top: 16px; }
+.card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.card-head .meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.status { display: inline-flex; align-items: center; gap: 6px; font: 600 11px var(--font-body); letter-spacing: 0.09em; text-transform: uppercase; white-space: nowrap; margin-top: 4px; }
+.status .dot { width: 6px; height: 6px; }
+.status.collect { color: var(--oxford); } .status.collect .dot { background: var(--oxford); }
+.status.pass { color: var(--up); } .status.pass .dot { background: var(--up); }
+.status.fail, .status.halt { color: var(--down); } .status.fail .dot, .status.halt .dot { background: var(--down); }
+.status.attn { color: var(--brass); } .status.attn .dot { background: var(--brass); }
+.figs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.figs > div { display: grid; gap: 2px; }
+.figs .v { font: 400 1.25rem/1.25 var(--font-display); }
+.figs .label { font-size: 10px; }
+
+.pos { display: grid; gap: 8px; background: var(--tint); padding: 12px 14px; }
+.pos .line { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 12px; }
+.side { font: 600 12px var(--font-body); letter-spacing: 0.08em; text-transform: uppercase; margin-right: 6px; }
+.side.buy { color: var(--up); } .side.sell { color: var(--down); }
+.pnl { font: 600 14px var(--font-figures); font-variant-numeric: tabular-nums; }
+.rail { position: relative; height: 20px; }
+.rail .track { position: absolute; left: 0; right: 0; top: 9px; height: 2px; background: var(--muted); opacity: 0.35; }
+.rail .end { position: absolute; top: 4px; width: 1px; height: 12px; }
+.rail .end.stop { background: var(--down); } .rail .end.target { background: var(--up); }
+.rail .entry { position: absolute; top: 3px; width: 1px; height: 14px; background: var(--muted); }
+.rail .now { position: absolute; top: 5px; width: 10px; height: 10px; background: var(--ink); transform: translateX(-5px) rotate(45deg); }
+.rail-labels { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; white-space: nowrap; font: 400 12px var(--font-figures); font-variant-numeric: tabular-nums; color: var(--muted); }
+.rail-labels .mid { color: var(--ink); text-align: center; }
+.rail-labels span:last-child { text-align: right; }
+@media (max-width: 420px) { .rail-labels { font-size: 11px; } }
+.pos .note { font-size: 12px; color: var(--muted); }
+.flat { background: var(--tint); padding: 12px 14px; font: italic 400 14px var(--font-display); color: var(--muted); }
+.halt-note { color: var(--down); font-style: normal; font-family: var(--font-body); font-size: 13px; }
+
+.progress { display: grid; gap: 6px; }
+.progress .row { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
+.progress .row .num { font-size: 12px; }
+.bar { height: 3px; background: var(--line); }
+.bar > i { display: block; height: 100%; background: var(--brass); min-width: 6px; }
+
+details summary { cursor: pointer; font: 600 13px var(--font-body); color: var(--oxford); list-style: none; }
+summary::-webkit-details-marker { display: none; }
+summary::after { content: "  ›"; } details[open] summary::after { content: "  ⌄"; }
+.detail-body { display: grid; gap: 12px; margin-top: 10px; }
+.scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; font: 600 10px var(--font-body); text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); padding: 6px 10px 8px; border-bottom: 1px solid var(--ink); white-space: nowrap; }
+td { padding: 9px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; vertical-align: top; }
+td.r, th.r { text-align: right; }
+td .fig { font: 600 14px var(--font-figures); font-variant-numeric: tabular-nums; }
+td.num, .fig-plain { font-family: var(--font-figures); font-variant-numeric: tabular-nums; }
+.st-pass { color: var(--up); font-weight: 600; } .st-fail { color: var(--down); font-weight: 600; } .st-pending { color: var(--muted); }
+.log { font: 12px/1.65 var(--font-figures); color: var(--muted); margin: 0; padding: 0; list-style: none; }
+.log li { white-space: pre-wrap; word-break: break-word; }
+
+.tabs { display: flex; gap: 26px; padding: 10px 24px 0; flex-wrap: wrap; }
+.tab { font: 400 13px var(--font-body); background: none; border: 0; border-bottom: 2px solid transparent; padding: 6px 0; color: var(--muted); cursor: pointer; }
+.tab[aria-selected="true"] { color: var(--ink); font-weight: 600; border-bottom-color: var(--brass); }
+.tabpanel { padding: 12px 24px 22px; display: grid; gap: 12px; border-top: 1px solid var(--ink); margin: 0 24px; padding-inline: 0; }
+.tabpanel p { margin: 0; color: var(--muted); font-size: 14px; max-width: 78ch; }
+.tabpanel p.fine { font-size: 12px; }
+.mk { font: 600 14px var(--font-body); }
+.sub { display: block; font: 400 11px var(--font-figures); color: var(--muted); margin-top: 2px; }
+.verdict { font: 600 11px var(--font-body); letter-spacing: 0.09em; text-transform: uppercase; }
+.verdict.trading { color: var(--up); } .verdict.rejected { color: var(--down); } .verdict.idle { color: var(--muted); }
+.range { position: relative; height: 16px; min-width: 200px; }
+.range .base { position: absolute; left: 0; right: 0; top: 7px; height: 1px; background: var(--line); }
+.range .span { position: absolute; top: 5px; height: 5px; background: var(--up); opacity: 0.35; }
+.range .zero { position: absolute; top: 1px; width: 1px; height: 14px; background: var(--muted); }
+.range .def { position: absolute; top: 3px; width: 9px; height: 9px; background: var(--ink); transform: translateX(-4.5px) rotate(45deg); }
+footer { display: grid; gap: 10px; }
+footer .rule { border-top: 1px solid var(--ink); }
+footer p { margin: 0; font-size: 12px; color: var(--muted); max-width: 90ch; }
+.empty-state { background: var(--panel); border: 1px solid var(--line); padding: 32px 20px; text-align: center; color: var(--muted); font: italic 400 15px var(--font-display); grid-column: 1 / -1; }
+@media (prefers-reduced-motion: no-preference) { .bar > i, .rail .now { transition: left .4s ease, width .4s ease; } }
+</style>
+<div class="wrap">
+  <header class="masthead">
+    <div class="mast-row">
+      <div>
+        <div class="label eyebrow">Sparkz Trader · Paper accounts</div>
+        <h1>Paper Desk</h1>
+      </div>
+      <div class="mast-meta">
+        <div class="asof" id="asof">Statement loading…</div>
+        <div class="fresh"><span class="dot" id="fresh-dot"></span><span id="fresh-text">Connecting to live data…</span></div>
+      </div>
+    </div>
+    <div class="double-rule" aria-hidden="true"></div>
+    <p class="lede">Ten simulated accounts trading the baseline strategy on BTC, ETH, gold and USD/JPY, each judged against targets fixed from its own backtest. No real money is involved.</p>
+  </header>
+
+  <section class="ledger" aria-label="All accounts">
+    <div class="lead"><div class="label">Combined equity</div><div class="v num" id="t-equity">—</div><div class="s" id="t-start">10 accounts</div></div>
+    <div><div class="label">Return</div><div class="v" id="t-return">—</div><div class="s">since each account opened</div></div>
+    <div><div class="label">Open positions</div><div class="v" id="t-open">—</div><div class="s" id="t-halted">&nbsp;</div></div>
+    <div><div class="label">Closed trades</div><div class="v" id="t-closed">—</div><div class="s" id="t-wins">&nbsp;</div></div>
+    <div><div class="label">Evaluations</div><div class="v" id="t-eval">—</div><div class="s">verdict after 30 trades each</div></div>
+  </section>
+
+  <section class="panel" aria-labelledby="eq-h">
+    <div class="panel-head"><h2 id="eq-h">Combined equity</h2><span class="muted" id="eq-range">hourly · dashed line marks the starting balance</span></div>
+    <div class="chart" id="chart"><div class="empty">The equity line appears after the first hourly updates.</div></div>
+  </section>
+
+  <section style="display:grid;gap:18px" aria-labelledby="acc-h">
+    <div class="section-head">
+      <div><h2 id="acc-h">Accounts</h2><p>Ten accounts, $10,000 each. Verdicts are given after 30 closed trades.</p></div>
+      <div class="filters" role="group" aria-label="Filter accounts">
+        <button class="filter" data-f="all" aria-pressed="true">All</button>
+        <button class="filter" data-f="open" aria-pressed="false">In a trade</button>
+        <button class="filter" data-f="1h" aria-pressed="false">Hourly</button>
+        <button class="filter" data-f="1d" aria-pressed="false">Daily</button>
+        <button class="filter" data-f="attention" aria-pressed="false">Needs attention</button>
+      </div>
+    </div>
+    <div class="cards" id="cards">
+      <div class="empty-state">Waiting for the first update from the hourly paper-trading run.</div>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="res-h">
+    <div class="panel-head"><h2 id="res-h">Research behind these accounts</h2><span class="muted num" id="res-date"></span></div>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" id="tab-markets" aria-selected="true" aria-controls="p-markets">Markets tested</button>
+      <button class="tab" role="tab" id="tab-sens" aria-selected="false" aria-controls="p-sens">Settings check</button>
+    </div>
+    <div class="tabpanel" role="tabpanel" id="p-markets" aria-labelledby="tab-markets">
+      <p>Full-period backtests of the same rules on each market, with that market's spread and slippage. Markets marked Paper trading passed and are running live; the rest were tested and not added.</p>
+      <div class="scroll"><table id="markets-table"></table></div>
+      <p class="fine">PF is profit factor: gross profit divided by gross loss. Profitable periods counts six-week windows (hourly) or calendar years (daily) in which buy-only made money.</p>
+    </div>
+    <div class="tabpanel" role="tabpanel" id="p-sens" aria-labelledby="tab-sens" hidden>
+      <p id="sens-intro"></p>
+      <div class="scroll"><table id="sens-table"></table></div>
+      <p class="fine">All variations use the same stretch of history, mostly rising for crypto and gold. This shows the strategy is not fragile; it does not show it will keep working, which is what the paper accounts are for.</p>
+    </div>
+  </section>
+
+  <footer><div class="rule"></div><p>Paper trading only: simulated fills with realistic spread, slippage and risk limits; no orders reach a real broker. Backtests and a few weeks of paper results do not guarantee future performance. Updated hourly by the Sparkz Trader paper-trading run.</p></footer>
+</div>
+<script>
+const RESEARCH = /*RESEARCH*/null;
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const money = (v) => v == null ? "—" : "$" + v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const signed = (v, d = 2) => v == null ? "—" : (v >= 0 ? "+" : "−") + Math.abs(v).toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d });
+const pct = (v, d = 2) => v == null ? "—" : signed(v, d) + "%";
+const tone = (v) => v == null || Math.abs(v) < 1e-9 ? "" : v > 0 ? "up" : "down";
+const price = (v, sym) => v == null ? "—" : v.toLocaleString(undefined, { minimumFractionDigits: sym === "USDJPY=X" ? 3 : 2, maximumFractionDigits: sym === "USDJPY=X" ? 3 : 2 });
+const MARKET = { "BTC-USD": "BTC", "ETH-USD": "ETH", "GC=F": "Gold", "USDJPY=X": "USD/JPY" };
+const TF = { "1h": "Hourly", "1d": "Daily" };
+const STRAT = { baseline: "Buy & sell", baseline_long_only: "Buy-only" };
+const ago = (iso) => {
+  const m = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+  if (m < 1) return "just now"; if (m < 60) return m + " min ago";
+  const h = Math.round(m / 60); return h < 48 ? h + " h ago" : Math.round(h / 24) + " days ago";
+};
+const when = (iso) => iso ? new Date(iso).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "—";
+
+let snapshot = null, history = null, filter = "all";
+try { filter = localStorage.getItem("desk-filter") || "all"; } catch (e) {}
+
+const nearStop = (a) => a.open_positions.some((p) => p.stop_distance_pct != null && Math.abs(p.stop_distance_pct) < 1);
+const needsAttention = (a) => a.halted || (a.evaluation?.verdict || "").startsWith("Failing") || nearStop(a);
+function statusLabel(a) {
+  const s = (cls, text) => `<span class="status ${cls}"><span class="dot"></span>${text}</span>`;
+  if (a.halted) return s("halt", "Halted");
+  const v = a.evaluation?.verdict || "No targets";
+  if (v.startsWith("Failing")) return s("fail", "Failing");
+  if (v === "Passing") return s("pass", "Passing");
+  if (nearStop(a)) return s("attn", "Near stop");
+  return s("collect", "Collecting");
+}
+
+function positionBlock(a) {
+  if (!a.open_positions.length) return '<div class="flat">No open position. Waiting for the next ' + (a.strategy === "baseline" ? "buy or sell" : "buy") + " signal.</div>";
+  return a.open_positions.map((p) => {
+    const now = a.latest_price;
+    const lo = Math.min(p.stop_price, p.target_price), hi = Math.max(p.stop_price, p.target_price);
+    const x = (v) => Math.max(0, Math.min(100, ((v - lo) / (hi - lo)) * 100));
+    const buy = p.direction === "BUY";
+    const left = buy ? ["stop", "Stop " + price(p.stop_price, a.symbol)] : ["target", "Target " + price(p.target_price, a.symbol)];
+    const right = buy ? ["target", "Target " + price(p.target_price, a.symbol)] : ["stop", "Stop " + price(p.stop_price, a.symbol)];
+    return `<div class="pos">
+      <div class="line"><span><span class="side ${buy ? "buy" : "sell"}">${p.direction}</span><span class="num">${p.size.toFixed(4)} at ${price(p.entry_price, a.symbol)}</span></span>
+        <span class="pnl ${tone(p.unrealized_pnl)}">${p.unrealized_pnl == null ? "price unavailable" : signed(p.unrealized_pnl) + " unrealized"}</span></div>
+      <div class="rail" role="img" aria-label="Price ${price(now, a.symbol)} between ${left[1]} and ${right[1]}">
+        <div class="track"></div><div class="end ${left[0]}" style="left:0"></div><div class="end ${right[0]}" style="right:0"></div>
+        <div class="entry" style="left:${x(p.entry_price)}%" title="Entry ${price(p.entry_price, a.symbol)}"></div>
+        ${now == null ? "" : `<div class="now" style="left:${x(now)}%" title="Now ${price(now, a.symbol)}"></div>`}
+      </div>
+      <div class="rail-labels"><span>${left[1]}</span><span class="mid">◆ ${price(now, a.symbol)}</span><span>${right[1]}</span></div>
+      <div class="note">◆ now · │ entry · opened ${when(p.opened_at)} · stop ${Math.abs(p.stop_distance_pct ?? 0).toFixed(2)}% away · target ${Math.abs(p.target_distance_pct ?? 0).toFixed(2)}% away</div>
+    </div>`;
+  }).join("");
+}
+
+function card(a) {
+  const e = a.evaluation || { checks: [], closed_trades: 0, min_trades: 30, verdict: "No targets set" };
+  const prog = Math.min(100, (e.closed_trades / (e.min_trades || 30)) * 100);
+  const failing = (e.verdict || "").startsWith("Failing");
+  const cls = a.halted ? "halted" : failing ? "fail" : nearStop(a) ? "attn" : "";
+  const checks = e.checks.length ? `<div class="scroll"><table><thead><tr><th>Check</th><th>Target</th><th class="r">Paper so far</th><th>Status</th></tr></thead><tbody>${
+    e.checks.map((c) => `<tr><td>${esc(c.name)}</td><td class="muted">${esc(c.target)}</td><td class="r num">${esc(c.actual)}</td><td class="st-${c.status}">${c.status}</td></tr>`).join("")}</tbody></table></div>` : '<p class="muted" style="margin:0;font-size:13px">No targets set.</p>';
+  const trades = a.closed_trades.length ? `<div class="scroll"><table><thead><tr><th>Closed</th><th>Side</th><th class="r">Entry</th><th class="r">Exit</th><th class="r">P&amp;L</th><th>Reason</th></tr></thead><tbody>${
+    a.closed_trades.map((t) => `<tr><td>${when(t.closed_at)}</td><td>${t.direction}</td><td class="r num">${price(t.entry_price, a.symbol)}</td><td class="r num">${price(t.exit_price, a.symbol)}</td><td class="r num ${tone(t.pnl)}">${signed(t.pnl)}</td><td class="muted">${esc(t.reason)}</td></tr>`).join("")}</tbody></table></div>` : '<p class="muted" style="margin:0;font-size:13px">No closed trades yet.</p>';
+  const log = a.log.length ? `<ul class="log">${a.log.map((l) => `<li>${esc(l)}</li>`).join("")}</ul>` : "";
+  return `<article class="card ${cls}" data-acc="${esc(a.account_name)}">
+    <div class="card-head"><div><h3>${MARKET[a.symbol] || esc(a.symbol)} · ${TF[a.timeframe] || a.timeframe}</h3>
+      <div class="meta">${STRAT[a.strategy] || esc(a.strategy)} · ${esc(a.account_name)}</div></div>${statusLabel(a)}</div>
+    ${a.halted ? `<div class="flat"><span class="halt-note">Halted by the drawdown limit since ${esc(a.halted)}. No new trades until resumed.</span></div>` : ""}
+    <div class="figs">
+      <div><div class="label">Equity</div><div class="v num">${money(a.equity)}</div></div>
+      <div><div class="label">Return</div><div class="v ${tone(a.return_pct)}">${pct(a.return_pct)}</div></div>
+      <div><div class="label">Closed</div><div class="v">${a.closed_trade_count ?? a.closed_trades.length} of ${e.min_trades}</div></div>
+    </div>
+    ${positionBlock(a)}
+    <div class="progress"><div class="row"><span>${esc(e.verdict)}</span><span class="num">${a.winning_trades} won</span></div><div class="bar"><i style="width:${prog}%"></i></div></div>
+    <details><summary>Checks, trades and activity</summary><div class="detail-body">${checks}${trades}${log}</div></details>
+  </article>`;
+}
+
+function renderSnapshot() {
+  if (!snapshot) return;
+  const t = snapshot.totals;
+  $("t-equity").textContent = money(t.equity);
+  $("t-start").textContent = `${t.accounts} accounts · started ${money(t.starting_balance)}`;
+  const r = $("t-return"); r.textContent = pct(t.return_pct); r.className = "v " + tone(t.return_pct);
+  $("asof").textContent = "Statement as of " + new Date(snapshot.updated_at).toLocaleString(undefined, { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  $("t-open").textContent = t.open_positions;
+  $("t-halted").textContent = t.halted ? `${t.halted} account${t.halted > 1 ? "s" : ""} halted` : "none halted";
+  $("t-closed").textContent = t.closed_trades;
+  $("t-wins").textContent = t.closed_trades ? `${t.winning_trades} winning (${Math.round((t.winning_trades / t.closed_trades) * 100)}%)` : "none yet";
+  const verdicts = snapshot.accounts.map((a) => a.halted ? "halt" : (a.evaluation?.verdict || ""));
+  const pass = verdicts.filter((v) => v === "Passing").length, fail = verdicts.filter((v) => v.startsWith("Failing") || v === "halt").length;
+  $("t-eval").textContent = `${pass} pass · ${fail} fail`;
+  renderFreshness();
+  const cards = $("cards");
+  const open = new Set([...cards.querySelectorAll("details[open]")].map((d) => d.closest(".card")?.dataset.acc));
+  const shown = snapshot.accounts.filter((a) => filter === "all" || (filter === "open" && a.open_positions.length) ||
+    filter === a.timeframe || (filter === "attention" && needsAttention(a)))
+    .sort((x, y) => needsAttention(y) - needsAttention(x) || y.open_positions.length - x.open_positions.length);
+  cards.innerHTML = shown.length ? shown.map(card).join("") : '<div class="empty-state">No accounts match this filter right now.</div>';
+  cards.querySelectorAll(".card").forEach((c) => { if (open.has(c.dataset.acc)) c.querySelector("details").open = true; });
+}
+
+function renderFreshness() {
+  const mins = (Date.now() - new Date(snapshot.updated_at).getTime()) / 60000;
+  $("fresh-dot").className = "dot " + (mins < 90 ? "live" : "stale");
+  $("fresh-text").textContent = `Updated ${ago(snapshot.updated_at)} · refreshed hourly` + (mins >= 90 ? " · an update may have been missed" : "");
+}
+
+function renderChart() {
+  const box = $("chart");
+  if (!history || !history.t || history.t.length < 2) {
+    box.innerHTML = '<div class="empty">The equity line appears after the first hourly updates' + (history?.t?.length ? " (1 point so far)." : ".") + "</div>";
+    return;
+  }
+  // Drawn at the container's real width so labels keep their size on a phone.
+  const W = Math.max(280, Math.round(box.clientWidth - 16)), H = W < 500 ? 180 : 220, L = 62, R = 12, T = 12, B = 26;
+  const ys = history.total, n = ys.length;
+  const start = snapshot?.totals?.starting_balance ?? ys[0];
+  let lo = Math.min(...ys, start), hi = Math.max(...ys, start);
+  const pad = Math.max((hi - lo) * 0.15, start * 0.001); lo -= pad; hi += pad;
+  const x = (i) => L + (i / (n - 1)) * (W - L - R), y = (v) => T + (1 - (v - lo) / (hi - lo)) * (H - T - B);
+  const pts = ys.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
+  const ticks = [0.15, 0.5, 0.85].map((f) => lo + (hi - lo) * f);
+  const last = ys[n - 1], up = last >= start;
+  const col = "var(--ink)";
+  box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Combined equity from ${money(ys[0])} to ${money(last)}">
+    ${ticks.map((v) => `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1" vector-effect="non-scaling-stroke"/>
+      <text x="${L - 8}" y="${y(v) + 4}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="Source Serif 4, Georgia, serif">${Math.round(v).toLocaleString()}</text>`).join("")}
+    <line x1="${L}" x2="${W - R}" y1="${y(start)}" y2="${y(start)}" stroke="var(--brass)" stroke-dasharray="4 4" stroke-width="1"/>
+    <polyline points="${pts}" fill="none" stroke="${col}" stroke-width="1.75" stroke-linejoin="round"/>
+    <circle cx="${x(n - 1)}" cy="${y(last)}" r="3.5" fill="${col}"/>
+
+    <text x="${L}" y="${H - 6}" font-size="11" fill="var(--muted)" font-family="Source Serif 4, Georgia, serif">${when(history.t[0])}</text>
+    <text x="${W - R}" y="${H - 6}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="Source Serif 4, Georgia, serif">${when(history.t[n - 1])}</text>
+  </svg>`;
+  $("eq-range").textContent = `Latest ${money(last)} · ${n} hourly points · dashed line marks the start`;
+}
+
+function renderResearch() {
+  if (!RESEARCH) return;
+  $("res-date").textContent = "Backtests run " + new Date(RESEARCH.generated_at).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+  const traded = new Set(RESEARCH.sensitivity.map((s) => s.symbol + "|" + s.timeframe));
+  const groups = {};
+  RESEARCH.markets.forEach((m) => { (groups[m.symbol + "|" + m.timeframe] ||= {})[m.side] = m; });
+  const cell = (m) => `<td class="r"><span class="fig ${tone(m.full.return_pct)}">${pct(m.full.return_pct, 0)}</span><span class="sub">PF ${m.full.profit_factor?.toFixed(2) ?? "—"} · ${m.full.trades} trades</span></td>`;
+  $("markets-table").innerHTML = `<thead><tr><th>Market</th><th class="r">Buy-only</th><th class="r">Buy &amp; sell</th><th class="r">Sell-only</th><th class="r">Just holding</th><th class="r">Profitable periods</th><th>Status</th></tr></thead><tbody>${
+    Object.entries(groups).map(([k, g]) => {
+      const b = g.buy, isTraded = traded.has(k), rejected = g.buy.full.return_pct < 0 && g.both.full.return_pct < 0;
+      return `<tr><td><span class="mk">${esc(b.market)} · ${TF[b.timeframe]}</span><span class="sub">${b.start} → ${b.end}</span></td>${cell(g.buy)}${cell(g.both)}${cell(g.sell)}
+        <td class="r"><span class="fig ${tone(b.hold_pct)}">${pct(b.hold_pct, 0)}</span></td><td class="r"><span class="fig">${b.profitable} of ${b.count}</span><span class="sub">${esc(b.kind)}s</span></td>
+        <td style="padding-left:24px">${isTraded ? '<span class="verdict trading">Paper trading</span>' : rejected ? '<span class="verdict rejected">Rejected</span>' : '<span class="verdict idle">Not traded</span>'}</td></tr>`;
+    }).join("")}</tbody>`;
+  const S = RESEARCH.sensitivity, total = S.reduce((s, r) => s + r.count, 0), prof = S.reduce((s, r) => s + r.profitable, 0);
+  $("sens-intro").textContent = `Each paper-account setup was rerun with one setting moved at a time: the fast and slow moving averages, the RSI threshold, the stop distance and the profit target. ${prof} of ${total} variations made money. The bar spans the worst to best variation; the dot marks the current settings.`;
+  const lo = Math.min(0, ...S.map((r) => r.min_pct)), hi = Math.max(...S.map((r) => r.max_pct));
+  const x = (v) => ((v - lo) / (hi - lo)) * 100;
+  $("sens-table").innerHTML = `<thead><tr><th>Setup</th><th class="r">Current</th><th class="r">Profitable</th><th>Range across variations</th><th class="r">Rank</th></tr></thead><tbody>${
+    S.map((r) => `<tr><td><span class="mk">${MARKET[r.symbol] || r.symbol} · ${TF[r.timeframe]}</span><span class="sub">${r.side === "both" ? "Buy &amp; sell" : "Buy-only"}</span></td>
+      <td class="r"><span class="fig ${tone(r.default_pct)}">${pct(r.default_pct, 0)}</span></td><td class="r"><span class="fig">${r.profitable} of ${r.count}</span></td>
+      <td><div class="range" title="${pct(r.min_pct, 0)} to ${pct(r.max_pct, 0)}"><div class="base"></div><div class="zero" style="left:${x(0)}%"></div>
+        <div class="span" style="left:${x(r.min_pct)}%;width:${x(r.max_pct) - x(r.min_pct)}%"></div><div class="def" style="left:${x(r.default_pct)}%"></div></div>
+        <span class="sub">${pct(r.min_pct, 0)} to ${pct(r.max_pct, 0)}</span></td>
+      <td class="r num muted">${r.default_rank} of ${r.count + 1}</td></tr>`).join("")}</tbody>`;
+}
+
+document.querySelectorAll(".filter").forEach((b) => {
+  b.setAttribute("aria-pressed", String(b.dataset.f === filter));
+  b.addEventListener("click", () => {
+    filter = b.dataset.f;
+    document.querySelectorAll(".filter").forEach((o) => o.setAttribute("aria-pressed", String(o === b)));
+    try { localStorage.setItem("desk-filter", filter); } catch (e) {}
+    renderSnapshot();
+  });
+});
+document.querySelectorAll(".tab").forEach((t) => t.addEventListener("click", () => {
+  document.querySelectorAll(".tab").forEach((o) => { o.setAttribute("aria-selected", String(o === t)); $(o.getAttribute("aria-controls")).hidden = o !== t; });
+}));
+
+renderResearch();
+let resizeTimer;
+window.addEventListener("resize", () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(renderChart, 150); });
+
+(async () => {
+  const db = await window.claude?.use?.("db");
+  if (!db) {
+    $("fresh-text").textContent = "Live data isn't available in this view. Open the page on claude.ai while signed in.";
+    return;
+  }
+  db.doc("live/snapshot").onSnapshot((s) => { if (s.exists) { snapshot = s.data(); renderSnapshot(); renderChart(); } },
+    () => { $("fresh-text").textContent = "Lost the live connection. Reload the page to reconnect."; });
+  db.doc("live/history").onSnapshot((s) => { if (s.exists) { history = s.data(); renderChart(); } }, () => {});
+  setInterval(() => { if (snapshot) renderFreshness(); }, 60000);
+})();
+</script>
