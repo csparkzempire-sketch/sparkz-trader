@@ -114,6 +114,7 @@ class PaperTradingSimulator:
             return None  # one position per symbol at a time in v1
 
         timestamp = timestamp or utc_now()
+        self._roll_day(account, timestamp)
         entry_price = apply_entry_costs(raw_price, direction, self.costs_for(symbol))
         stop_target = calculate_stop_and_target(
             entry_price=entry_price,
@@ -170,11 +171,22 @@ class PaperTradingSimulator:
     ) -> PaperTradeRecord | None:
         return self._close(account, symbol, raw_price, "MANUAL_CLOSE", timestamp)
 
+    @staticmethod
+    def _roll_day(account: PaperAccountState, timestamp: datetime) -> None:
+        """Reset the daily-loss tally on a new UTC day, as the backtest engine does.
+        Without this, losses accumulate forever and max_daily_loss_pct ends up
+        blocking every new trade after a few losing days."""
+        day = timestamp.date()
+        if account.risk_state.current_day != day:
+            account.risk_state.current_day = day
+            account.risk_state.daily_loss = 0.0
+
     def _close(
         self, account: PaperAccountState, symbol: str, raw_price: float, reason: str, timestamp: datetime | None
     ) -> PaperTradeRecord:
         pos = account.open_positions.pop(symbol)
         timestamp = timestamp or utc_now()
+        self._roll_day(account, timestamp)
         exit_price = apply_exit_costs(raw_price, pos.direction, self.costs_for(symbol))
         direction_sign = 1 if pos.direction == "BUY" else -1
         pnl = direction_sign * (exit_price - pos.entry_price) * pos.size

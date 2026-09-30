@@ -55,3 +55,20 @@ def baseline_signal(
     warmup_mask = df[[fast_col, slow_col, "rsi"]].isna().any(axis=1)
     signal[warmup_mask] = "HOLD"
     return signal
+
+
+# Rule-based strategies selectable by name wherever a strategy is chosen
+# (backtest CLI/API, paper trading). Anything else is treated as a model_id.
+# "baseline_long_only" drops the SELL side: across BTC and ETH, hourly and
+# daily, the short side's profits mostly came from the market falling rather
+# than from the rules, while the long side held up on its own.
+RULE_STRATEGIES = ("baseline", "baseline_long_only")
+
+
+def rule_signal(df: pd.DataFrame, strategy: str, cfg: Settings | None = None) -> pd.Series:
+    if strategy not in RULE_STRATEGIES:
+        raise ValueError(f"Unknown rule strategy {strategy!r}; expected one of {RULE_STRATEGIES}")
+    signal = baseline_signal(df, cfg=cfg)
+    if strategy == "baseline_long_only":
+        signal = signal.where(signal != "SELL", "HOLD")
+    return signal

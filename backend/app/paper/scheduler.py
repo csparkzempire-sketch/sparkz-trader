@@ -26,12 +26,12 @@ from datetime import datetime
 
 from app.config import Settings, settings
 from app.data.downloader import DownloadError, download_ohlcv
-from app.data.validator import DataValidationError, validate_and_clean
+from app.data.validator import DataValidationError, closed_candles, validate_and_clean
 from app.features.feature_engineering import build_feature_matrix, get_feature_columns
 from app.ml.dataset import add_labels
 from app.ml.model_registry import load_model_artifact
 from app.paper.simulator import PaperAccountState, PaperTradingSimulator
-from app.strategy.rules import baseline_signal
+from app.strategy.rules import RULE_STRATEGIES, baseline_signal
 from app.strategy.signals import signal_from_probability
 from app.utils.logging import get_logger, kv
 
@@ -137,10 +137,13 @@ class PaperFeedScheduler:
         status.last_poll_at = utc_now()
         try:
             raw = await asyncio.to_thread(download_ohlcv, status.symbol, status.timeframe)
-            clean, _report = await asyncio.to_thread(validate_and_clean, raw, status.timeframe)
+            clean, _report = await asyncio.to_thread(validate_and_clean, raw, status.timeframe, True, status.symbol)
         except (DownloadError, DataValidationError) as exc:
             status.last_error = str(exc)
             return
+        # Yahoo includes the still-forming candle; acting on it would trade on
+        # a provisional close and check stops against a partial high/low.
+        clean = closed_candles(clean, status.timeframe)
 
         featured = build_feature_matrix(clean, self.cfg)
         featured = featured.dropna(subset=["atr"])
@@ -183,8 +186,10 @@ class PaperFeedScheduler:
         status.last_error = None
 
     def _compute_signal(self, featured, status: FeedStatus) -> tuple[str, float | None]:
-        if status.strategy == "baseline":
+        if status.strategy in RULE_STRATEGIES:
             sig = baseline_signal(featured).iloc[-1]
+            if status.strategy == "baseline_long_only" and sig == "SELL":
+                sig = "HOLD"
             return sig, None
 
         try:
