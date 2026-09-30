@@ -1,0 +1,119 @@
+{
+ "runs": 200,
+ "accounts": [
+  {
+   "account": "btc_daily_long",
+   "symbol": "BTC-USD",
+   "timeframe": "1d",
+   "strategy": "baseline_long_only",
+   "window": [
+    "2021-10-13 00:00:00+00:00",
+    "2026-09-28 00:00:00+00:00"
+   ],
+   "real_return_pct": 22.921917382332424,
+   "real_trades": 55,
+   "buy_and_hold_pct": 45.47214737087521,
+   "tests": {
+    "random_timing": {
+     "median_trades": 58.0,
+     "runs": 200,
+     "p5": -10.346633420305745,
+     "p50": 5.772532643111727,
+     "p95": 25.28629834908437,
+     "max": 30.516386436804122,
+     "real_percentile": 93.0,
+     "passed": false
+    }
+   },
+   "passed": false
+  },
+  {
+   "account": "btc_hourly_both",
+   "symbol": "BTC-USD",
+   "timeframe": "1h",
+   "strategy": "baseline",
+   "window": [
+    "2024-10-01 13:00:00+00:00",
+    "2026-09-29 23:00:00+00:00"
+   ],
+   "real_return_pct": 228.00182747157015,
+   "real_trades": 1000,
+   "buy_and_hold_pct": 32.91961200496216,
+   "tests": {
+    "random_timing": {
+     "median_trades": 812.0,
+     "runs": 200,
+     "p5": -49.8760372951305,
+     "p50": -33.86598494765014,
+     "p95": 46.222868790727176,
+     "max": 116.74393124115743,
+     "real_percentile": 100.0,
+     "passed": true
+    },
+    "random_direction": {
+     "median_trades": 881.5,
+     "runs": 200,
+     "p5": -49.814328285640116,
+     "p50": -37.33720716339417,
+     "p95": 59.85627243279698,
+     "max": 219.92503673240526,
+     "real_percentile": 100.0,
+     "passed": true
+    }
+   },
+   "passed": true
+  },
+  {
+   "account": "btc_hourly_long",
+   "symbol": "BTC-USD",
+   "timeframe": "1h",
+   "strategy": "baseline_long_only",
+   "window": [
+    "2024-10-01 13:00:00+00:00",
+    "2026-09-29 23:00:00+00:00"
+   ],
+   "real_return_pct": 76.59258708618506,
+   "real_trades": 552,
+   "buy_and_hold_pct": 32.91961200496216,
+   "tests": {
+    "random_timing": {
+     "median_trades": 556.5,
+     "runs": 200,
+     "p5": -45.06973164826832,
+     "p50": -31.344391133016302,
+     "p95": 16.08421338815666,
+     "max": 71.69440244281886,
+     "real_percentile": 100.0,
+     "passed": true
+    }
+   },
+   "passed": true
+  },
+  {
+   "account": "eth_daily_long",
+   "symbol": "ETH-USD",
+   "timeframe": "1d",
+   "strategy": "baseline_long_only",
+   "window": [
+    "2021-10-13 00:00:00+00:00",
+    "2026-09-28 00:00:00+00:00"
+   ],
+   "real_return_pct": 7.047658801021295,
+   "real_trades": 62,
+   "buy_and_hold_pct": -25.443196067538278,
+   "tests": {
+    "random_timing": {
+     "median_trades": 57.0,
+     "runs": 200,
+     "p5": -15.727448486770363,
+     "p50": -2.1299120546889263,
+     "p95": 13.751340233497821,
+     "max": 20.784311146891852,
+     "real_percentile": 85.5,
+     "passed": false
+    }
+   },
+   "passed": false
+  }
+ ]
+}
