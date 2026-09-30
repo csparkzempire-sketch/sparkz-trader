@@ -1,0 +1,13 @@
+# Python packages for the Vercel function (api/index.py). For local development use
+# backend/requirements.txt instead: it adds pyarrow (parquet cache), uvicorn and pytest.
+# pyarrow is left out here to keep the function under Vercel's bundle size limit; the
+# backend then caches market data as pickle files.
+fastapi>=0.110
+pydantic>=2.6
+sqlalchemy>=2.0
+pandas>=2.2
+numpy>=1.26
+scikit-learn>=1.4
+yfinance>=0.2.37
+joblib>=1.3
+python-multipart>=0.0.9

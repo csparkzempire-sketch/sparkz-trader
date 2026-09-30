@@ -11,6 +11,7 @@ filename — reports are never silently overwritten.
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
@@ -30,7 +31,7 @@ from app.utils.time import utc_now
 
 logger = get_logger(__name__)
 
-REPORTS_DIR = Path(__file__).resolve().parents[3] / "reports"
+REPORTS_DIR = Path(os.getenv("SPARKZ_REPORTS_DIR") or Path(__file__).resolve().parents[3] / "reports")
 
 
 def _json_default(obj: Any) -> Any:

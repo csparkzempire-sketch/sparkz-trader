@@ -73,3 +73,11 @@ def test_load_processed_roundtrips_after_merge():
     loaded = repo.load_processed("BTC-USD", "1h")
     assert len(loaded) == 30
     assert str(loaded["timestamp"].dt.tz) == "UTC"
+
+
+def test_cache_uses_pickle_where_pyarrow_is_missing(monkeypatch):
+    """The Vercel function leaves pyarrow out to fit the bundle size limit."""
+    monkeypatch.setattr(repo, "_PARQUET", False)
+    merged, path, _ = repo.merge_into_cache(_bars("2024-01-01", 10), "EURUSD=X", "1h")
+    assert path.suffix == ".pkl"
+    pd.testing.assert_frame_equal(repo.load_processed("EURUSD=X", "1h"), merged)
