@@ -358,6 +358,8 @@ None of these conditions is met today:
 4. A broker adapter with authentication, idempotent orders and reconciliation. None
    exists in version 1, by design.
 
-The most promising direction in this data is **not** the grid: it's the entry signal on
-its own (the single-position control on gold 1h: +$1,510 to +$2,164, profit factor
-1.26–1.39, max DD under 6%). That deserves its own out-of-sample test before anything else.
+The most promising lead in this data was the entry signal on its own (the single-position
+control on gold 1h: +$1,510 to +$2,164, profit factor 1.26–1.39, max DD under 6%). It was
+tested separately and **failed**: random buying at the same rate, with the same exits, did
+just as well. That profit is gold's 2024–26 rise, not timing skill. See
+[ENTRY_SIGNAL_VALIDATION.md](ENTRY_SIGNAL_VALIDATION.md).
