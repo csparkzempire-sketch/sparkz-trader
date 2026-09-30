@@ -47,7 +47,7 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
         id="app-nav"
         className={`fixed inset-y-0 left-0 z-40 w-64 max-w-[85vw] transform transition-transform duration-200
           md:static md:z-auto md:w-56 md:max-w-none md:translate-x-0 md:transition-none
-          shrink-0 border-r border-base-border bg-base-side flex flex-col
+          shrink-0 border-r border-base-border bg-base-side/85 backdrop-blur flex flex-col
           ${open ? "translate-x-0" : "-translate-x-full"}`}
       >
         <div className="px-4 py-5 border-b border-base-border flex items-start justify-between">
@@ -71,7 +71,7 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
               className={({ isActive }) =>
                 `block px-4 py-2.5 md:py-2 text-sm border-l-2 transition-colors ${
                   isActive
-                    ? "border-accent-brass text-base-text bg-base-panel font-semibold"
+                    ? "border-accent-brass text-base-text bg-base-tint/80 font-semibold"
                     : "border-transparent text-base-muted hover:text-base-text hover:bg-base-panel/70"
                 }`
               }
@@ -93,7 +93,7 @@ function TopBar({ onMenu }: { onMenu: () => void }) {
   const { pathname } = useLocation();
   const current = NAV_ITEMS.find((i) => (i.exact ? pathname === i.to : pathname.startsWith(i.to)));
   return (
-    <header className="md:hidden sticky top-0 z-20 flex items-center gap-3 px-4 h-14 border-b border-base-border bg-base-side">
+    <header className="md:hidden sticky top-0 z-20 flex items-center gap-3 px-4 h-14 border-b border-base-border bg-base-side/90 backdrop-blur">
       <button
         onClick={onMenu}
         className="-ml-1 p-1.5 text-base-text"
