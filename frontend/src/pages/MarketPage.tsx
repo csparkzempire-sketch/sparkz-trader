@@ -71,7 +71,7 @@ export default function MarketPage() {
           <>
             <div className="panel">
               <div className="panel-header flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
-                <span>Price · EMA 20 (blue) · EMA 50 (amber)</span>
+                <span>Price · EMA 20 (red) · EMA 50 (white)</span>
                 <span className="text-base-muted normal-case tracking-normal">
                   {candles.length} candles · {symbol} · {timeframe}
                 </span>
