@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import routes_backtest, routes_market, routes_models, routes_paper, routes_system
+from app.api import routes_backtest, routes_market, routes_models, routes_paper, routes_research, routes_system
 from app.config import settings
 from app.database.database import init_db
 from app.utils.logging import get_logger
@@ -51,3 +51,4 @@ app.include_router(routes_market.router, prefix="/market", tags=["market"])
 app.include_router(routes_backtest.router, prefix="/backtest", tags=["backtest"])
 app.include_router(routes_models.router, prefix="/models", tags=["models"])
 app.include_router(routes_paper.router, prefix="/paper", tags=["paper"])
+app.include_router(routes_research.router, prefix="/research", tags=["research"])
