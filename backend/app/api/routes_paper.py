@@ -96,7 +96,7 @@ class FeedStartRequest(BaseModel):
     account_name: str = "default"
     symbol: str = "EURUSD=X"
     timeframe: str = "1h"
-    strategy: str = Field("baseline", description="'baseline' or a trained model_id")
+    strategy: str = Field("baseline", description="'baseline', 'baseline_long_only', or a trained model_id")
     poll_interval_seconds: float = Field(60.0, gt=0, le=3600)
 
 

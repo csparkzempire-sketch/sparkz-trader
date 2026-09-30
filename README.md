@@ -69,7 +69,7 @@ SPARKZ-TRADER/
 │   │   ├── markets/        # per-instrument pip sizes, costs, calendars
 │   │   ├── database/       # SQLAlchemy models + session
 │   │   └── utils/          # logging, time helpers
-│   ├── tests/               # pytest suite (151 tests)
+│   ├── tests/               # pytest suite (162 tests)
 │   ├── requirements.txt
 │   └── .env.example
 ├── frontend/                # React + Vite + TS + Tailwind + Recharts dashboard
@@ -352,15 +352,35 @@ explanation — never a bare directional claim.
 
 ### Starting paper trading
 
+**Run-once paper trading (recommended for daily strategies).** Keeps the
+account in `data/paper/<account>.json`, so it survives restarts:
+```bash
+python -m app.cli paper-trade --account btc_daily_long --symbol BTC-USD \
+  --timeframe 1d --strategy baseline_long_only --starting-balance 10000
+```
+The first run creates the account. After that, `python -m app.cli paper-trade --account btc_daily_long`
+is enough: run it once a day (e.g. from cron shortly after 00:00 UTC, when the
+daily crypto candle closes). Each run:
+- uses only **closed** candles: Yahoo also returns today's still-forming
+  candle, which is ignored;
+- checks the open position's stop/target against **every** candle closed
+  since the last run, so a missed day can't hide a stop-out;
+- decides on a new entry from the newest closed candle only. It never
+  back-fills entries on days it wasn't running.
+
+Strategies: `baseline` (buy and sell) or `baseline_long_only` (the same
+rules with the SELL side removed). `baseline_long_only` also works with
+`backtest --strategy`.
+
+**Live feed through the API** (in-memory; lost on restart, better for
+watching intraday):
 ```bash
 curl -X POST http://localhost:8000/paper/start \
   -H "Content-Type: application/json" \
   -d '{"account_name": "default", "starting_balance": 10000}'
 ```
-
-Then check `/paper/account`, `/paper/positions`, `/paper/trades`. There is no
-scheduler/loop wired up in this version to automatically feed live candles into
-the paper simulator — see "Known limitations" below.
+Then `POST /paper/feed/start` to poll a symbol, and check `/paper/account`,
+`/paper/positions`, `/paper/trades`.
 
 ### Markets
 
@@ -419,7 +439,7 @@ cd backend
 pytest
 ```
 
-151 tests covering: data validation, indicator correctness (including an
+162 tests covering: data validation, indicator correctness (including an
 explicit look-ahead-bias check), signal rules, position sizing, stop/target
 calculations, the backtest engine's next-bar execution rule and cost model,
 ML dataset construction and chronological splitting, a synthetic leakage

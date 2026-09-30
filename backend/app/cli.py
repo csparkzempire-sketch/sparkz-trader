@@ -10,7 +10,7 @@ Usage:
         [--train-bars N] [--test-bars N] [--step-bars N] [--window-mode rolling|expanding] [--purge-bars N]
         [--lookahead-period N] [--target-return-threshold R]
     python -m app.cli evaluate-model --model-id <id>
-    python -m app.cli paper-trade [--symbol EURUSD=X]
+    python -m app.cli paper-trade --account NAME [--symbol BTC-USD] [--timeframe 1d] [--strategy baseline_long_only]
     python -m app.cli system-status
 """
 
@@ -34,7 +34,7 @@ from app.ml.evaluate import evaluate_classification, feature_importance, sweep_s
 from app.ml.model_registry import load_model_artifact
 from app.ml.train import train_model
 from app.ml.walk_forward import run_walk_forward
-from app.strategy.rules import baseline_signal
+from app.strategy.rules import RULE_STRATEGIES, rule_signal
 from app.utils.logging import get_logger
 
 logger = get_logger("cli", settings.log_level)
@@ -96,9 +96,9 @@ def cmd_backtest(args) -> None:
         print(f"ERROR: {exc}", file=sys.stderr)
         sys.exit(1)
 
-    if args.strategy == "baseline":
+    if args.strategy in RULE_STRATEGIES:
         featured = build_feature_matrix(clean)
-        featured["signal"] = baseline_signal(featured)
+        featured["signal"] = rule_signal(featured, args.strategy)
     else:
         higher_timeframes = (
             [t.strip() for t in args.multi_timeframe.split(",")] if getattr(args, "multi_timeframe", None) else None
@@ -312,11 +312,58 @@ def cmd_evaluate_model(args) -> None:
 
 
 def cmd_paper_trade(args) -> None:
-    print(
-        "Paper trading is available via the API (POST /paper/start, /paper/positions, etc.) "
-        "or programmatically via app.paper.simulator.PaperTradingSimulator. "
-        "No real broker connection exists in this build."
-    )
+    """One paper-trading step for a saved account: run once per candle (e.g. daily via cron)."""
+    from app.paper.runner import PaperRunConfig, init_state, load_state, run_step, save_state, state_path
+
+    path = state_path(args.account)
+    if path.exists():
+        state = load_state(path)
+        c = state.config
+        if (args.symbol, args.timeframe, args.strategy) != (c.symbol, c.timeframe, c.strategy) and args.explicit:
+            print(
+                f"ERROR: account '{args.account}' already trades {c.symbol} {c.timeframe} {c.strategy}. "
+                "Use a different --account name for a different setup.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+    else:
+        try:
+            state = init_state(PaperRunConfig(args.account, args.symbol, args.timeframe, args.strategy, args.starting_balance))
+        except ValueError as exc:
+            print(f"ERROR: {exc}", file=sys.stderr)
+            sys.exit(1)
+        print(f"Created paper account '{args.account}': {args.symbol} {args.timeframe} {args.strategy}, "
+              f"starting balance {args.starting_balance:.2f}")
+
+    candles = None
+    if args.use_cached:
+        try:
+            candles = load_processed(state.config.symbol, state.config.timeframe)
+        except FileNotFoundError as exc:
+            print(f"ERROR: {exc}", file=sys.stderr)
+            sys.exit(1)
+    try:
+        result = run_step(state, candles=candles)
+    except (DownloadError, DataValidationError) as exc:
+        print(f"ERROR: {exc} (state unchanged)", file=sys.stderr)
+        sys.exit(1)
+    save_state(state, path)
+
+    acct = state.account
+    print(f"Processed {result.new_candles} new closed candle(s); latest {result.latest_candle} "
+          f"close {result.latest_close}, signal {result.latest_signal}.")
+    for e in result.events:
+        print("  " + e)
+    if not result.events:
+        print("  No trades this run.")
+    for p in acct.open_positions.values():
+        unreal = (result.latest_close - p.entry_price) * p.size * (1 if p.direction == "BUY" else -1)
+        print(f"Open: {p.direction} {p.size:.6f} {p.symbol} @ {p.entry_price:.2f} (stop {p.stop_price:.2f}, "
+              f"target {p.target_price:.2f}), unrealized {unreal:+.2f}")
+    closed = acct.trade_history
+    wins = sum(1 for t in closed if t.pnl > 0)
+    print(f"Balance {acct.balance:.2f} (started {state.config.starting_balance:.2f}); "
+          f"{len(closed)} closed trade(s), {wins} winning. State: {path}")
 
 
 def cmd_system_status(args) -> None:
@@ -342,7 +389,7 @@ def main() -> None:
     p = sub.add_parser("backtest")
     p.add_argument("--symbol", default=settings.market_symbol)
     p.add_argument("--timeframe", default=settings.timeframe)
-    p.add_argument("--strategy", default="baseline", help="'baseline' or a model_id from train-model.")
+    p.add_argument("--strategy", default="baseline", help="'baseline', 'baseline_long_only', or a model_id from train-model.")
     p.add_argument(
         "--buy-threshold", type=float, default=None, dest="buy_threshold",
         help=f"Model-strategy only: P(up) needed to fire a BUY (default from settings: {settings.signal_buy_threshold}). "
@@ -437,13 +484,28 @@ def main() -> None:
     p.add_argument("--model-id", required=True, dest="model_id")
     p.set_defaults(func=cmd_evaluate_model)
 
-    p = sub.add_parser("paper-trade")
+    p = sub.add_parser(
+        "paper-trade",
+        help="Run one paper-trading step for a saved account (state in data/paper/<account>.json). "
+             "Run it once per candle, e.g. daily from cron for a 1d strategy.",
+    )
+    p.add_argument("--account", default="default")
+    p.add_argument("--symbol", default=settings.market_symbol)
+    p.add_argument("--timeframe", default=settings.timeframe)
+    p.add_argument("--strategy", default="baseline", help="'baseline' or 'baseline_long_only'.")
+    p.add_argument("--starting-balance", type=float, default=settings.initial_capital, dest="starting_balance",
+                   help="Only used when the account is first created.")
+    p.add_argument("--use-cached", action="store_true", dest="use_cached",
+                   help="Read the local cache instead of downloading (no network).")
     p.set_defaults(func=cmd_paper_trade)
 
     p = sub.add_parser("system-status")
     p.set_defaults(func=cmd_system_status)
 
     args = parser.parse_args()
+    # For paper-trade: only complain about a setup mismatch if the user actually
+    # passed those flags, not when they're just the defaults.
+    args.explicit = any(a in sys.argv for a in ("--symbol", "--timeframe", "--strategy"))
     args.func(args)
 
 

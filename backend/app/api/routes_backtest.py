@@ -26,7 +26,7 @@ from app.features.feature_engineering import build_feature_matrix
 from app.markets.instruments import resolve_costs
 from app.ml.model_registry import load_model_artifact
 from app.ml.predict import ModelNotAvailableError
-from app.strategy.rules import baseline_signal
+from app.strategy.rules import RULE_STRATEGIES, rule_signal
 from app.strategy.signals import signal_from_probability
 from app.utils.logging import get_logger
 
@@ -45,8 +45,8 @@ def run_backtest(req: BacktestRequest, session: Session = Depends(get_session_de
     featured = build_feature_matrix(clean)
     extra_warnings: list[str] = []
 
-    if req.strategy == "baseline":
-        featured["signal"] = baseline_signal(featured)
+    if req.strategy in RULE_STRATEGIES:
+        featured["signal"] = rule_signal(featured, req.strategy)
         prob_col = None
     else:
         # Treat `strategy` as a model_id.

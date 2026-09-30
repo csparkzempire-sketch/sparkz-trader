@@ -175,3 +175,17 @@ def validate_and_clean(
         raise DataValidationError("All rows were removed during validation — check the source data.")
 
     return df, report
+
+
+def closed_candles(df: pd.DataFrame, timeframe: str, now: pd.Timestamp | None = None) -> pd.DataFrame:
+    """
+    Drop any candle that hasn't closed yet as of `now` (default: current UTC
+    time). Yahoo returns the in-progress candle too -- e.g. today's daily
+    bar, whose close/high/low are still moving. Anything that trades or
+    checks stops on "the latest candle" must use this first, or it acts on
+    provisional prices the backtest never saw.
+    """
+    now = now if now is not None else pd.Timestamp.now(tz="UTC")
+    bar = pd.Timedelta(timeframe_to_pandas_freq(timeframe))
+    ts = pd.to_datetime(df["timestamp"], utc=True)
+    return df.loc[ts + bar <= now].reset_index(drop=True)
