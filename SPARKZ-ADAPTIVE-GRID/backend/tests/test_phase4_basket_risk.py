@@ -212,3 +212,18 @@ def test_drawdown_tracker():
     assert t.update(9_450) == pytest.approx(10.0) and t.max_drawdown_pct == pytest.approx(10.0)
     t.update(10_600)
     assert t.max_drawdown_pct == pytest.approx(10.0) and t.current_pct(10_600) == 0
+
+
+def test_atr_normalized_base_lot_equalises_risk_across_markets():
+    from app.config import BaseLotMode
+    from app.strategy.position_sizing import base_lot
+
+    cfg = SizingCfg(base_lot_mode=BaseLotMode.ATR_NORMALIZED, usd_per_atr=10.0)
+    eur = get_instrument("EURUSD")
+    assert base_lot(cfg, GOLD, 8.0, 4200.0) == pytest.approx(0.01)        # $800 per ATR per lot -> 0.0125 -> 0.01
+    assert base_lot(cfg, eur, 0.00036, 1.13) == pytest.approx(0.28)         # $36 per ATR per lot -> 0.278
+    assert base_lot(SizingCfg(), eur, 0.00036, 1.13) == pytest.approx(0.01)  # FIXED ignores ATR
+    assert base_lot(cfg, eur, float("nan"), 1.13) == pytest.approx(0.01)     # no ATR: fall back to the fixed lot
+    # grid sizes scale from the basket's base lot
+    lin = SizingCfg(mode=SizingMode.LINEAR)
+    assert planned_lots(3, lin, eur, 0.28) == pytest.approx([0.28, 0.56, 0.84])

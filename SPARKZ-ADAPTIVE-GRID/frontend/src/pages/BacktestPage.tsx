@@ -125,7 +125,17 @@ export default function BacktestPage() {
                     <option value="MARTINGALE">Martingale (1,2,4…) HIGH RISK</option>
                   </select>
                 </Field>
-                <Field label="Base lot"><input className={inputCls} type="number" step="0.01" value={cfg.sizing.base_lot} onChange={(e) => set("sizing.base_lot", Number(e.target.value))} /></Field>
+                <Field label="Base lot size">
+                  <select className={inputCls} value={cfg.sizing.base_lot_mode} onChange={(e) => set("sizing.base_lot_mode", e.target.value)}>
+                    <option value="FIXED">Fixed lots</option>
+                    <option value="ATR_NORMALIZED">Same $ risk per ATR</option>
+                  </select>
+                </Field>
+                {cfg.sizing.base_lot_mode === "ATR_NORMALIZED" ? (
+                  <Field label="USD per 1-ATR move" hint="Base lot set per basket"><input className={inputCls} type="number" step="1" value={cfg.sizing.usd_per_atr} onChange={(e) => set("sizing.usd_per_atr", Number(e.target.value))} /></Field>
+                ) : (
+                  <Field label="Base lot"><input className={inputCls} type="number" step="0.01" value={cfg.sizing.base_lot} onChange={(e) => set("sizing.base_lot", Number(e.target.value))} /></Field>
+                )}
                 {martingale && (
                   <Field label="Martingale" hint="Refused unless ticked">
                     <span className="flex items-center gap-2 text-sm">

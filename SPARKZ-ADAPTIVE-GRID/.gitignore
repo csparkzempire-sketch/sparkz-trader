@@ -2,6 +2,7 @@ data/*.db
 data/*.db-journal
 data/cache/
 reports/*.json
+!reports/study_*.json
 !reports/.gitkeep
 __pycache__/
 .pytest_cache/

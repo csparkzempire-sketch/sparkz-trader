@@ -48,7 +48,7 @@ from app.strategy.basket_manager import Basket, CompletedBasketRecord, Position,
 from app.strategy.entry_engine import evaluate_entry, still_supports
 from app.strategy.grid_engine import next_add_level
 from app.strategy.market_analysis import ready
-from app.strategy.position_sizing import lot_for_entry
+from app.strategy.position_sizing import base_lot, lot_for_entry
 
 
 @dataclass
@@ -120,7 +120,7 @@ class GridEngine:
 
     def _add(self, br: _Branch, mid: float, ts: datetime, i: int, row, fx: float) -> bool:
         bk = br.basket
-        lots = lot_for_entry(bk.n + 1, self.s.sizing, self.inst)
+        lots = lot_for_entry(bk.n + 1, self.s.sizing, self.inst, bk.base_lot)
         equity = self._equity(br.balance, bk, mid, row, fx)
         d = self.risk.check_add(bk.n, bk.total_lots, lots, mid, equity)
         if not d.allowed:
@@ -256,7 +256,8 @@ class GridEngine:
         if st.pending and st.pending["execute_at"] == i and st.basket is None:
             p = st.pending
             st.pending = None
-            lots = lot_for_entry(1, self.s.sizing, self.inst)
+            base = base_lot(self.s.sizing, self.inst, p["atr"], o)
+            lots = lot_for_entry(1, self.s.sizing, self.inst, base)
             d = self.risk.check_open(lots, o, st.balance, i)
             p_sig = {"ts": p["signal_ts"], "signal": p["direction"], "regime": p["regime"],
                      "vol_regime": p["vol_regime"], "reason": p["reason"]}
@@ -267,7 +268,7 @@ class GridEngine:
                 st.basket_counter += 1
                 loss, tgt, tdist = basket_limits(self.s, st.balance, p["atr"])
                 bk = Basket(f"BASKET-{st.basket_counter:06d}", p["direction"], ts, i, st.balance, loss, tgt, tdist,
-                            p["atr"], p["regime"], p["vol_regime"])
+                            p["atr"], p["regime"], p["vol_regime"], base_lot=base)
                 fill = self.ex.entry_fill(bk.direction, o, row)
                 bk.positions.append(Position(1, bk.direction, lots, ts, fill, o, self.comm * lots))
                 bk.last_entry_index = i

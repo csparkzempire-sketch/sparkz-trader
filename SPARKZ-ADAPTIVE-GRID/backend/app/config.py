@@ -122,9 +122,16 @@ class GridCfg(BaseModel):
         return v
 
 
+class BaseLotMode(str, Enum):
+    FIXED = "FIXED"                  # base_lot as configured
+    ATR_NORMALIZED = "ATR_NORMALIZED"  # base lot sized so a 1-ATR move is worth usd_per_atr, per basket
+
+
 class SizingCfg(BaseModel):
     mode: SizingMode = SizingMode.FIXED
     base_lot: float = 0.01
+    base_lot_mode: BaseLotMode = BaseLotMode.FIXED
+    usd_per_atr: float = 10.0        # ATR_NORMALIZED: USD value of a 1-ATR move on the base lot
     martingale_multiplier: float = 2.0
     allow_martingale: bool = False
 
@@ -226,6 +233,8 @@ ENV_KEYS: dict[str, tuple[str, ...]] = {
     "MAX_POSITIONS": ("risk", "max_positions"),
     "POSITION_SIZING": ("sizing", "mode"),
     "BASE_LOT": ("sizing", "base_lot"),
+    "BASE_LOT_MODE": ("sizing", "base_lot_mode"),
+    "USD_PER_ATR": ("sizing", "usd_per_atr"),
     "MARTINGALE_MULTIPLIER": ("sizing", "martingale_multiplier"),
     "ALLOW_MARTINGALE": ("sizing", "allow_martingale"),
     "RISK_PER_CYCLE": ("risk", "risk_per_cycle"),

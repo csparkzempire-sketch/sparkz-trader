@@ -55,6 +55,7 @@ class Basket:
     max_margin: float = 0.0
     last_entry_index: int = 0
     adds_blocked: str | None = None   # why the grid stopped adding, if it did
+    base_lot: float | None = None     # fixed at the basket's start (see position_sizing.base_lot)
 
     def clone(self) -> "Basket":
         """Copy for a what-if path. Positions never change once opened, so the list is copied, not them."""

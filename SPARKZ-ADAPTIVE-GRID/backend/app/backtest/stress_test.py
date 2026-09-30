@@ -28,7 +28,7 @@ from app.backtest.summary import pick
 from app.config import Settings
 from app.data.instruments import get_instrument
 from app.data.repository import load_candles
-from app.strategy.position_sizing import planned_lots
+from app.strategy.position_sizing import base_lot, planned_lots
 from app.utils.time import bar_length
 
 
@@ -130,7 +130,7 @@ def run_stress(settings: Settings, candles: pd.DataFrame | None = None) -> dict:
                  "halted": _worst_order_drawdown(pnls, settings.risk.initial_capital) <= -settings.risk.max_account_drawdown_percent or None})
 
     inst = get_instrument(m.symbol)
-    lots = planned_lots(settings.risk.max_positions, settings.sizing, inst)
+    lots = planned_lots(settings.risk.max_positions, settings.sizing, inst, base_lot(settings.sizing, inst, atr, price))
     total = sum(lots)
     full = [b for b in base.baskets if b.positions >= settings.risk.max_positions]
     max_basket = {

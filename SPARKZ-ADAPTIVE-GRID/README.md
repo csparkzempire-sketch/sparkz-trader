@@ -27,7 +27,7 @@ python -m app.cli robustness --preset B_atr_grid --runs 60
 python -m app.cli sensitivity --preset B_atr_grid
 python -m app.cli walk-forward --preset B_atr_grid --timeframe 1h
 python -m app.research.study                            # the full study behind the technical report
-python -m pytest                                        # 106 tests
+python -m pytest                                        # 108 tests
 
 uvicorn app.main:app --port 8100                        # research API (binds to localhost)
 cd ../frontend && npm install && npm run dev            # dashboard on http://localhost:5174

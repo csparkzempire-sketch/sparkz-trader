@@ -280,3 +280,11 @@ def test_backtests_are_saved_to_sqlite():
         bt = s.get(Backtest, res.backtest_id)
         assert bt.summary["metrics"]["baskets"] == len(res.baskets)
         assert s.query(CompletedBasket).filter_by(backtest_id=bt.id).count() == len(res.baskets)
+
+
+def test_atr_normalized_sizing_is_fixed_per_basket_from_the_signal_bar():
+    bars = flat(3) + _sawtooth(10)
+    s = cfg(BASE_LOT_MODE="ATR_NORMALIZED", USD_PER_ATR="20", MAX_BASKET_LOSS_PERCENT=50)
+    b = run(frame(bars, {2: "BUY"}, atr=2.0), s).state.completed[0]
+    # $20 per ATR, ATR 2.0, gold 100 oz per lot -> 0.10 lot, and every add uses that base
+    assert len(b.entries) > 1 and [e["lots"] for e in b.entries] == pytest.approx([0.10] * len(b.entries))
