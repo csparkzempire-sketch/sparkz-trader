@@ -6,7 +6,7 @@
     "strategy": "baseline",
     "starting_balance": 10000.0
   },
-  "last_processed": "2026-09-30T06:00:00+00:00",
+  "last_processed": "2026-09-30T07:00:00+00:00",
   "account": {
     "balance": 10000.0,
     "is_active": true,
@@ -34,5 +34,6 @@
   },
   "log": [
     "2026-09-30 05:00 OPEN SELL ETH-USD @ 2672.41, size 3.317992, stop 2702.55, target 2612.13"
-  ]
+  ],
+  "halted": null
 }

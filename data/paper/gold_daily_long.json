@@ -22,5 +22,6 @@
       "bars_since_last_trade": 10000
     }
   },
-  "log": []
+  "log": [],
+  "halted": null
 }
