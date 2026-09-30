@@ -60,11 +60,12 @@ export default function BacktestPage() {
   return (
     <div>
       <PageHeader title="Backtesting" subtitle="Event-driven, cost-aware backtest with next-bar execution" />
-      <div className="px-6 pb-6">
+      <div className="px-4 md:px-6 pb-6">
         <SymbolTimeframePicker />
       </div>
 
-      <div className="px-6 pb-6 panel p-4">
+      <div className="px-4 md:px-6 pb-6">
+      <div className="panel p-4">
         <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
           <Field label="Starting Capital ($)" value={initialCapital} onChange={setInitialCapital} />
           <Field label="Risk / Trade (%)" value={riskPerTrade} onChange={setRiskPerTrade} step={0.1} />
@@ -81,8 +82,9 @@ export default function BacktestPage() {
           {loading ? "Running backtest…" : "Run Backtest"}
         </button>
       </div>
+      </div>
 
-      <div className="px-6 pb-8 space-y-4">
+      <div className="px-4 md:px-6 pb-8 space-y-4">
         {error && <ErrorBanner message={error} />}
         {loading && <LoadingBlock label="Simulating trades with costs, stops, and risk limits…" />}
 

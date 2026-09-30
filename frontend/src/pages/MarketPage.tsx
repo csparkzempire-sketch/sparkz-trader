@@ -55,7 +55,7 @@ export default function MarketPage() {
   return (
     <div>
       <PageHeader title="Market" subtitle="Candlesticks, EMAs, RSI, MACD, and ATR for the selected instrument" />
-      <div className="px-6 pb-6 flex items-center justify-between">
+      <div className="px-4 md:px-6 pb-6 flex flex-wrap items-center justify-between gap-3">
         <SymbolTimeframePicker />
         <div className="flex items-center gap-2 text-xs text-base-muted">
           <span>Regime:</span>
@@ -63,20 +63,20 @@ export default function MarketPage() {
         </div>
       </div>
 
-      <div className="px-6 pb-8 space-y-3">
+      <div className="px-4 md:px-6 pb-8 space-y-3">
         {error && <ErrorBanner message={error} />}
         {loading && !error && <LoadingBlock label="Downloading, validating, and computing indicators…" />}
 
         {!loading && !error && candles.length > 0 && (
           <>
             <div className="panel">
-              <div className="panel-header flex items-center justify-between">
+              <div className="panel-header flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
                 <span>Price · EMA 20 (blue) · EMA 50 (amber)</span>
                 <span className="text-base-muted normal-case tracking-normal">
                   {candles.length} candles · {symbol} · {timeframe}
                 </span>
               </div>
-              <div className="p-3 h-96">
+              <div className="p-3 h-72 md:h-96">
                 <CandlestickChart data={chartData} />
               </div>
             </div>

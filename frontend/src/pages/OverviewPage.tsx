@@ -42,11 +42,11 @@ export default function OverviewPage() {
   return (
     <div>
       <PageHeader title="Overview" subtitle={`${symbol} · ${timeframe} · research & paper-trading snapshot`} />
-      <div className="px-6 pb-6 flex items-center justify-between">
+      <div className="px-4 md:px-6 pb-6 flex flex-wrap items-center justify-between gap-3">
         <SymbolTimeframePicker />
       </div>
 
-      <div className="px-6 pb-8">
+      <div className="px-4 md:px-6 pb-8">
         {error && <ErrorBanner message={error} />}
         {loading && !error && <LoadingBlock label="Fetching latest market snapshot…" />}
 

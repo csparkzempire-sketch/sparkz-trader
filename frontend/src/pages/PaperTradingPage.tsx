@@ -41,8 +41,8 @@ export default function PaperTradingPage() {
         title="Paper Trading"
         subtitle="Accounts updated once per candle by the paper-trade runner · positions marked at the latest price"
       />
-      <div className="px-6 pb-8 space-y-4">
-        <div className="flex items-center gap-3">
+      <div className="px-4 md:px-6 pb-8 space-y-4">
+        <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={load}
             disabled={loading}

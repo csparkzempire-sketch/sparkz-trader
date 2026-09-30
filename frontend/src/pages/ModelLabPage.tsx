@@ -41,7 +41,7 @@ export default function ModelLabPage() {
   return (
     <div>
       <PageHeader title="Model Lab" subtitle="Train, evaluate, and compare classification models" />
-      <div className="px-6 pb-6 flex items-center gap-4">
+      <div className="px-4 md:px-6 pb-6 flex flex-wrap items-center gap-3 md:gap-4">
         <SymbolTimeframePicker />
         <select
           value={modelType}
@@ -63,14 +63,14 @@ export default function ModelLabPage() {
         </button>
       </div>
 
-      <div className="px-6 pb-8 space-y-4">
+      <div className="px-4 md:px-6 pb-8 space-y-4">
         {error && <ErrorBanner message={error} />}
         {loading && <LoadingBlock label="Building leak-safe dataset, splitting chronologically, and fitting the model…" />}
 
         {!loading && trained && (
           <>
             <div className="panel p-4">
-              <div className="grid grid-cols-3 gap-4 text-sm">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
                 <div>
                   <div className="stat-label">Train Period</div>
                   <div className="text-xs font-mono-nums mt-1">
@@ -92,7 +92,7 @@ export default function ModelLabPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div className="panel p-4">
                 <div className="panel-header -mx-4 -mt-4 mb-3">Validation Metrics</div>
                 <MetricGrid m={trained.classification_metrics_validation} />
@@ -109,7 +109,7 @@ export default function ModelLabPage() {
                 <div className="space-y-1.5">
                   {trained.feature_importance.slice(0, 10).map((f) => (
                     <div key={f.feature} className="flex items-center gap-3 text-xs">
-                      <div className="w-32 text-base-muted font-mono-nums truncate">{f.feature}</div>
+                      <div className="w-24 sm:w-32 shrink-0 text-base-muted font-mono-nums truncate">{f.feature}</div>
                       <div className="flex-1 h-2 bg-base-bg rounded overflow-hidden border border-base-border">
                         <div
                           className="h-full bg-accent-brand"
@@ -136,26 +136,28 @@ export default function ModelLabPage() {
             {models.length === 0 ? (
               <div className="text-sm text-base-muted">No models trained yet.</div>
             ) : (
-              <table className="w-full text-sm">
+              <div className="overflow-x-auto">
+              <table className="w-full text-sm whitespace-nowrap">
                 <thead>
                   <tr className="text-left text-base-muted text-xs uppercase tracking-wider">
-                    <th className="pb-2">Model ID</th>
-                    <th className="pb-2">Type</th>
-                    <th className="pb-2">Symbol</th>
+                    <th className="pb-2 pr-4">Model ID</th>
+                    <th className="pb-2 pr-4">Type</th>
+                    <th className="pb-2 pr-4">Symbol</th>
                     <th className="pb-2">Created</th>
                   </tr>
                 </thead>
                 <tbody>
                   {models.map((m) => (
                     <tr key={m.model_id} className="border-t border-base-border/50 font-mono-nums text-xs">
-                      <td className="py-2">{m.model_id}</td>
-                      <td className="py-2">{m.model_type}</td>
-                      <td className="py-2">{m.symbol}</td>
+                      <td className="py-2 pr-4">{m.model_id}</td>
+                      <td className="py-2 pr-4">{m.model_type}</td>
+                      <td className="py-2 pr-4">{m.symbol}</td>
                       <td className="py-2 text-base-muted">{new Date(m.created_at).toLocaleString()}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
+              </div>
             )}
           </div>
         </div>
@@ -166,7 +168,7 @@ export default function ModelLabPage() {
 
 function MetricGrid({ m }: { m: TrainModelResponse["classification_metrics_test"] }) {
   return (
-    <div className="grid grid-cols-3 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
       <StatCard label="Accuracy" value={m.accuracy.toFixed(3)} />
       <StatCard label="Precision" value={m.precision.toFixed(3)} />
       <StatCard label="Recall" value={m.recall.toFixed(3)} />
