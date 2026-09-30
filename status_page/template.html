@@ -3,36 +3,40 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
 <style>
-/* Layout: a private-bank statement. Masthead with a double rule, a ledger of totals, a hairline
-   equity chart, then one statement card per account and the research record. Design: Figma
-   "Sparkz Paper Desk — Classic redesign". */
+/* Layout: a statement desk laid over the red lattice artwork (background.jpg, published beside
+   the page). Masthead with a double rule, a ledger of totals, a hairline equity chart, then one
+   statement card per account and the research record. One deliberate dark look, matching the
+   local dashboard; panels are translucent so the artwork shows through. */
 :root {
-  --bg: #f3f3ef;
-  --panel: #ffffff;
-  --tint: #f1f3f6;
-  --ink: #13233a;
-  --muted: #5e6878;
-  --line: #d8dbe0;
-  --brass: #9c7a3c;
-  --oxford: #1f3a5f;
-  --up: #1e6b4a;
-  --down: #9b2c2c;
+  --bg: #080607;
+  --panel: rgb(18 13 14 / 0.84);
+  --tint: rgb(42 24 26 / 0.72);
+  --ink: #f0eae8;
+  --muted: #aa9898;
+  --line: #4a2628;
+  --brass: #ee4040;
+  --oxford: #ff7a7a;
+  --warn: #e0a64a;
+  --up: #5cc488;
+  --down: #ff7068;
+  --overlay: rgb(0 0 0 / 0.45);
   --font-display: "Libre Caslon Text", "Baskerville", "Georgia", serif;
   --font-figures: "Source Serif 4", "Georgia", serif;
   --font-body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0e1726; --panel: #142033; --tint: #1a2840; --ink: #ece9e1; --muted: #9aa4b2; --line: #2a3850;
-    --brass: #c9a75e; --oxford: #8fb3dc; --up: #5fb38a; --down: #e07a73; color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #0e1726; --panel: #142033; --tint: #1a2840; --ink: #ece9e1; --muted: #9aa4b2; --line: #2a3850;
-  --brass: #c9a75e; --oxford: #8fb3dc; --up: #5fb38a; --down: #e07a73; color-scheme: dark;
+  color-scheme: dark;
 }
 * { box-sizing: border-box; }
-body { background: var(--bg); color: var(--ink); font: 400 15px/1.5 var(--font-body); }
+body {
+  background-color: var(--bg);
+  background-image: linear-gradient(var(--overlay), var(--overlay)), url("background.jpg");
+  background-size: cover; background-position: center; background-attachment: fixed;
+  color: var(--ink); font: 400 15px/1.5 var(--font-body);
+}
+/* The artwork is portrait; landscape screens get a quarter-turn copy (16:9) so the red bands stay in view. */
+@media (orientation: landscape) {
+  body { background-image: linear-gradient(var(--overlay), var(--overlay)), url("background-wide.jpg"); }
+}
+.panel, .card, .ledger { backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
 .wrap { max-width: 1180px; margin: 0 auto; padding-inline: 16px; padding-block: 36px 56px; display: grid; gap: 28px; }
 @media (min-width: 720px) { .wrap { padding-inline: 32px; } }
 h1, h2, h3 { font-family: var(--font-display); font-weight: 400; margin: 0; text-wrap: balance; }
@@ -52,7 +56,7 @@ h3 { font-size: 1.25rem; }
 .asof { font: 400 14px var(--font-figures); }
 .fresh { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; color: var(--muted); }
 .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); flex: none; }
-.dot.live { background: var(--up); } .dot.stale { background: var(--brass); }
+.dot.live { background: var(--up); } .dot.stale { background: var(--warn); }
 .double-rule { border-top: 2px solid var(--ink); border-bottom: 1px solid var(--ink); height: 5px; }
 .lede { margin: 0; color: var(--muted); max-width: 70ch; }
 
@@ -89,7 +93,7 @@ h3 { font-size: 1.25rem; }
 .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; align-items: start; }
 @media (max-width: 420px) { .cards { grid-template-columns: 1fr; } }
 .card { background: var(--panel); border: 1px solid var(--line); display: grid; align-content: start; gap: 14px; padding: 18px 20px 16px; min-width: 0; }
-.card.attn { border-color: var(--brass); border-top-width: 3px; padding-top: 16px; }
+.card.attn { border-color: var(--warn); border-top-width: 3px; padding-top: 16px; }
 .card.fail, .card.halted { border-color: var(--down); border-top-width: 3px; padding-top: 16px; }
 .card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
 .card-head .meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
@@ -98,7 +102,7 @@ h3 { font-size: 1.25rem; }
 .status.collect { color: var(--oxford); } .status.collect .dot { background: var(--oxford); }
 .status.pass { color: var(--up); } .status.pass .dot { background: var(--up); }
 .status.fail, .status.halt { color: var(--down); } .status.fail .dot, .status.halt .dot { background: var(--down); }
-.status.attn { color: var(--brass); } .status.attn .dot { background: var(--brass); }
+.status.attn { color: var(--warn); } .status.attn .dot { background: var(--warn); }
 .figs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
 .figs > div { display: grid; gap: 2px; }
 .figs .v { font: 400 1.25rem/1.25 var(--font-display); }
