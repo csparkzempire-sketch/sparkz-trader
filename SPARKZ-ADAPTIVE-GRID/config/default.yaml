@@ -1,0 +1,66 @@
+# SPARKZ Adaptive Grid & Basket - default configuration.
+# Every value can be overridden by a flat environment variable (see .env.example)
+# or per run from the API / comparison lab. Research settings, not recommendations.
+name: default
+market:
+  symbol: XAUUSD
+  timeframe: 15m
+analysis:
+  ema_fast: 20
+  ema_slow: 50
+  ema_trend: 200
+  rsi_period: 14
+  atr_period: 14
+  bb_period: 20
+  bb_std: 2.0
+  adx_period: 14
+  trend_adx_min: 20
+  range_adx_max: 18
+  vol_lookback: 500
+  high_vol_percentile: 0.85
+  low_vol_percentile: 0.15
+entry:
+  mode: TREND
+  rsi_buy_min: 50
+  rsi_sell_max: 50
+  min_trend_strength: 20
+  require_ema_trend_alignment: false
+  skip_high_volatility: true
+grid:
+  mode: ATR
+  price_step: 1.0
+  step_growth: 0.0
+  atr_multiplier: 0.5
+  min_bars_between_entries: 1
+sizing:
+  mode: FIXED
+  base_lot: 0.01
+  martingale_multiplier: 2.0
+  allow_martingale: false      # HIGH RISK mode; must be switched on explicitly
+target:
+  mode: PERCENT
+  fixed_usd: 10
+  percent: 0.5
+  risk_reward: 1.0
+  atr_multiplier: 1.0
+stop:
+  max_basket_loss_percent: 1.0
+  max_basket_bars: null
+risk:
+  initial_capital: 10000
+  risk_per_cycle: 0.01
+  max_positions: 5
+  max_daily_loss_percent: 3.0
+  max_account_drawdown_percent: 10.0
+  max_exposure_leverage: 10.0
+  max_margin_usage_percent: 50.0
+  cooldown_bars_after_loss: 8
+execution:
+  spread_multiplier: 1.0
+  slippage_multiplier: 1.0
+  commission_per_lot_side: 0.0
+  entry_latency_bars: 0
+  intrabar_mode: PESSIMISTIC
+  use_bar_spread: true
+paper_trading: true
+live_trading_enabled: false    # not implemented in version 1; true is rejected
