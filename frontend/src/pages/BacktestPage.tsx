@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Area, CartesianGrid, ComposedChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { api } from "../services/api";
+import { chart } from "../theme";
 import { useAppState } from "../hooks/useAppState";
 import { DisclaimerNote, ErrorBanner, LoadingBlock, PageHeader, StatCard, SymbolTimeframePicker } from "../components/ui";
 
@@ -57,6 +58,7 @@ export default function BacktestPage() {
     equity: p.equity,
   }));
 
+  const c = chart();
   return (
     <div>
       <PageHeader title="Backtesting" subtitle="Event-driven, cost-aware backtest with next-bar execution" />
@@ -77,7 +79,7 @@ export default function BacktestPage() {
         <button
           onClick={run}
           disabled={loading}
-          className="mt-4 bg-accent-brand text-white text-sm px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+          className="mt-4 btn-primary"
         >
           {loading ? "Running backtest…" : "Run Backtest"}
         </button>
@@ -121,11 +123,11 @@ export default function BacktestPage() {
               <div className="p-4 h-72">
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart data={equityData}>
-                    <CartesianGrid stroke="#1c2532" strokeDasharray="3 3" />
-                    <XAxis dataKey="time" stroke="#6e7681" fontSize={11} minTickGap={40} />
-                    <YAxis stroke="#6e7681" fontSize={11} domain={["auto", "auto"]} />
-                    <Tooltip contentStyle={{ background: "#0f1520", border: "1px solid #1c2532", fontSize: 12 }} />
-                    <Area type="monotone" dataKey="equity" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.15} />
+                    <CartesianGrid stroke={c.grid} strokeDasharray="3 3" />
+                    <XAxis dataKey="time" stroke={c.axis} fontSize={11} minTickGap={40} />
+                    <YAxis stroke={c.axis} fontSize={11} domain={["auto", "auto"]} />
+                    <Tooltip contentStyle={c.tooltip} />
+                    <Area type="monotone" dataKey="equity" stroke={c.line} strokeWidth={1.75} fill={c.line} fillOpacity={0.06} />
                   </ComposedChart>
                 </ResponsiveContainer>
               </div>

@@ -62,7 +62,6 @@ function MarketsSection({ rows, traded }: { rows: ResearchMarketRow[]; traded: R
           <thead>
             <tr className="border-b border-base-border text-left text-base-muted text-xs uppercase tracking-wider">
               <th className="px-3 py-2">Market</th>
-              <th className="px-3 py-2">Period</th>
               <th className="px-3 py-2 text-right">Buy-only</th>
               <th className="px-3 py-2 text-right">Buy & sell</th>
               <th className="px-3 py-2 text-right">Sell-only</th>
@@ -81,9 +80,9 @@ function MarketsSection({ rows, traded }: { rows: ResearchMarketRow[]; traded: R
                 <tr key={`${first.symbol}${first.timeframe}`} className="border-b border-base-border/50 font-mono-nums">
                   <td className="px-3 py-2 font-sans">
                     {first.market} <span className="text-base-muted">· {TF_LABEL[first.timeframe]}</span>
-                  </td>
-                  <td className="px-3 py-2 text-base-muted text-xs">
-                    {first.start} → {first.end}
+                    <span className="block font-mono-nums text-[11px] text-base-muted">
+                      {first.start} → {first.end}
+                    </span>
                   </td>
                   {(["buy", "both", "sell"] as const).map((side) => (
                     <td key={side} className="px-3 py-2 text-right">
@@ -96,7 +95,7 @@ function MarketsSection({ rows, traded }: { rows: ResearchMarketRow[]; traded: R
                   <td className={`px-3 py-2 text-right ${toneClass(first.hold_pct)}`}>{pct(first.hold_pct, 0)}</td>
                   <td className="px-3 py-2 text-right">
                     {by.buy.periods.profitable}/{by.buy.periods.count}
-                    <span className="block text-[11px] text-base-muted">buy-only, per {by.buy.periods.kind}</span>
+                    <span className="block text-[11px] text-base-muted">per {by.buy.periods.kind}</span>
                   </td>
                   <td className="px-3 py-2">
                     {tradedHere ? (
