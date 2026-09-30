@@ -121,6 +121,8 @@ class BacktestEngine:
         risk_state = RiskState(equity=self.config.initial_capital, peak_equity=self.config.initial_capital)
         warnings: list[str] = []
         current_day = None
+        self._drawdown_halt_at = None
+        self._blocked_by_drawdown = 0
 
         for i in range(len(df)):
             row = df.iloc[i]
@@ -168,6 +170,23 @@ class BacktestEngine:
                 self._settle(risk_state, trade)
             portfolio.record_equity(last_row["timestamp"], last_row["close"])
 
+        if self._drawdown_halt_at is not None:
+            last_entry = max((t.entry_time for t in portfolio.closed_trades), default=None)
+            halted_bars = int((df["timestamp"] >= self._drawdown_halt_at).sum())
+            if last_entry is None or last_entry < self._drawdown_halt_at:
+                warnings.append(
+                    f"Max drawdown limit ({self.risk_manager.cfg.max_drawdown_pct:.0%} below peak equity) was hit at "
+                    f"{self._drawdown_halt_at} and trading never resumed: the remaining {halted_bars} of {len(df)} bars "
+                    f"({halted_bars / len(df):.0%} of the backtest) sat in cash, and {self._blocked_by_drawdown} entry "
+                    "signals were skipped. Results after that point say nothing about the strategy. Raise "
+                    "MAX_DRAWDOWN_PCT to see how it would have traded through."
+                )
+            else:
+                warnings.append(
+                    f"Max drawdown limit ({self.risk_manager.cfg.max_drawdown_pct:.0%}) blocked "
+                    f"{self._blocked_by_drawdown} entry signals, first at {self._drawdown_halt_at}."
+                )
+
         result = BacktestResult(
             portfolio=portfolio,
             config=self.config,
@@ -210,6 +229,10 @@ class BacktestEngine:
 
         check = self.risk_manager.check_new_trade(risk_state, size_result.dollar_risk)
         if not check.allowed:
+            if check.reason.startswith("max_drawdown_pct"):
+                self._blocked_by_drawdown += 1
+                if self._drawdown_halt_at is None:
+                    self._drawdown_halt_at = ts
             return
 
         portfolio.open(
