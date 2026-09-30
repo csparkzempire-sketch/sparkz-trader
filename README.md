@@ -368,6 +368,21 @@ daily crypto candle closes). Each run:
 - decides on a new entry from the newest closed candle only. It never
   back-fills entries on days it wasn't running.
 
+**Pass/fail targets.** A new account gets its targets from a backtest of the
+same setup, and they stay fixed: `--set-targets` only adds them where none
+exist. If the backtest behind them turns out to be wrong (for example, after a
+backtester bug fix), replace them on purpose:
+```bash
+python -m app.cli paper-trade --account btc_hourly_long --reset-targets \
+  --reason "backtester look-ahead fixes"
+```
+This reruns the backtest over the **same data window**, so only the
+backtest changes. The old targets are kept inside the new ones under
+`previous`, together with the reason, and the dashboard shows it. If the
+download no longer reaches back to the window's start (Yahoo keeps about two
+years of hourly bars), the command stops. Add `--new-window` to use the latest
+data instead.
+
 Strategies: `baseline` (buy and sell) or `baseline_long_only` (the same
 rules with the SELL side removed). `baseline_long_only` also works with
 `backtest --strategy`.

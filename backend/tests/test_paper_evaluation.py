@@ -5,9 +5,10 @@ from __future__ import annotations
 import argparse
 from datetime import datetime, timedelta, timezone
 
+import pandas as pd
 import pytest
 
-from app.paper.evaluation import MIN_TRADES, compute_targets, evaluate
+from app.paper.evaluation import MIN_TRADES, compute_norms, compute_targets, evaluate, reset_targets, targets_history
 from app.paper.runner import PaperRunConfig, init_state
 from app.paper.simulator import PaperTradeRecord
 
@@ -85,3 +86,81 @@ def test_cli_sets_targets_on_creation_and_never_overwrites_them(tmp_path, monkey
     cli.cmd_paper_trade(args)
     assert runner.load_state(tmp_path / "t.json").targets == first
     assert "already set" in capsys.readouterr().out
+
+
+def _account_with_targets(candles):
+    s = init_state(PaperRunConfig("t", "EURUSD=X", "1h", "baseline_long_only", 10_000))
+    s.targets = compute_targets(candles, "EURUSD=X", "1h", "baseline_long_only")
+    s.norms = compute_norms(candles, "EURUSD=X", "1h", "baseline_long_only")
+    return s
+
+
+def test_reset_recomputes_over_the_same_window_and_keeps_the_old_targets(synthetic_ohlcv):
+    s = _account_with_targets(synthetic_ohlcv.iloc[:1000])
+    old, old_norms = s.targets, s.norms
+    new = reset_targets(s, synthetic_ohlcv, "backtester fix")  # later bars exist but are left out
+    assert new["source"] == old["source"]
+    assert new["backtest_trades"] == old["backtest_trades"]  # same engine here, so same figures
+    assert new["reset_reason"] == "backtester fix" and new["previous"] == old
+    assert s.targets is new and s.norms["previous"] == old_norms
+
+
+def test_the_window_is_rebuilt_with_its_warm_up(synthetic_ohlcv):
+    t = compute_targets(synthetic_ohlcv.iloc[200:1000], "EURUSD=X", "1h", "baseline_long_only")
+    hist = targets_history(synthetic_ohlcv, t, "1h", "baseline_long_only")
+    assert hist is not None
+    assert compute_targets(hist, "EURUSD=X", "1h", "baseline_long_only")["source"] == t["source"]
+
+
+def test_reset_refuses_a_window_the_data_no_longer_covers(synthetic_ohlcv):
+    s = _account_with_targets(synthetic_ohlcv.iloc[:1000])
+    old = s.targets
+    with pytest.raises(ValueError, match="--new-window"):
+        reset_targets(s, synthetic_ohlcv.iloc[500:], "fix")
+    assert s.targets is old
+    new = reset_targets(s, synthetic_ohlcv.iloc[500:], "fix", new_window=True)
+    assert new["source"] != old["source"] and new["previous"] == old
+
+
+def test_reset_needs_a_reason_and_existing_targets(synthetic_ohlcv):
+    s = _account_with_targets(synthetic_ohlcv)
+    with pytest.raises(ValueError, match="reason"):
+        reset_targets(s, synthetic_ohlcv, "  ")
+    s.targets = None
+    with pytest.raises(ValueError, match="--set-targets"):
+        reset_targets(s, synthetic_ohlcv, "fix")
+
+
+def test_cli_reset_targets(tmp_path, monkeypatch, synthetic_ohlcv, capsys):
+    import app.cli as cli
+    import app.paper.runner as runner
+
+    monkeypatch.setattr(runner, "PAPER_DIR", tmp_path)
+    monkeypatch.setattr(cli, "_load_market_data", lambda sym, tf, use_cached=False: synthetic_ohlcv.copy())
+    args = argparse.Namespace(account="t", symbol="EURUSD=X", timeframe="1h", strategy="baseline_long_only",
+                              starting_balance=10_000, use_cached=False, resume=False, set_targets=False,
+                              explicit=True)
+    cli.cmd_paper_trade(args)
+    first = runner.load_state(tmp_path / "t.json").targets
+    capsys.readouterr()
+
+    args.reset_targets, args.reason = True, None
+    with pytest.raises(SystemExit):
+        cli.cmd_paper_trade(args)
+    assert runner.load_state(tmp_path / "t.json").targets == first
+
+    args.reason = "backtester fix"
+    cli.cmd_paper_trade(args)
+    t = runner.load_state(tmp_path / "t.json").targets
+    assert t["previous"] == first and t["reset_reason"] == "backtester fix"
+    assert "Targets reset (backtester fix)" in capsys.readouterr().out
+    assert evaluate(runner.load_state(tmp_path / "t.json"))["targets_reset_reason"] == "backtester fix"
+
+
+def test_older_targets_are_cut_where_they_were_set(synthetic_ohlcv):
+    """Targets saved before "last_bar" existed: the window ends at the bars closed at set_at."""
+    t = compute_targets(synthetic_ohlcv.iloc[:1000], "EURUSD=X", "1h", "baseline_long_only")
+    last = pd.Timestamp(t.pop("last_bar"))
+    t["set_at"] = (last + pd.Timedelta(hours=1, minutes=5)).isoformat()
+    hist = targets_history(synthetic_ohlcv, t, "1h", "baseline_long_only")
+    assert pd.Timestamp(hist["timestamp"].iloc[-1]) == last
