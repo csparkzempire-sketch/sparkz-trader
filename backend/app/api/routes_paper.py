@@ -25,6 +25,7 @@ from app.api.schemas import (
 )
 from app.data.downloader import DownloadError, download_ohlcv
 from app.paper import state as paper_state
+from app.paper.evaluation import evaluate
 from app.paper.runner import list_states
 from app.paper.scheduler import FeedStatus, paper_feed_scheduler
 
@@ -225,6 +226,7 @@ def list_paper_runs() -> list[PaperRunSummary]:
             price_error=price_error, open_positions=positions, closed_trades=trades,
             winning_trades=sum(1 for t in a.trade_history if t.pnl > 0),
             halted=s.halted,
+            evaluation=evaluate(s),
             log=list(reversed(s.log[-50:])),
         ))
     return out
