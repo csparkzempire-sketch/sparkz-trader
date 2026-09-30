@@ -6,7 +6,7 @@
     "strategy": "baseline",
     "starting_balance": 10000.0
   },
-  "last_processed": "2026-09-30T15:00:00+00:00",
+  "last_processed": "2026-09-30T16:00:00+00:00",
   "account": {
     "balance": 9690.230579480161,
     "is_active": true,
@@ -62,7 +62,8 @@
     "2026-09-30 12:00 OPEN BUY ETH-USD @ 2732.09, size 2.805725, stop 2696.82, target 2802.62",
     "2026-09-30 13:00 CLOSE BUY ETH-USD STOP @ 2695.32, pnl -103.16, balance 9791.86",
     "2026-09-30 13:00 OPEN BUY ETH-USD @ 2710.08, size 2.476649, stop 2670.54, target 2789.15",
-    "2026-09-30 14:00 CLOSE BUY ETH-USD STOP @ 2669.04, pnl -101.63, balance 9690.23"
+    "2026-09-30 14:00 CLOSE BUY ETH-USD STOP @ 2669.04, pnl -101.63, balance 9690.23",
+    "2026-09-30 16:00 BUY signal skipped: max_daily_loss_pct breached (3.20% >= 3.00%)"
   ],
   "halted": null,
   "targets": {

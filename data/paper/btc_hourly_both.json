@@ -6,7 +6,7 @@
     "strategy": "baseline",
     "starting_balance": 10000.0
   },
-  "last_processed": "2026-09-30T15:00:00+00:00",
+  "last_processed": "2026-09-30T16:00:00+00:00",
   "account": {
     "balance": 9694.947279309716,
     "is_active": true,
@@ -64,7 +64,8 @@
     "2026-09-30 13:00 OPEN BUY BTC-USD @ 84604.82, size 0.086513, stop 83472.62, target 86869.22",
     "2026-09-30 14:00 CLOSE BUY BTC-USD STOP @ 83447.62, pnl -100.11, balance 9694.95",
     "2026-09-30 14:00 BUY signal skipped: max_daily_loss_pct breached (3.15% >= 3.00%)",
-    "2026-09-30 15:00 BUY signal skipped: max_daily_loss_pct breached (3.15% >= 3.00%)"
+    "2026-09-30 15:00 BUY signal skipped: max_daily_loss_pct breached (3.15% >= 3.00%)",
+    "2026-09-30 16:00 BUY signal skipped: max_daily_loss_pct breached (3.15% >= 3.00%)"
   ],
   "halted": null,
   "targets": {
