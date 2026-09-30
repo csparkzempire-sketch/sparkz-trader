@@ -6,7 +6,7 @@
     "strategy": "baseline_long_only",
     "starting_balance": 10000.0
   },
-  "last_processed": "2026-09-30T18:00:00+00:00",
+  "last_processed": "2026-09-30T19:00:00+00:00",
   "account": {
     "balance": 9796.279118053255,
     "is_active": true,
@@ -72,5 +72,29 @@
     "win_rate_pct": 39.32,
     "max_drawdown_pct": -27.5977,
     "avg_hold_bars": 16.79
+  },
+  "norms": {
+    "set_at": "2026-09-30T20:06:31+00:00",
+    "days": 730,
+    "trades": 503,
+    "max_losing_streak": 13,
+    "losing_streaks": {
+      "1": 19,
+      "2": 22,
+      "3": 9,
+      "4": 11,
+      "5": 7,
+      "6": 4,
+      "7": 1,
+      "8": 2,
+      "9": 6,
+      "11": 1,
+      "12": 1,
+      "13": 1
+    },
+    "daily_limit_pct": 3.0,
+    "daily_limit_days": 12,
+    "max_daily_limit_days_in_week": 2,
+    "worst_week_pct": -9.01
   }
 }

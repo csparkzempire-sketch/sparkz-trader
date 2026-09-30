@@ -45,5 +45,23 @@
     "win_rate_pct": 40.38,
     "max_drawdown_pct": -8.504,
     "avg_hold_bars": 14.37
+  },
+  "norms": {
+    "set_at": "2026-09-30T20:06:34+00:00",
+    "days": 1813,
+    "trades": 52,
+    "max_losing_streak": 8,
+    "losing_streaks": {
+      "1": 2,
+      "3": 1,
+      "5": 1,
+      "6": 1,
+      "7": 1,
+      "8": 1
+    },
+    "daily_limit_pct": 3.0,
+    "daily_limit_days": 0,
+    "max_daily_limit_days_in_week": 0,
+    "worst_week_pct": -2.02
   }
 }
