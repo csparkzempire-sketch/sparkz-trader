@@ -219,4 +219,5 @@ class PaperRunSummary(BaseModel):
     winning_trades: int
     halted: str | None = None
     evaluation: dict | None = None
+    norms: dict | None = None  # normal-losses check (app.paper.norms)
     log: list[str]

@@ -136,6 +136,16 @@ h3 { font-size: 1.25rem; }
 details summary { cursor: pointer; font: 600 13px var(--font-body); color: var(--oxford); list-style: none; }
 summary::-webkit-details-marker { display: none; }
 summary::after { content: "  ›"; } details[open] summary::after { content: "  ⌄"; }
+.norms { font-size: 12px; color: var(--muted); }
+.norms .ok { color: var(--up); font-weight: 600; } .norms .warn { color: var(--warn); font-weight: 600; }
+.norms-notes { margin: 0; font-size: 12px; color: var(--muted); max-width: 70ch; }
+.norms-list { display: grid; gap: 10px; }
+.norm { display: grid; gap: 3px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.norm-head { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; }
+.norm-head span:last-child { font-size: 11px; text-transform: uppercase; letter-spacing: 0.09em; }
+.norm-figs { display: flex; flex-wrap: wrap; gap: 2px 16px; font-size: 12px; color: var(--muted); }
+.norm-figs b { font-weight: 600; color: var(--ink); }
+.norm-note { font-size: 12px; color: var(--muted); }
 .detail-body { display: grid; gap: 12px; margin-top: 10px; }
 .scroll { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -258,13 +268,15 @@ let snapshot = null, history = null, filter = "all";
 try { filter = localStorage.getItem("desk-filter") || "all"; } catch (e) {}
 
 const nearStop = (a) => a.open_positions.some((p) => p.stop_distance_pct != null && Math.abs(p.stop_distance_pct) < 1);
-const needsAttention = (a) => a.halted || (a.evaluation?.verdict || "").startsWith("Failing") || nearStop(a);
+const outsideNorms = (a) => (a.norms?.verdict || "").startsWith("Outside");
+const needsAttention = (a) => a.halted || (a.evaluation?.verdict || "").startsWith("Failing") || nearStop(a) || outsideNorms(a);
 function statusLabel(a) {
   const s = (cls, text) => `<span class="status ${cls}"><span class="dot"></span>${text}</span>`;
   if (a.halted) return s("halt", "Halted");
   const v = a.evaluation?.verdict || "No targets";
   if (v.startsWith("Failing")) return s("fail", "Failing");
   if (v === "Passing") return s("pass", "Passing");
+  if (outsideNorms(a)) return s("attn", "Outside range");
   if (nearStop(a)) return s("attn", "Near stop");
   return s("collect", "Collecting");
 }
@@ -296,7 +308,17 @@ function card(a) {
   const e = a.evaluation || { checks: [], closed_trades: 0, min_trades: 30, verdict: "No targets set" };
   const prog = Math.min(100, (e.closed_trades / (e.min_trades || 30)) * 100);
   const failing = (e.verdict || "").startsWith("Failing");
-  const cls = a.halted ? "halted" : failing ? "fail" : nearStop(a) ? "attn" : "";
+  const cls = a.halted ? "halted" : failing ? "fail" : (nearStop(a) || outsideNorms(a)) ? "attn" : "";
+  // Normal-losses check: the live bad patch vs the worst stretches of the same backtest.
+  const n = a.norms;
+  const streak = n?.items.find((i) => i.name === "Losing streak");
+  const normsLine = n ? `<div class="norms"><span class="${outsideNorms(a) ? "warn" : "ok"}">${esc(n.verdict)}</span>${
+    streak ? ` · losing streak ${esc(streak.live.split(",")[0].replace(" now", ""))}, backtest ${esc(streak.backtest)}` : ""}</div>` : "";
+  const normsTable = n ? `<div class="norms-list"><div class="label">Normal-losses check</div>${
+    n.items.map((i) => `<div class="norm"><div class="norm-head"><span>${esc(i.name)}</span><span class="${i.status === "outside" ? "st-fail" : "st-pending"}">${i.status === "outside" ? "outside range" : "normal"}</span></div>
+      <div class="norm-figs"><span>Paper: <b class="num">${esc(i.live)}</b></span><span>Backtest worst: <span class="num">${esc(i.backtest.replace(/^(longest|most in a week) /, ""))}</span></span></div>
+      ${i.note ? `<div class="norm-note">${esc(i.note[0].toUpperCase() + i.note.slice(1))}.</div>` : ""}</div>`).join("")
+  }<p class="norms-notes">An early warning only; it never changes the pass/fail targets.</p></div>` : "";
   const checks = e.checks.length ? `<div class="scroll"><table><thead><tr><th>Check</th><th>Target</th><th class="r">Paper so far</th><th>Status</th></tr></thead><tbody>${
     e.checks.map((c) => `<tr><td>${esc(c.name)}</td><td class="muted">${esc(c.target)}</td><td class="r num">${esc(c.actual)}</td><td class="st-${c.status}">${c.status}</td></tr>`).join("")}</tbody></table></div>` : '<p class="muted" style="margin:0;font-size:13px">No targets set.</p>';
   const trades = a.closed_trades.length ? `<div class="scroll"><table><thead><tr><th>Closed</th><th>Side</th><th class="r">Entry</th><th class="r">Exit</th><th class="r">P&amp;L</th><th>Reason</th></tr></thead><tbody>${
@@ -313,7 +335,8 @@ function card(a) {
     </div>
     ${positionBlock(a)}
     <div class="progress"><div class="row"><span>${esc(e.verdict)}</span><span class="num">${a.winning_trades} won</span></div><div class="bar"><i style="width:${prog}%"></i></div></div>
-    <details><summary>Checks, trades and activity</summary><div class="detail-body">${checks}${trades}${log}</div></details>
+    ${normsLine}
+    <details><summary>Checks, trades and activity</summary><div class="detail-body">${checks}${normsTable}${trades}${log}</div></details>
   </article>`;
 }
 
