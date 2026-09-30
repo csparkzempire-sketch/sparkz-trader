@@ -114,6 +114,130 @@
     }
    },
    "passed": false
+  },
+  {
+   "account": "eth_hourly_both",
+   "symbol": "ETH-USD",
+   "timeframe": "1h",
+   "strategy": "baseline",
+   "window": [
+    "2024-10-01 13:00:00+00:00",
+    "2026-09-30 01:00:00+00:00"
+   ],
+   "real_return_pct": 300.85041541754725,
+   "real_trades": 980,
+   "buy_and_hold_pct": 3.4591798411270025,
+   "tests": {
+    "random_timing": {
+     "median_trades": 648.5,
+     "runs": 200,
+     "p5": -49.794175124443804,
+     "p50": -41.95526409732498,
+     "p95": 19.706457872054653,
+     "max": 132.40336576836393,
+     "real_percentile": 100.0,
+     "passed": true
+    },
+    "random_direction": {
+     "median_trades": 749.0,
+     "runs": 200,
+     "p5": -49.81357701048103,
+     "p50": -38.983767479653,
+     "p95": 33.96958872957973,
+     "max": 144.19383984123863,
+     "real_percentile": 100.0,
+     "passed": true
+    }
+   },
+   "passed": true
+  },
+  {
+   "account": "eth_hourly_long",
+   "symbol": "ETH-USD",
+   "timeframe": "1h",
+   "strategy": "baseline_long_only",
+   "window": [
+    "2024-10-01 13:00:00+00:00",
+    "2026-09-30 01:00:00+00:00"
+   ],
+   "real_return_pct": 82.93281715278479,
+   "real_trades": 580,
+   "buy_and_hold_pct": 3.4591798411270025,
+   "tests": {
+    "random_timing": {
+     "median_trades": 548.5,
+     "runs": 200,
+     "p5": -47.211226644648626,
+     "p50": -34.43566992282713,
+     "p95": 18.461709666837113,
+     "max": 50.977791784282815,
+     "real_percentile": 100.0,
+     "passed": true
+    }
+   },
+   "passed": true
+  },
+  {
+   "account": "gold_daily_long",
+   "symbol": "GC=F",
+   "timeframe": "1d",
+   "strategy": "baseline_long_only",
+   "window": [
+    "2021-10-19 00:00:00+00:00",
+    "2026-09-29 00:00:00+00:00"
+   ],
+   "real_return_pct": 33.39771604550661,
+   "real_trades": 54,
+   "buy_and_hold_pct": 136.07456624188083,
+   "tests": {
+    "random_timing": {
+     "median_trades": 52.0,
+     "runs": 200,
+     "p5": 9.755553165581855,
+     "p50": 19.689463235171424,
+     "p95": 39.41089165978493,
+     "max": 49.24439297788143,
+     "real_percentile": 86.5,
+     "passed": false
+    }
+   },
+   "passed": false
+  },
+  {
+   "account": "gold_hourly_both",
+   "symbol": "GC=F",
+   "timeframe": "1h",
+   "strategy": "baseline",
+   "window": [
+    "2024-05-08 17:00:00+00:00",
+    "2026-09-30 06:00:00+00:00"
+   ],
+   "real_return_pct": 225.03062154449515,
+   "real_trades": 677,
+   "buy_and_hold_pct": 81.44032771649697,
+   "tests": {
+    "random_timing": {
+     "median_trades": 556.0,
+     "runs": 200,
+     "p5": -49.83174244059897,
+     "p50": -43.385807364602535,
+     "p95": 18.89276317449615,
+     "max": 104.25984738696803,
+     "real_percentile": 100.0,
+     "passed": true
+    },
+    "random_direction": {
+     "median_trades": 459.0,
+     "runs": 200,
+     "p5": -50.01370751682413,
+     "p50": -45.7947329771154,
+     "p95": -10.491159361069663,
+     "max": 40.95843172371541,
+     "real_percentile": 100.0,
+     "passed": true
+    }
+   },
+   "passed": true
   }
  ]
 }
