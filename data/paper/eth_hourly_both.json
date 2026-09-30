@@ -1,0 +1,38 @@
+{
+  "config": {
+    "account_name": "eth_hourly_both",
+    "symbol": "ETH-USD",
+    "timeframe": "1h",
+    "strategy": "baseline",
+    "starting_balance": 10000.0
+  },
+  "last_processed": "2026-09-30T05:00:00+00:00",
+  "account": {
+    "balance": 10000.0,
+    "is_active": true,
+    "open_positions": [
+      {
+        "symbol": "ETH-USD",
+        "direction": "SELL",
+        "entry_price": 2672.409912109375,
+        "stop_price": 2702.54862422647,
+        "target_price": 2612.132487875185,
+        "size": 3.317991811046185,
+        "opened_at": "2026-09-30T05:00:00+00:00"
+      }
+    ],
+    "trade_history": [],
+    "risk_state": {
+      "equity": 10000.0,
+      "peak_equity": 10000.0,
+      "open_positions": 1,
+      "current_exposure": 100.0,
+      "daily_loss": 0.0,
+      "current_day": "2026-09-30",
+      "bars_since_last_trade": 10000
+    }
+  },
+  "log": [
+    "2026-09-30 05:00 OPEN SELL ETH-USD @ 2672.41, size 3.317992, stop 2702.55, target 2612.13"
+  ]
+}

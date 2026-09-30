@@ -1,0 +1,38 @@
+{
+  "config": {
+    "account_name": "btc_hourly_both",
+    "symbol": "BTC-USD",
+    "timeframe": "1h",
+    "strategy": "baseline",
+    "starting_balance": 10000.0
+  },
+  "last_processed": "2026-09-30T05:00:00+00:00",
+  "account": {
+    "balance": 10000.0,
+    "is_active": true,
+    "open_positions": [
+      {
+        "symbol": "BTC-USD",
+        "direction": "SELL",
+        "entry_price": 83319.6875,
+        "stop_price": 84046.61988480996,
+        "target_price": 81865.82273038008,
+        "size": 0.13756437612301842,
+        "opened_at": "2026-09-30T05:00:00+00:00"
+      }
+    ],
+    "trade_history": [],
+    "risk_state": {
+      "equity": 10000.0,
+      "peak_equity": 10000.0,
+      "open_positions": 1,
+      "current_exposure": 100.0,
+      "daily_loss": 0.0,
+      "current_day": "2026-09-30",
+      "bars_since_last_trade": 10000
+    }
+  },
+  "log": [
+    "2026-09-30 05:00 OPEN SELL BTC-USD @ 83319.69, size 0.137564, stop 84046.62, target 81865.82"
+  ]
+}
