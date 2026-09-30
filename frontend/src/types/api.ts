@@ -192,3 +192,47 @@ export interface Instrument {
   slippage_pips: number;
   trades_24_7: boolean;
 }
+
+export interface PaperRunPosition {
+  symbol: string;
+  direction: string;
+  size: number;
+  entry_price: number;
+  stop_price: number;
+  target_price: number;
+  opened_at: string;
+  unrealized_pnl: number | null;
+  stop_distance_pct: number | null;
+  target_distance_pct: number | null;
+}
+
+export interface PaperRunTrade {
+  symbol: string;
+  direction: string;
+  entry_price: number;
+  exit_price: number;
+  size: number;
+  pnl: number;
+  opened_at: string;
+  closed_at: string;
+  reason: string;
+}
+
+export interface PaperRunSummary {
+  account_name: string;
+  symbol: string;
+  timeframe: string;
+  strategy: string;
+  starting_balance: number;
+  balance: number;
+  equity: number;
+  return_pct: number;
+  last_processed: string | null;
+  latest_price: number | null;
+  latest_price_at: string | null;
+  price_error: string | null;
+  open_positions: PaperRunPosition[];
+  closed_trades: PaperRunTrade[];
+  winning_trades: number;
+  log: string[];
+}

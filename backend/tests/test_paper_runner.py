@@ -113,3 +113,55 @@ def test_state_round_trips_through_disk(tmp_path, monkeypatch):
 def test_rejects_model_strategies():
     with pytest.raises(ValueError):
         init_state(PaperRunConfig("t", "BTC-USD", "1d", "random_forest_x", 10_000))
+
+
+def _saved_account(tmp_path, monkeypatch):
+    monkeypatch.setattr(runner, "PAPER_DIR", tmp_path)
+    _force_signal(monkeypatch, "BUY")
+    s = _state()
+    run_step(s, candles=_daily(), now=pd.Timestamp("2026-01-01", tz="UTC"))
+    save_state(s, tmp_path / "t.json")
+    return s
+
+
+def test_runs_endpoint_marks_open_positions_to_latest_price(tmp_path, monkeypatch):
+    from fastapi.testclient import TestClient
+
+    import app.api.routes_paper as routes
+    from app.main import app
+
+    s = _saved_account(tmp_path, monkeypatch)
+    pos = s.account.open_positions["BTC-USD"]
+    price = pos.entry_price * 1.05
+    monkeypatch.setattr(routes, "_latest_price", lambda sym: (price, pd.Timestamp("2026-01-01", tz="UTC"), None))
+
+    [acct] = TestClient(app).get("/paper/runs").json()
+    assert acct["account_name"] == "t" and acct["strategy"] == "baseline_long_only"
+    [p] = acct["open_positions"]
+    assert p["unrealized_pnl"] == pytest.approx((price - pos.entry_price) * pos.size)
+    assert acct["equity"] == pytest.approx(10_000 + p["unrealized_pnl"])
+    assert p["stop_distance_pct"] < 0 < p["target_distance_pct"]
+
+
+def test_runs_endpoint_still_works_when_price_is_unavailable(tmp_path, monkeypatch):
+    from fastapi.testclient import TestClient
+
+    import app.api.routes_paper as routes
+    from app.main import app
+
+    _saved_account(tmp_path, monkeypatch)
+    monkeypatch.setattr(routes, "_latest_price", lambda sym: (None, None, "Yahoo unreachable"))
+
+    [acct] = TestClient(app).get("/paper/runs").json()
+    assert acct["price_error"] == "Yahoo unreachable"
+    assert acct["equity"] == pytest.approx(acct["balance"])
+    assert acct["open_positions"][0]["unrealized_pnl"] is None
+
+
+def test_runs_endpoint_is_empty_without_accounts(tmp_path, monkeypatch):
+    from fastapi.testclient import TestClient
+
+    from app.main import app
+
+    monkeypatch.setattr(runner, "PAPER_DIR", tmp_path / "none")
+    assert TestClient(app).get("/paper/runs").json() == []
