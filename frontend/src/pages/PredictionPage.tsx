@@ -41,12 +41,12 @@ export default function PredictionPage() {
   return (
     <div>
       <PageHeader title="AI Prediction" subtitle="Model-estimated probability of the configured target event — never a certainty" />
-      <div className="px-6 pb-6 flex items-center gap-4">
+      <div className="px-4 md:px-6 pb-6 flex flex-wrap items-center gap-3 md:gap-4">
         <SymbolTimeframePicker />
         <select
           value={selectedModel}
           onChange={(e) => setSelectedModel(e.target.value)}
-          className="bg-base-bg border border-base-border rounded px-2 py-1.5 text-sm text-base-text min-w-[240px]"
+          className="bg-base-bg border border-base-border rounded px-2 py-1.5 text-sm text-base-text w-full sm:w-auto sm:min-w-[240px]"
         >
           <option value="">Select a trained model…</option>
           {models.map((m) => (
@@ -64,7 +64,7 @@ export default function PredictionPage() {
         </button>
       </div>
 
-      <div className="px-6 pb-8 space-y-4">
+      <div className="px-4 md:px-6 pb-8 space-y-4">
         {error && <ErrorBanner message={error} />}
         {models.length === 0 && !error && (
           <div className="panel p-4 text-sm text-base-muted">
@@ -73,8 +73,8 @@ export default function PredictionPage() {
         )}
 
         {result && (
-          <div className="panel p-6">
-            <div className="flex items-center justify-between mb-6">
+          <div className="panel p-4 md:p-6">
+            <div className="flex items-start justify-between gap-3 mb-6">
               <div>
                 <div className="text-xs uppercase tracking-wider text-base-muted">Model Estimate</div>
                 <div className="text-sm text-base-muted mt-1">
@@ -84,7 +84,7 @@ export default function PredictionPage() {
               <SignalBadge signal={result.signal} />
             </div>
 
-            <div className="grid grid-cols-2 gap-6 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
               <div>
                 <div className="stat-label mb-2">Probability Up</div>
                 <div className="h-3 bg-base-bg rounded overflow-hidden border border-base-border">

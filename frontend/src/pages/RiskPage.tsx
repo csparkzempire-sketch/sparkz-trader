@@ -8,7 +8,7 @@ export default function RiskPage() {
   return (
     <div>
       <PageHeader title="Risk" subtitle="Exposure and drawdown from the most recent backtest configuration" />
-      <div className="px-6 pb-8">
+      <div className="px-4 md:px-6 pb-8">
         {!m ? (
           <div className="panel p-6 text-sm text-base-muted">
             No backtest run yet — risk figures populate after a backtest completes.
