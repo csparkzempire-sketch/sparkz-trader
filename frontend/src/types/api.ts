@@ -253,3 +253,57 @@ export interface PaperRunSummary {
   evaluation: PaperEvaluation | null;
   log: string[];
 }
+
+export interface ResearchBacktest {
+  return_pct: number;
+  cagr_pct: number | null;
+  max_drawdown_pct: number;
+  sharpe: number | null;
+  profit_factor: number | null;
+  trades: number;
+  win_rate_pct: number;
+}
+
+export interface ResearchMarketRow {
+  symbol: string;
+  market: string;
+  timeframe: string;
+  side: "both" | "buy" | "sell";
+  side_label: string;
+  start: string;
+  end: string;
+  hold_pct: number;
+  full: ResearchBacktest;
+  periods: {
+    kind: string;
+    count: number;
+    profitable: number;
+    avg_pct: number | null;
+    worst_pct: number | null;
+    chained_pct: number;
+    hold_chained_pct: number;
+    corr_with_hold: number | null;
+  };
+}
+
+export interface ResearchSensitivity {
+  account: string;
+  symbol: string;
+  timeframe: string;
+  side: string;
+  default: ResearchBacktest;
+  variants: (ResearchBacktest & { variant: string; param: string; param_label: string; value: number })[];
+  profitable: number;
+  count: number;
+  min_pct: number;
+  max_pct: number;
+  median_pct: number;
+  default_rank: number;
+}
+
+export interface ResearchResults {
+  generated_at: string;
+  note: string;
+  markets: ResearchMarketRow[];
+  sensitivity: ResearchSensitivity[];
+}

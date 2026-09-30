@@ -7,6 +7,7 @@ import BacktestPage from "./pages/BacktestPage";
 import TradesPage from "./pages/TradesPage";
 import PaperTradingPage from "./pages/PaperTradingPage";
 import RiskPage from "./pages/RiskPage";
+import ResearchPage from "./pages/ResearchPage";
 import ModelLabPage from "./pages/ModelLabPage";
 import { AppStateProvider } from "./hooks/useAppState";
 
@@ -17,6 +18,7 @@ const NAV_ITEMS = [
   { to: "/backtest", label: "Backtesting" },
   { to: "/trades", label: "Trades" },
   { to: "/paper", label: "Paper Trading" },
+  { to: "/research", label: "Research" },
   { to: "/risk", label: "Risk" },
   { to: "/model-lab", label: "Model Lab" },
 ];
@@ -131,6 +133,7 @@ function Shell() {
           <Route path="/backtest" element={<BacktestPage />} />
           <Route path="/trades" element={<TradesPage />} />
           <Route path="/paper" element={<PaperTradingPage />} />
+          <Route path="/research" element={<ResearchPage />} />
           <Route path="/risk" element={<RiskPage />} />
           <Route path="/model-lab" element={<ModelLabPage />} />
         </Routes>

@@ -238,3 +238,30 @@ def test_runs_endpoint_reports_halted_accounts(tmp_path, monkeypatch):
 
     [acct] = TestClient(app).get("/paper/runs").json()
     assert acct["halted"] == s.halted
+
+
+# --- Snapshot feed for the hosted page -----------------------------------------
+
+def test_snapshot_and_history_feed(tmp_path, monkeypatch):
+    import json
+    from datetime import timedelta
+
+    from app.paper import snapshot
+    from app.paper.summary import summarize
+
+    _saved_account(tmp_path, monkeypatch)
+    states = runner.list_states()
+    summaries = summarize(states, lambda sym: (60_000.0, pd.Timestamp("2026-01-01", tz="UTC"), None))
+    now = datetime(2026, 1, 1, 10, 20, tzinfo=timezone.utc)
+    hist = tmp_path / "hist.jsonl"
+
+    snap = snapshot.build_snapshot(summaries, now)
+    json.dumps(snap)  # must be plain JSON for the page database
+    assert snap["totals"]["accounts"] == 1 and snap["accounts"][0]["evaluation"]["verdict"]
+
+    snapshot.append_history(summaries, now, hist)
+    snapshot.append_history(summaries, now + timedelta(minutes=30), hist)  # same hour: replaced
+    snapshot.append_history(summaries, now + timedelta(hours=1), hist)
+    doc = snapshot.history_doc(hist)
+    assert doc["t"] == ["2026-01-01T10:00:00+00:00", "2026-01-01T11:00:00+00:00"]
+    assert list(doc["accounts"]) == ["t"] and len(doc["total"]) == 2

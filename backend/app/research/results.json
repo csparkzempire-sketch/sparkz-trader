@@ -1,0 +1,5741 @@
+{
+ "generated_at": "2026-09-30T09:07:34+00:00",
+ "defaults": {
+  "ema_fast": 20,
+  "ema_slow": 50,
+  "rsi": 50.0,
+  "stop_atr_multiplier": 2.0,
+  "take_profit_r": 2.0
+ },
+ "note": "Full-period backtests use a 50% drawdown limit so a halt doesn't cut them short; period results use the normal limit. Costs are each market's spread and slippage.",
+ "markets": [
+  {
+   "symbol": "BTC-USD",
+   "market": "BTC/USD",
+   "timeframe": "1h",
+   "side": "both",
+   "side_label": "Buy & sell",
+   "start": "2024-10-08",
+   "end": "2026-09-29",
+   "hold_pct": 33.85,
+   "full": {
+    "return_pct": 247.03,
+    "cagr_pct": 87.84,
+    "max_drawdown_pct": -24.03,
+    "sharpe": 2.14,
+    "profit_factor": 1.222,
+    "trades": 886,
+    "win_rate_pct": 39.3
+   },
+   "periods": {
+    "kind": "6-week window",
+    "count": 13,
+    "profitable": 7,
+    "avg_pct": 7.7,
+    "worst_pct": -10.1,
+    "chained_pct": 136.91,
+    "hold_chained_pct": 1.61,
+    "corr_with_hold": -0.06,
+    "rows": [
+     {
+      "label": "2025-04-01",
+      "hold_pct": 24.64,
+      "return_pct": 19.56
+     },
+     {
+      "label": "2025-05-13",
+      "hold_pct": 2.69,
+      "return_pct": -1.81
+     },
+     {
+      "label": "2025-06-24",
+      "hold_pct": 9.17,
+      "return_pct": -6.45
+     },
+     {
+      "label": "2025-08-05",
+      "hold_pct": 0.24,
+      "return_pct": -3.17
+     },
+     {
+      "label": "2025-09-16",
+      "hold_pct": -0.86,
+      "return_pct": 31.6
+     },
+     {
+      "label": "2025-10-28",
+      "hold_pct": -20.57,
+      "return_pct": 19.9
+     },
+     {
+      "label": "2025-12-09",
+      "hold_pct": 2.11,
+      "return_pct": -8.46
+     },
+     {
+      "label": "2026-01-20",
+      "hold_pct": -25.7,
+      "return_pct": 16.21
+     },
+     {
+      "label": "2026-03-03",
+      "hold_pct": 8.33,
+      "return_pct": 14.25
+     },
+     {
+      "label": "2026-04-14",
+      "hold_pct": 3.77,
+      "return_pct": -5.91
+     },
+     {
+      "label": "2026-05-26",
+      "hold_pct": -17.15,
+      "return_pct": 14.8
+     },
+     {
+      "label": "2026-07-07",
+      "hold_pct": 0.74,
+      "return_pct": -10.1
+     },
+     {
+      "label": "2026-08-18",
+      "hold_pct": 29.42,
+      "return_pct": 19.63
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "BTC-USD",
+   "market": "BTC/USD",
+   "timeframe": "1h",
+   "side": "buy",
+   "side_label": "Buy-only",
+   "start": "2024-10-08",
+   "end": "2026-09-29",
+   "hold_pct": 33.85,
+   "full": {
+    "return_pct": 99.08,
+    "cagr_pct": 41.75,
+    "max_drawdown_pct": -27.6,
+    "sharpe": 1.57,
+    "profit_factor": 1.185,
+    "trades": 497,
+    "win_rate_pct": 39.2
+   },
+   "periods": {
+    "kind": "6-week window",
+    "count": 13,
+    "profitable": 5,
+    "avg_pct": 3.19,
+    "worst_pct": -9.53,
+    "chained_pct": 38.37,
+    "hold_chained_pct": 1.61,
+    "corr_with_hold": 0.66,
+    "rows": [
+     {
+      "label": "2025-04-01",
+      "hold_pct": 24.64,
+      "return_pct": 23.16
+     },
+     {
+      "label": "2025-05-13",
+      "hold_pct": 2.69,
+      "return_pct": -5.08
+     },
+     {
+      "label": "2025-06-24",
+      "hold_pct": 9.17,
+      "return_pct": -0.44
+     },
+     {
+      "label": "2025-08-05",
+      "hold_pct": 0.24,
+      "return_pct": 0.7
+     },
+     {
+      "label": "2025-09-16",
+      "hold_pct": -0.86,
+      "return_pct": 23.35
+     },
+     {
+      "label": "2025-10-28",
+      "hold_pct": -20.57,
+      "return_pct": -3.16
+     },
+     {
+      "label": "2025-12-09",
+      "hold_pct": 2.11,
+      "return_pct": -2.62
+     },
+     {
+      "label": "2026-01-20",
+      "hold_pct": -25.7,
+      "return_pct": -6.25
+     },
+     {
+      "label": "2026-03-03",
+      "hold_pct": 8.33,
+      "return_pct": 9.47
+     },
+     {
+      "label": "2026-04-14",
+      "hold_pct": 3.77,
+      "return_pct": -6.17
+     },
+     {
+      "label": "2026-05-26",
+      "hold_pct": -17.15,
+      "return_pct": -6.24
+     },
+     {
+      "label": "2026-07-07",
+      "hold_pct": 0.74,
+      "return_pct": -9.53
+     },
+     {
+      "label": "2026-08-18",
+      "hold_pct": 29.42,
+      "return_pct": 24.25
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "BTC-USD",
+   "market": "BTC/USD",
+   "timeframe": "1h",
+   "side": "sell",
+   "side_label": "Sell-only",
+   "start": "2024-10-08",
+   "end": "2026-09-29",
+   "hold_pct": 33.85,
+   "full": {
+    "return_pct": 66.13,
+    "cagr_pct": 29.33,
+    "max_drawdown_pct": -21.69,
+    "sharpe": 1.25,
+    "profit_factor": 1.198,
+    "trades": 451,
+    "win_rate_pct": 38.4
+   },
+   "periods": {
+    "kind": "6-week window",
+    "count": 13,
+    "profitable": 7,
+    "avg_pct": 4.13,
+    "worst_pct": -8.99,
+    "chained_pct": 57.15,
+    "hold_chained_pct": 1.61,
+    "corr_with_hold": -0.8,
+    "rows": [
+     {
+      "label": "2025-04-01",
+      "hold_pct": 24.64,
+      "return_pct": -3.06
+     },
+     {
+      "label": "2025-05-13",
+      "hold_pct": 2.69,
+      "return_pct": 3.29
+     },
+     {
+      "label": "2025-06-24",
+      "hold_pct": 9.17,
+      "return_pct": -8.29
+     },
+     {
+      "label": "2025-08-05",
+      "hold_pct": 0.24,
+      "return_pct": -5.38
+     },
+     {
+      "label": "2025-09-16",
+      "hold_pct": -0.86,
+      "return_pct": 5.36
+     },
+     {
+      "label": "2025-10-28",
+      "hold_pct": -20.57,
+      "return_pct": 24.36
+     },
+     {
+      "label": "2025-12-09",
+      "hold_pct": 2.11,
+      "return_pct": -8.99
+     },
+     {
+      "label": "2026-01-20",
+      "hold_pct": -25.7,
+      "return_pct": 25.1
+     },
+     {
+      "label": "2026-03-03",
+      "hold_pct": 8.33,
+      "return_pct": 2.05
+     },
+     {
+      "label": "2026-04-14",
+      "hold_pct": 3.77,
+      "return_pct": 2.24
+     },
+     {
+      "label": "2026-05-26",
+      "hold_pct": -17.15,
+      "return_pct": 20.82
+     },
+     {
+      "label": "2026-07-07",
+      "hold_pct": 0.74,
+      "return_pct": -0.99
+     },
+     {
+      "label": "2026-08-18",
+      "hold_pct": 29.42,
+      "return_pct": -2.86
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "BTC-USD",
+   "market": "BTC/USD",
+   "timeframe": "1d",
+   "side": "both",
+   "side_label": "Buy & sell",
+   "start": "2020-01-01",
+   "end": "2026-09-28",
+   "hold_pct": 1060.58,
+   "full": {
+    "return_pct": 67.22,
+    "cagr_pct": 7.91,
+    "max_drawdown_pct": -11.74,
+    "sharpe": 1.2,
+    "profit_factor": 1.669,
+    "trades": 133,
+    "win_rate_pct": 47.4
+   },
+   "periods": {
+    "kind": "calendar year",
+    "count": 7,
+    "profitable": 6,
+    "avg_pct": 8.37,
+    "worst_pct": -3.3,
+    "chained_pct": 71.96,
+    "hold_chained_pct": 1060.37,
+    "corr_with_hold": 0.81,
+    "rows": [
+     {
+      "label": "2020",
+      "hold_pct": 303.09,
+      "return_pct": 26.73
+     },
+     {
+      "label": "2021",
+      "hold_pct": 59.71,
+      "return_pct": 3.85
+     },
+     {
+      "label": "2022",
+      "hold_pct": -64.27,
+      "return_pct": 7.73
+     },
+     {
+      "label": "2023",
+      "hold_pct": 155.41,
+      "return_pct": 11.07
+     },
+     {
+      "label": "2024",
+      "hold_pct": 120.98,
+      "return_pct": 6.07
+     },
+     {
+      "label": "2025",
+      "hold_pct": -6.33,
+      "return_pct": -3.3
+     },
+     {
+      "label": "2026",
+      "hold_pct": -4.58,
+      "return_pct": 6.46
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "BTC-USD",
+   "market": "BTC/USD",
+   "timeframe": "1d",
+   "side": "buy",
+   "side_label": "Buy-only",
+   "start": "2020-01-01",
+   "end": "2026-09-28",
+   "hold_pct": 1060.58,
+   "full": {
+    "return_pct": 65.18,
+    "cagr_pct": 7.72,
+    "max_drawdown_pct": -8.05,
+    "sharpe": 1.37,
+    "profit_factor": 2.067,
+    "trades": 90,
+    "win_rate_pct": 53.3
+   },
+   "periods": {
+    "kind": "calendar year",
+    "count": 7,
+    "profitable": 5,
+    "avg_pct": 7.57,
+    "worst_pct": -4.04,
+    "chained_pct": 60.83,
+    "hold_chained_pct": 1060.37,
+    "corr_with_hold": 0.98,
+    "rows": [
+     {
+      "label": "2020",
+      "hold_pct": 303.09,
+      "return_pct": 28.35
+     },
+     {
+      "label": "2021",
+      "hold_pct": 59.71,
+      "return_pct": 3.84
+     },
+     {
+      "label": "2022",
+      "hold_pct": -64.27,
+      "return_pct": -4.0
+     },
+     {
+      "label": "2023",
+      "hold_pct": 155.41,
+      "return_pct": 16.93
+     },
+     {
+      "label": "2024",
+      "hold_pct": 120.98,
+      "return_pct": 10.49
+     },
+     {
+      "label": "2025",
+      "hold_pct": -6.33,
+      "return_pct": -4.04
+     },
+     {
+      "label": "2026",
+      "hold_pct": -4.58,
+      "return_pct": 1.39
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "BTC-USD",
+   "market": "BTC/USD",
+   "timeframe": "1d",
+   "side": "sell",
+   "side_label": "Sell-only",
+   "start": "2020-01-01",
+   "end": "2026-09-28",
+   "hold_pct": 1060.58,
+   "full": {
+    "return_pct": 1.96,
+    "cagr_pct": 0.29,
+    "max_drawdown_pct": -14.34,
+    "sharpe": 0.09,
+    "profit_factor": 1.055,
+    "trades": 54,
+    "win_rate_pct": 35.2
+   },
+   "periods": {
+    "kind": "calendar year",
+    "count": 7,
+    "profitable": 4,
+    "avg_pct": 0.76,
+    "worst_pct": -5.98,
+    "chained_pct": 4.63,
+    "hold_chained_pct": 1060.37,
+    "corr_with_hold": -0.71,
+    "rows": [
+     {
+      "label": "2020",
+      "hold_pct": 303.09,
+      "return_pct": -1.26
+     },
+     {
+      "label": "2021",
+      "hold_pct": 59.71,
+      "return_pct": 2.0
+     },
+     {
+      "label": "2022",
+      "hold_pct": -64.27,
+      "return_pct": 8.83
+     },
+     {
+      "label": "2023",
+      "hold_pct": 155.41,
+      "return_pct": -5.98
+     },
+     {
+      "label": "2024",
+      "hold_pct": 120.98,
+      "return_pct": -4.0
+     },
+     {
+      "label": "2025",
+      "hold_pct": -6.33,
+      "return_pct": 0.77
+     },
+     {
+      "label": "2026",
+      "hold_pct": -4.58,
+      "return_pct": 4.95
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "ETH-USD",
+   "market": "ETH/USD",
+   "timeframe": "1h",
+   "side": "both",
+   "side_label": "Buy & sell",
+   "start": "2024-10-09",
+   "end": "2026-09-30",
+   "hold_pct": 9.48,
+   "full": {
+    "return_pct": 238.64,
+    "cagr_pct": 85.71,
+    "max_drawdown_pct": -24.92,
+    "sharpe": 2.12,
+    "profit_factor": 1.169,
+    "trades": 901,
+    "win_rate_pct": 39.4
+   },
+   "periods": {
+    "kind": "6-week window",
+    "count": 13,
+    "profitable": 8,
+    "avg_pct": 3.77,
+    "worst_pct": -13.36,
+    "chained_pct": 49.13,
+    "hold_chained_pct": 40.85,
+    "corr_with_hold": -0.49,
+    "rows": [
+     {
+      "label": "2025-04-02",
+      "hold_pct": 40.79,
+      "return_pct": -12.08
+     },
+     {
+      "label": "2025-05-14",
+      "hold_pct": -8.65,
+      "return_pct": -0.94
+     },
+     {
+      "label": "2025-06-25",
+      "hold_pct": 47.45,
+      "return_pct": 0.35
+     },
+     {
+      "label": "2025-08-06",
+      "hold_pct": 24.69,
+      "return_pct": 10.8
+     },
+     {
+      "label": "2025-09-17",
+      "hold_pct": -11.62,
+      "return_pct": 22.48
+     },
+     {
+      "label": "2025-10-29",
+      "hold_pct": -16.54,
+      "return_pct": 11.54
+     },
+     {
+      "label": "2025-12-10",
+      "hold_pct": -11.58,
+      "return_pct": 2.5
+     },
+     {
+      "label": "2026-01-21",
+      "hold_pct": -32.47,
+      "return_pct": 7.75
+     },
+     {
+      "label": "2026-03-04",
+      "hold_pct": 17.18,
+      "return_pct": 4.16
+     },
+     {
+      "label": "2026-04-15",
+      "hold_pct": -10.85,
+      "return_pct": -4.75
+     },
+     {
+      "label": "2026-05-27",
+      "hold_pct": -14.54,
+      "return_pct": 27.28
+     },
+     {
+      "label": "2026-07-08",
+      "hold_pct": 8.28,
+      "return_pct": -13.36
+     },
+     {
+      "label": "2026-08-19",
+      "hold_pct": 39.91,
+      "return_pct": -6.71
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "ETH-USD",
+   "market": "ETH/USD",
+   "timeframe": "1h",
+   "side": "buy",
+   "side_label": "Buy-only",
+   "start": "2024-10-09",
+   "end": "2026-09-30",
+   "hold_pct": 9.48,
+   "full": {
+    "return_pct": 85.75,
+    "cagr_pct": 36.92,
+    "max_drawdown_pct": -21.85,
+    "sharpe": 1.44,
+    "profit_factor": 1.163,
+    "trades": 533,
+    "win_rate_pct": 38.8
+   },
+   "periods": {
+    "kind": "6-week window",
+    "count": 13,
+    "profitable": 8,
+    "avg_pct": 2.73,
+    "worst_pct": -7.43,
+    "chained_pct": 39.02,
+    "hold_chained_pct": 40.85,
+    "corr_with_hold": 0.67,
+    "rows": [
+     {
+      "label": "2025-04-02",
+      "hold_pct": 40.79,
+      "return_pct": 6.6
+     },
+     {
+      "label": "2025-05-14",
+      "hold_pct": -8.65,
+      "return_pct": -3.94
+     },
+     {
+      "label": "2025-06-25",
+      "hold_pct": 47.45,
+      "return_pct": 10.38
+     },
+     {
+      "label": "2025-08-06",
+      "hold_pct": 24.69,
+      "return_pct": 7.91
+     },
+     {
+      "label": "2025-09-17",
+      "hold_pct": -11.62,
+      "return_pct": 9.44
+     },
+     {
+      "label": "2025-10-29",
+      "hold_pct": -16.54,
+      "return_pct": -0.84
+     },
+     {
+      "label": "2025-12-10",
+      "hold_pct": -11.58,
+      "return_pct": 2.38
+     },
+     {
+      "label": "2026-01-21",
+      "hold_pct": -32.47,
+      "return_pct": -2.69
+     },
+     {
+      "label": "2026-03-04",
+      "hold_pct": 17.18,
+      "return_pct": 9.51
+     },
+     {
+      "label": "2026-04-15",
+      "hold_pct": -10.85,
+      "return_pct": -7.43
+     },
+     {
+      "label": "2026-05-27",
+      "hold_pct": -14.54,
+      "return_pct": 0.16
+     },
+     {
+      "label": "2026-07-08",
+      "hold_pct": 8.28,
+      "return_pct": -2.72
+     },
+     {
+      "label": "2026-08-19",
+      "hold_pct": 39.91,
+      "return_pct": 6.73
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "ETH-USD",
+   "market": "ETH/USD",
+   "timeframe": "1h",
+   "side": "sell",
+   "side_label": "Sell-only",
+   "start": "2024-10-09",
+   "end": "2026-09-30",
+   "hold_pct": 9.48,
+   "full": {
+    "return_pct": 23.39,
+    "cagr_pct": 11.26,
+    "max_drawdown_pct": -25.35,
+    "sharpe": 0.59,
+    "profit_factor": 1.064,
+    "trades": 454,
+    "win_rate_pct": 36.3
+   },
+   "periods": {
+    "kind": "6-week window",
+    "count": 13,
+    "profitable": 6,
+    "avg_pct": 1.0,
+    "worst_pct": -13.19,
+    "chained_pct": 7.71,
+    "hold_chained_pct": 40.85,
+    "corr_with_hold": -0.7,
+    "rows": [
+     {
+      "label": "2025-04-02",
+      "hold_pct": 40.79,
+      "return_pct": -3.29
+     },
+     {
+      "label": "2025-05-14",
+      "hold_pct": -8.65,
+      "return_pct": 2.78
+     },
+     {
+      "label": "2025-06-25",
+      "hold_pct": 47.45,
+      "return_pct": -10.2
+     },
+     {
+      "label": "2025-08-06",
+      "hold_pct": 24.69,
+      "return_pct": -1.55
+     },
+     {
+      "label": "2025-09-17",
+      "hold_pct": -11.62,
+      "return_pct": 10.75
+     },
+     {
+      "label": "2025-10-29",
+      "hold_pct": -16.54,
+      "return_pct": 13.38
+     },
+     {
+      "label": "2025-12-10",
+      "hold_pct": -11.58,
+      "return_pct": 0.75
+     },
+     {
+      "label": "2026-01-21",
+      "hold_pct": -32.47,
+      "return_pct": 3.12
+     },
+     {
+      "label": "2026-03-04",
+      "hold_pct": 17.18,
+      "return_pct": -0.96
+     },
+     {
+      "label": "2026-04-15",
+      "hold_pct": -10.85,
+      "return_pct": -0.58
+     },
+     {
+      "label": "2026-05-27",
+      "hold_pct": -14.54,
+      "return_pct": 21.6
+     },
+     {
+      "label": "2026-07-08",
+      "hold_pct": 8.28,
+      "return_pct": -9.61
+     },
+     {
+      "label": "2026-08-19",
+      "hold_pct": 39.91,
+      "return_pct": -13.19
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "ETH-USD",
+   "market": "ETH/USD",
+   "timeframe": "1d",
+   "side": "both",
+   "side_label": "Buy & sell",
+   "start": "2020-01-01",
+   "end": "2026-09-28",
+   "hold_pct": 1974.1,
+   "full": {
+    "return_pct": 80.59,
+    "cagr_pct": 9.15,
+    "max_drawdown_pct": -7.94,
+    "sharpe": 1.35,
+    "profit_factor": 1.968,
+    "trades": 125,
+    "win_rate_pct": 50.4
+   },
+   "periods": {
+    "kind": "calendar year",
+    "count": 7,
+    "profitable": 7,
+    "avg_pct": 8.97,
+    "worst_pct": 1.16,
+    "chained_pct": 81.55,
+    "hold_chained_pct": 1972.89,
+    "corr_with_hold": 0.86,
+    "rows": [
+     {
+      "label": "2020",
+      "hold_pct": 469.16,
+      "return_pct": 15.34
+     },
+     {
+      "label": "2021",
+      "hold_pct": 399.2,
+      "return_pct": 12.59
+     },
+     {
+      "label": "2022",
+      "hold_pct": -67.51,
+      "return_pct": 1.16
+     },
+     {
+      "label": "2023",
+      "hold_pct": 90.64,
+      "return_pct": 8.15
+     },
+     {
+      "label": "2024",
+      "hold_pct": 45.98,
+      "return_pct": 9.07
+     },
+     {
+      "label": "2025",
+      "hold_pct": -10.96,
+      "return_pct": 7.36
+     },
+     {
+      "label": "2026",
+      "hold_pct": -9.38,
+      "return_pct": 9.13
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "ETH-USD",
+   "market": "ETH/USD",
+   "timeframe": "1d",
+   "side": "buy",
+   "side_label": "Buy-only",
+   "start": "2020-01-01",
+   "end": "2026-09-28",
+   "hold_pct": 1974.1,
+   "full": {
+    "return_pct": 54.97,
+    "cagr_pct": 6.7,
+    "max_drawdown_pct": -8.5,
+    "sharpe": 1.15,
+    "profit_factor": 1.802,
+    "trades": 99,
+    "win_rate_pct": 49.5
+   },
+   "periods": {
+    "kind": "calendar year",
+    "count": 7,
+    "profitable": 6,
+    "avg_pct": 6.69,
+    "worst_pct": -4.94,
+    "chained_pct": 54.39,
+    "hold_chained_pct": 1972.89,
+    "corr_with_hold": 0.95,
+    "rows": [
+     {
+      "label": "2020",
+      "hold_pct": 469.16,
+      "return_pct": 20.4
+     },
+     {
+      "label": "2021",
+      "hold_pct": 399.2,
+      "return_pct": 14.55
+     },
+     {
+      "label": "2022",
+      "hold_pct": -67.51,
+      "return_pct": -4.94
+     },
+     {
+      "label": "2023",
+      "hold_pct": 90.64,
+      "return_pct": 8.26
+     },
+     {
+      "label": "2024",
+      "hold_pct": 45.98,
+      "return_pct": 1.75
+     },
+     {
+      "label": "2025",
+      "hold_pct": -10.96,
+      "return_pct": 2.89
+     },
+     {
+      "label": "2026",
+      "hold_pct": -9.38,
+      "return_pct": 3.9
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "ETH-USD",
+   "market": "ETH/USD",
+   "timeframe": "1d",
+   "side": "sell",
+   "side_label": "Sell-only",
+   "start": "2020-01-01",
+   "end": "2026-09-28",
+   "hold_pct": 1974.1,
+   "full": {
+    "return_pct": 10.63,
+    "cagr_pct": 1.51,
+    "max_drawdown_pct": -6.49,
+    "sharpe": 0.44,
+    "profit_factor": 1.496,
+    "trades": 37,
+    "win_rate_pct": 43.2
+   },
+   "periods": {
+    "kind": "calendar year",
+    "count": 7,
+    "profitable": 4,
+    "avg_pct": 1.65,
+    "worst_pct": -4.2,
+    "chained_pct": 11.7,
+    "hold_chained_pct": 1972.89,
+    "corr_with_hold": -0.94,
+    "rows": [
+     {
+      "label": "2020",
+      "hold_pct": 469.16,
+      "return_pct": -4.2
+     },
+     {
+      "label": "2021",
+      "hold_pct": 399.2,
+      "return_pct": -1.72
+     },
+     {
+      "label": "2022",
+      "hold_pct": -67.51,
+      "return_pct": 6.42
+     },
+     {
+      "label": "2023",
+      "hold_pct": 90.64,
+      "return_pct": -0.18
+     },
+     {
+      "label": "2024",
+      "hold_pct": 45.98,
+      "return_pct": 2.94
+     },
+     {
+      "label": "2025",
+      "hold_pct": -10.96,
+      "return_pct": 4.34
+     },
+     {
+      "label": "2026",
+      "hold_pct": -9.38,
+      "return_pct": 3.98
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "GC=F",
+   "market": "Gold",
+   "timeframe": "1h",
+   "side": "both",
+   "side_label": "Buy & sell",
+   "start": "2024-05-20",
+   "end": "2026-09-30",
+   "hold_pct": 72.69,
+   "full": {
+    "return_pct": 140.65,
+    "cagr_pct": 48.12,
+    "max_drawdown_pct": -18.81,
+    "sharpe": 1.78,
+    "profit_factor": 1.249,
+    "trades": 618,
+    "win_rate_pct": 39.2
+   },
+   "periods": {
+    "kind": "6-week window",
+    "count": 13,
+    "profitable": 12,
+    "avg_pct": 6.06,
+    "worst_pct": -2.08,
+    "chained_pct": 112.0,
+    "hold_chained_pct": 34.05,
+    "corr_with_hold": 0.02,
+    "rows": [
+     {
+      "label": "2025-04-02",
+      "hold_pct": 3.54,
+      "return_pct": 12.74
+     },
+     {
+      "label": "2025-05-14",
+      "hold_pct": 2.44,
+      "return_pct": 0.97
+     },
+     {
+      "label": "2025-06-25",
+      "hold_pct": 3.0,
+      "return_pct": 11.22
+     },
+     {
+      "label": "2025-08-06",
+      "hold_pct": 8.55,
+      "return_pct": 6.54
+     },
+     {
+      "label": "2025-09-17",
+      "hold_pct": 6.62,
+      "return_pct": 1.97
+     },
+     {
+      "label": "2025-10-29",
+      "hold_pct": 6.54,
+      "return_pct": 1.94
+     },
+     {
+      "label": "2025-12-10",
+      "hold_pct": 12.76,
+      "return_pct": 4.52
+     },
+     {
+      "label": "2026-01-21",
+      "hold_pct": 7.4,
+      "return_pct": 14.69
+     },
+     {
+      "label": "2026-03-04",
+      "hold_pct": -5.31,
+      "return_pct": 7.47
+     },
+     {
+      "label": "2026-04-15",
+      "hold_pct": -7.03,
+      "return_pct": -2.08
+     },
+     {
+      "label": "2026-05-27",
+      "hold_pct": -9.05,
+      "return_pct": 9.71
+     },
+     {
+      "label": "2026-07-08",
+      "hold_pct": 6.75,
+      "return_pct": 2.14
+     },
+     {
+      "label": "2026-08-19",
+      "hold_pct": -3.86,
+      "return_pct": 6.96
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "GC=F",
+   "market": "Gold",
+   "timeframe": "1h",
+   "side": "buy",
+   "side_label": "Buy-only",
+   "start": "2024-05-20",
+   "end": "2026-09-30",
+   "hold_pct": 72.69,
+   "full": {
+    "return_pct": 83.08,
+    "cagr_pct": 31.07,
+    "max_drawdown_pct": -22.09,
+    "sharpe": 1.55,
+    "profit_factor": 1.254,
+    "trades": 391,
+    "win_rate_pct": 39.6
+   },
+   "periods": {
+    "kind": "6-week window",
+    "count": 13,
+    "profitable": 9,
+    "avg_pct": 4.1,
+    "worst_pct": -12.5,
+    "chained_pct": 63.65,
+    "hold_chained_pct": 34.05,
+    "corr_with_hold": 0.86,
+    "rows": [
+     {
+      "label": "2025-04-02",
+      "hold_pct": 3.54,
+      "return_pct": 8.9
+     },
+     {
+      "label": "2025-05-14",
+      "hold_pct": 2.44,
+      "return_pct": 1.64
+     },
+     {
+      "label": "2025-06-25",
+      "hold_pct": 3.0,
+      "return_pct": 7.44
+     },
+     {
+      "label": "2025-08-06",
+      "hold_pct": 8.55,
+      "return_pct": 10.04
+     },
+     {
+      "label": "2025-09-17",
+      "hold_pct": 6.62,
+      "return_pct": 6.26
+     },
+     {
+      "label": "2025-10-29",
+      "hold_pct": 6.54,
+      "return_pct": 7.34
+     },
+     {
+      "label": "2025-12-10",
+      "hold_pct": 12.76,
+      "return_pct": 10.07
+     },
+     {
+      "label": "2026-01-21",
+      "hold_pct": 7.4,
+      "return_pct": 14.49
+     },
+     {
+      "label": "2026-03-04",
+      "hold_pct": -5.31,
+      "return_pct": -2.54
+     },
+     {
+      "label": "2026-04-15",
+      "hold_pct": -7.03,
+      "return_pct": -12.5
+     },
+     {
+      "label": "2026-05-27",
+      "hold_pct": -9.05,
+      "return_pct": -2.2
+     },
+     {
+      "label": "2026-07-08",
+      "hold_pct": 6.75,
+      "return_pct": 5.6
+     },
+     {
+      "label": "2026-08-19",
+      "hold_pct": -3.86,
+      "return_pct": -1.21
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "GC=F",
+   "market": "Gold",
+   "timeframe": "1h",
+   "side": "sell",
+   "side_label": "Sell-only",
+   "start": "2024-05-20",
+   "end": "2026-09-30",
+   "hold_pct": 72.69,
+   "full": {
+    "return_pct": 13.01,
+    "cagr_pct": 5.62,
+    "max_drawdown_pct": -17.84,
+    "sharpe": 0.43,
+    "profit_factor": 1.073,
+    "trades": 268,
+    "win_rate_pct": 35.8
+   },
+   "periods": {
+    "kind": "6-week window",
+    "count": 13,
+    "profitable": 7,
+    "avg_pct": 1.46,
+    "worst_pct": -5.24,
+    "chained_pct": 18.7,
+    "hold_chained_pct": 34.05,
+    "corr_with_hold": -0.86,
+    "rows": [
+     {
+      "label": "2025-04-02",
+      "hold_pct": 3.54,
+      "return_pct": 3.45
+     },
+     {
+      "label": "2025-05-14",
+      "hold_pct": 2.44,
+      "return_pct": -0.75
+     },
+     {
+      "label": "2025-06-25",
+      "hold_pct": 3.0,
+      "return_pct": 5.56
+     },
+     {
+      "label": "2025-08-06",
+      "hold_pct": 8.55,
+      "return_pct": -2.29
+     },
+     {
+      "label": "2025-09-17",
+      "hold_pct": 6.62,
+      "return_pct": -4.12
+     },
+     {
+      "label": "2025-10-29",
+      "hold_pct": 6.54,
+      "return_pct": -5.08
+     },
+     {
+      "label": "2025-12-10",
+      "hold_pct": 12.76,
+      "return_pct": -4.15
+     },
+     {
+      "label": "2026-01-21",
+      "hold_pct": 7.4,
+      "return_pct": 1.14
+     },
+     {
+      "label": "2026-03-04",
+      "hold_pct": -5.31,
+      "return_pct": 4.82
+     },
+     {
+      "label": "2026-04-15",
+      "hold_pct": -7.03,
+      "return_pct": 6.36
+     },
+     {
+      "label": "2026-05-27",
+      "hold_pct": -9.05,
+      "return_pct": 11.05
+     },
+     {
+      "label": "2026-07-08",
+      "hold_pct": 6.75,
+      "return_pct": -5.24
+     },
+     {
+      "label": "2026-08-19",
+      "hold_pct": -3.86,
+      "return_pct": 8.29
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "GC=F",
+   "market": "Gold",
+   "timeframe": "1d",
+   "side": "both",
+   "side_label": "Buy & sell",
+   "start": "2017-01-03",
+   "end": "2026-09-29",
+   "hold_pct": 261.82,
+   "full": {
+    "return_pct": 31.64,
+    "cagr_pct": 2.87,
+    "max_drawdown_pct": -10.67,
+    "sharpe": 0.56,
+    "profit_factor": 1.359,
+    "trades": 138,
+    "win_rate_pct": 40.6
+   },
+   "periods": {
+    "kind": "calendar year",
+    "count": 10,
+    "profitable": 6,
+    "avg_pct": 2.47,
+    "worst_pct": -4.99,
+    "chained_pct": 26.2,
+    "hold_chained_pct": 257.18,
+    "corr_with_hold": 0.6,
+    "rows": [
+     {
+      "label": "2017",
+      "hold_pct": 13.08,
+      "return_pct": -3.43
+     },
+     {
+      "label": "2018",
+      "hold_pct": -1.84,
+      "return_pct": 3.89
+     },
+     {
+      "label": "2019",
+      "hold_pct": 18.16,
+      "return_pct": -0.23
+     },
+     {
+      "label": "2020",
+      "hold_pct": 24.83,
+      "return_pct": 2.22
+     },
+     {
+      "label": "2021",
+      "hold_pct": -4.17,
+      "return_pct": -4.99
+     },
+     {
+      "label": "2022",
+      "hold_pct": -0.21,
+      "return_pct": 6.56
+     },
+     {
+      "label": "2023",
+      "hold_pct": 13.1,
+      "return_pct": -0.96
+     },
+     {
+      "label": "2024",
+      "hold_pct": 27.42,
+      "return_pct": 8.7
+     },
+     {
+      "label": "2025",
+      "hold_pct": 64.37,
+      "return_pct": 11.23
+     },
+     {
+      "label": "2026",
+      "hold_pct": -3.69,
+      "return_pct": 1.74
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "GC=F",
+   "market": "Gold",
+   "timeframe": "1d",
+   "side": "buy",
+   "side_label": "Buy-only",
+   "start": "2017-01-03",
+   "end": "2026-09-29",
+   "hold_pct": 261.82,
+   "full": {
+    "return_pct": 42.58,
+    "cagr_pct": 3.72,
+    "max_drawdown_pct": -9.8,
+    "sharpe": 0.82,
+    "profit_factor": 1.66,
+    "trades": 103,
+    "win_rate_pct": 45.6
+   },
+   "periods": {
+    "kind": "calendar year",
+    "count": 10,
+    "profitable": 7,
+    "avg_pct": 3.36,
+    "worst_pct": -2.56,
+    "chained_pct": 37.79,
+    "hold_chained_pct": 257.18,
+    "corr_with_hold": 0.85,
+    "rows": [
+     {
+      "label": "2017",
+      "hold_pct": 13.08,
+      "return_pct": -0.4
+     },
+     {
+      "label": "2018",
+      "hold_pct": -1.84,
+      "return_pct": -0.9
+     },
+     {
+      "label": "2019",
+      "hold_pct": 18.16,
+      "return_pct": 5.04
+     },
+     {
+      "label": "2020",
+      "hold_pct": 24.83,
+      "return_pct": 3.68
+     },
+     {
+      "label": "2021",
+      "hold_pct": -4.17,
+      "return_pct": -2.56
+     },
+     {
+      "label": "2022",
+      "hold_pct": -0.21,
+      "return_pct": 4.54
+     },
+     {
+      "label": "2023",
+      "hold_pct": 13.1,
+      "return_pct": 0.12
+     },
+     {
+      "label": "2024",
+      "hold_pct": 27.42,
+      "return_pct": 8.7
+     },
+     {
+      "label": "2025",
+      "hold_pct": 64.37,
+      "return_pct": 13.45
+     },
+     {
+      "label": "2026",
+      "hold_pct": -3.69,
+      "return_pct": 1.92
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "GC=F",
+   "market": "Gold",
+   "timeframe": "1d",
+   "side": "sell",
+   "side_label": "Sell-only",
+   "start": "2017-01-03",
+   "end": "2026-09-29",
+   "hold_pct": 261.82,
+   "full": {
+    "return_pct": -9.62,
+    "cagr_pct": -1.03,
+    "max_drawdown_pct": -14.42,
+    "sharpe": -0.35,
+    "profit_factor": 0.663,
+    "trades": 40,
+    "win_rate_pct": 25.0
+   },
+   "periods": {
+    "kind": "calendar year",
+    "count": 10,
+    "profitable": 2,
+    "avg_pct": -0.94,
+    "worst_pct": -5.02,
+    "chained_pct": -9.31,
+    "hold_chained_pct": 257.18,
+    "corr_with_hold": -0.29,
+    "rows": [
+     {
+      "label": "2017",
+      "hold_pct": 13.08,
+      "return_pct": -3.14
+     },
+     {
+      "label": "2018",
+      "hold_pct": -1.84,
+      "return_pct": 4.84
+     },
+     {
+      "label": "2019",
+      "hold_pct": 18.16,
+      "return_pct": -5.02
+     },
+     {
+      "label": "2020",
+      "hold_pct": 24.83,
+      "return_pct": -2.43
+     },
+     {
+      "label": "2021",
+      "hold_pct": -4.17,
+      "return_pct": -1.99
+     },
+     {
+      "label": "2022",
+      "hold_pct": -0.21,
+      "return_pct": 1.93
+     },
+     {
+      "label": "2023",
+      "hold_pct": 13.1,
+      "return_pct": -2.07
+     },
+     {
+      "label": "2024",
+      "hold_pct": 27.42,
+      "return_pct": -0.3
+     },
+     {
+      "label": "2025",
+      "hold_pct": 64.37,
+      "return_pct": -1.01
+     },
+     {
+      "label": "2026",
+      "hold_pct": -3.69,
+      "return_pct": -0.19
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "USDJPY=X",
+   "market": "USD/JPY",
+   "timeframe": "1h",
+   "side": "both",
+   "side_label": "Buy & sell",
+   "start": "2023-12-26",
+   "end": "2026-09-30",
+   "hold_pct": 10.06,
+   "full": {
+    "return_pct": 83.94,
+    "cagr_pct": 24.32,
+    "max_drawdown_pct": -37.95,
+    "sharpe": 1.03,
+    "profit_factor": 1.105,
+    "trades": 763,
+    "win_rate_pct": 37.6
+   },
+   "periods": {
+    "kind": "6-week window",
+    "count": 13,
+    "profitable": 7,
+    "avg_pct": 2.11,
+    "worst_pct": -16.86,
+    "chained_pct": 21.44,
+    "hold_chained_pct": 5.22,
+    "corr_with_hold": 0.01,
+    "rows": [
+     {
+      "label": "2025-04-02",
+      "hold_pct": -1.49,
+      "return_pct": 8.46
+     },
+     {
+      "label": "2025-05-14",
+      "hold_pct": -1.76,
+      "return_pct": 7.68
+     },
+     {
+      "label": "2025-06-25",
+      "hold_pct": 1.79,
+      "return_pct": 18.42
+     },
+     {
+      "label": "2025-08-06",
+      "hold_pct": -0.75,
+      "return_pct": -9.7
+     },
+     {
+      "label": "2025-09-17",
+      "hold_pct": 3.7,
+      "return_pct": 15.24
+     },
+     {
+      "label": "2025-10-29",
+      "hold_pct": 3.36,
+      "return_pct": 1.04
+     },
+     {
+      "label": "2025-12-10",
+      "hold_pct": 0.87,
+      "return_pct": -4.62
+     },
+     {
+      "label": "2026-01-21",
+      "hold_pct": -0.23,
+      "return_pct": 11.85
+     },
+     {
+      "label": "2026-03-04",
+      "hold_pct": 0.65,
+      "return_pct": -16.86
+     },
+     {
+      "label": "2026-04-15",
+      "hold_pct": 0.29,
+      "return_pct": -7.45
+     },
+     {
+      "label": "2026-05-27",
+      "hold_pct": 1.95,
+      "return_pct": -10.89
+     },
+     {
+      "label": "2026-07-08",
+      "hold_pct": -1.73,
+      "return_pct": -0.23
+     },
+     {
+      "label": "2026-08-19",
+      "hold_pct": -1.34,
+      "return_pct": 14.43
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "USDJPY=X",
+   "market": "USD/JPY",
+   "timeframe": "1h",
+   "side": "buy",
+   "side_label": "Buy-only",
+   "start": "2023-12-26",
+   "end": "2026-09-30",
+   "hold_pct": 10.06,
+   "full": {
+    "return_pct": 72.7,
+    "cagr_pct": 21.56,
+    "max_drawdown_pct": -18.89,
+    "sharpe": 1.14,
+    "profit_factor": 1.171,
+    "trades": 462,
+    "win_rate_pct": 39.0
+   },
+   "periods": {
+    "kind": "6-week window",
+    "count": 13,
+    "profitable": 9,
+    "avg_pct": 2.84,
+    "worst_pct": -8.55,
+    "chained_pct": 40.04,
+    "hold_chained_pct": 5.22,
+    "corr_with_hold": 0.35,
+    "rows": [
+     {
+      "label": "2025-04-02",
+      "hold_pct": -1.49,
+      "return_pct": 3.86
+     },
+     {
+      "label": "2025-05-14",
+      "hold_pct": -1.76,
+      "return_pct": 5.37
+     },
+     {
+      "label": "2025-06-25",
+      "hold_pct": 1.79,
+      "return_pct": 15.15
+     },
+     {
+      "label": "2025-08-06",
+      "hold_pct": -0.75,
+      "return_pct": -5.69
+     },
+     {
+      "label": "2025-09-17",
+      "hold_pct": 3.7,
+      "return_pct": 13.84
+     },
+     {
+      "label": "2025-10-29",
+      "hold_pct": 3.36,
+      "return_pct": 3.95
+     },
+     {
+      "label": "2025-12-10",
+      "hold_pct": 0.87,
+      "return_pct": 3.09
+     },
+     {
+      "label": "2026-01-21",
+      "hold_pct": -0.23,
+      "return_pct": 6.13
+     },
+     {
+      "label": "2026-03-04",
+      "hold_pct": 0.65,
+      "return_pct": -8.55
+     },
+     {
+      "label": "2026-04-15",
+      "hold_pct": 0.29,
+      "return_pct": 0.43
+     },
+     {
+      "label": "2026-05-27",
+      "hold_pct": 1.95,
+      "return_pct": -2.91
+     },
+     {
+      "label": "2026-07-08",
+      "hold_pct": -1.73,
+      "return_pct": -2.98
+     },
+     {
+      "label": "2026-08-19",
+      "hold_pct": -1.34,
+      "return_pct": 5.2
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "USDJPY=X",
+   "market": "USD/JPY",
+   "timeframe": "1h",
+   "side": "sell",
+   "side_label": "Sell-only",
+   "start": "2023-12-26",
+   "end": "2026-09-30",
+   "hold_pct": 10.06,
+   "full": {
+    "return_pct": -23.73,
+    "cagr_pct": -9.22,
+    "max_drawdown_pct": -36.98,
+    "sharpe": -0.53,
+    "profit_factor": 0.899,
+    "trades": 370,
+    "win_rate_pct": 32.4
+   },
+   "periods": {
+    "kind": "6-week window",
+    "count": 13,
+    "profitable": 5,
+    "avg_pct": -1.26,
+    "worst_pct": -10.16,
+    "chained_pct": -17.27,
+    "hold_chained_pct": 5.22,
+    "corr_with_hold": -0.36,
+    "rows": [
+     {
+      "label": "2025-04-02",
+      "hold_pct": -1.49,
+      "return_pct": 6.5
+     },
+     {
+      "label": "2025-05-14",
+      "hold_pct": -1.76,
+      "return_pct": 2.2
+     },
+     {
+      "label": "2025-06-25",
+      "hold_pct": 1.79,
+      "return_pct": -0.19
+     },
+     {
+      "label": "2025-08-06",
+      "hold_pct": -0.75,
+      "return_pct": -0.49
+     },
+     {
+      "label": "2025-09-17",
+      "hold_pct": 3.7,
+      "return_pct": 4.17
+     },
+     {
+      "label": "2025-10-29",
+      "hold_pct": 3.36,
+      "return_pct": -4.79
+     },
+     {
+      "label": "2025-12-10",
+      "hold_pct": 0.87,
+      "return_pct": -8.44
+     },
+     {
+      "label": "2026-01-21",
+      "hold_pct": -0.23,
+      "return_pct": 6.65
+     },
+     {
+      "label": "2026-03-04",
+      "hold_pct": 0.65,
+      "return_pct": -8.51
+     },
+     {
+      "label": "2026-04-15",
+      "hold_pct": 0.29,
+      "return_pct": -9.01
+     },
+     {
+      "label": "2026-05-27",
+      "hold_pct": 1.95,
+      "return_pct": -10.16
+     },
+     {
+      "label": "2026-07-08",
+      "hold_pct": -1.73,
+      "return_pct": -0.78
+     },
+     {
+      "label": "2026-08-19",
+      "hold_pct": -1.34,
+      "return_pct": 6.48
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "USDJPY=X",
+   "market": "USD/JPY",
+   "timeframe": "1d",
+   "side": "both",
+   "side_label": "Buy & sell",
+   "start": "2017-01-02",
+   "end": "2026-09-29",
+   "hold_pct": 34.72,
+   "full": {
+    "return_pct": 4.64,
+    "cagr_pct": 0.48,
+    "max_drawdown_pct": -10.04,
+    "sharpe": 0.13,
+    "profit_factor": 1.079,
+    "trades": 91,
+    "win_rate_pct": 36.3
+   },
+   "periods": {
+    "kind": "calendar year",
+    "count": 10,
+    "profitable": 5,
+    "avg_pct": 0.83,
+    "worst_pct": -6.35,
+    "chained_pct": 6.82,
+    "hold_chained_pct": 38.12,
+    "corr_with_hold": 0.76,
+    "rows": [
+     {
+      "label": "2017",
+      "hold_pct": -3.37,
+      "return_pct": -6.35
+     },
+     {
+      "label": "2018",
+      "hold_pct": -2.16,
+      "return_pct": -0.28
+     },
+     {
+      "label": "2019",
+      "hold_pct": -0.18,
+      "return_pct": -2.54
+     },
+     {
+      "label": "2020",
+      "hold_pct": -5.12,
+      "return_pct": -2.55
+     },
+     {
+      "label": "2021",
+      "hold_pct": 11.47,
+      "return_pct": 4.53
+     },
+     {
+      "label": "2022",
+      "hold_pct": 15.44,
+      "return_pct": 15.62
+     },
+     {
+      "label": "2023",
+      "hold_pct": 8.09,
+      "return_pct": 1.78
+     },
+     {
+      "label": "2024",
+      "hold_pct": 11.38,
+      "return_pct": 0.7
+     },
+     {
+      "label": "2025",
+      "hold_pct": -0.83,
+      "return_pct": 3.18
+     },
+     {
+      "label": "2026",
+      "hold_pct": 0.4,
+      "return_pct": -5.77
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "USDJPY=X",
+   "market": "USD/JPY",
+   "timeframe": "1d",
+   "side": "buy",
+   "side_label": "Buy-only",
+   "start": "2017-01-02",
+   "end": "2026-09-29",
+   "hold_pct": 34.72,
+   "full": {
+    "return_pct": 14.62,
+    "cagr_pct": 1.46,
+    "max_drawdown_pct": -9.17,
+    "sharpe": 0.38,
+    "profit_factor": 1.334,
+    "trades": 69,
+    "win_rate_pct": 40.6
+   },
+   "periods": {
+    "kind": "calendar year",
+    "count": 10,
+    "profitable": 5,
+    "avg_pct": 1.0,
+    "worst_pct": -4.44,
+    "chained_pct": 9.17,
+    "hold_chained_pct": 38.12,
+    "corr_with_hold": 0.85,
+    "rows": [
+     {
+      "label": "2017",
+      "hold_pct": -3.37,
+      "return_pct": -4.44
+     },
+     {
+      "label": "2018",
+      "hold_pct": -2.16,
+      "return_pct": -2.14
+     },
+     {
+      "label": "2019",
+      "hold_pct": -0.18,
+      "return_pct": -1.45
+     },
+     {
+      "label": "2020",
+      "hold_pct": -5.12,
+      "return_pct": -2.99
+     },
+     {
+      "label": "2021",
+      "hold_pct": 11.47,
+      "return_pct": 6.68
+     },
+     {
+      "label": "2022",
+      "hold_pct": 15.44,
+      "return_pct": 12.45
+     },
+     {
+      "label": "2023",
+      "hold_pct": 8.09,
+      "return_pct": 2.93
+     },
+     {
+      "label": "2024",
+      "hold_pct": 11.38,
+      "return_pct": 0.79
+     },
+     {
+      "label": "2025",
+      "hold_pct": -0.83,
+      "return_pct": 2.23
+     },
+     {
+      "label": "2026",
+      "hold_pct": 0.4,
+      "return_pct": -4.02
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "USDJPY=X",
+   "market": "USD/JPY",
+   "timeframe": "1d",
+   "side": "sell",
+   "side_label": "Sell-only",
+   "start": "2017-01-02",
+   "end": "2026-09-29",
+   "hold_pct": 34.72,
+   "full": {
+    "return_pct": -4.3,
+    "cagr_pct": -0.47,
+    "max_drawdown_pct": -6.66,
+    "sharpe": -0.16,
+    "profit_factor": 0.82,
+    "trades": 35,
+    "win_rate_pct": 31.4
+   },
+   "periods": {
+    "kind": "calendar year",
+    "count": 10,
+    "profitable": 3,
+    "avg_pct": -0.61,
+    "worst_pct": -3.02,
+    "chained_pct": -6.1,
+    "hold_chained_pct": 38.12,
+    "corr_with_hold": 0.2,
+    "rows": [
+     {
+      "label": "2017",
+      "hold_pct": -3.37,
+      "return_pct": -3.0
+     },
+     {
+      "label": "2018",
+      "hold_pct": -2.16,
+      "return_pct": 1.9
+     },
+     {
+      "label": "2019",
+      "hold_pct": -0.18,
+      "return_pct": -1.15
+     },
+     {
+      "label": "2020",
+      "hold_pct": -5.12,
+      "return_pct": -0.55
+     },
+     {
+      "label": "2021",
+      "hold_pct": 11.47,
+      "return_pct": -3.02
+     },
+     {
+      "label": "2022",
+      "hold_pct": 15.44,
+      "return_pct": 2.82
+     },
+     {
+      "label": "2023",
+      "hold_pct": 8.09,
+      "return_pct": -1.12
+     },
+     {
+      "label": "2024",
+      "hold_pct": 11.38,
+      "return_pct": -0.09
+     },
+     {
+      "label": "2025",
+      "hold_pct": -0.83,
+      "return_pct": 0.93
+     },
+     {
+      "label": "2026",
+      "hold_pct": 0.4,
+      "return_pct": -2.81
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "EURUSD=X",
+   "market": "EUR/USD",
+   "timeframe": "1h",
+   "side": "both",
+   "side_label": "Buy & sell",
+   "start": "2023-12-26",
+   "end": "2026-09-30",
+   "hold_pct": 2.84,
+   "full": {
+    "return_pct": -45.35,
+    "cagr_pct": -19.32,
+    "max_drawdown_pct": -50.51,
+    "sharpe": -1.3,
+    "profit_factor": 0.755,
+    "trades": 338,
+    "win_rate_pct": 30.2
+   },
+   "periods": {
+    "kind": "6-week window",
+    "count": 13,
+    "profitable": 5,
+    "avg_pct": -0.62,
+    "worst_pct": -19.93,
+    "chained_pct": -14.26,
+    "hold_chained_pct": 5.15,
+    "corr_with_hold": -0.12,
+    "rows": [
+     {
+      "label": "2025-04-02",
+      "hold_pct": 3.64,
+      "return_pct": 5.71
+     },
+     {
+      "label": "2025-05-14",
+      "hold_pct": 3.8,
+      "return_pct": -10.69
+     },
+     {
+      "label": "2025-06-25",
+      "hold_pct": -0.28,
+      "return_pct": 16.96
+     },
+     {
+      "label": "2025-08-06",
+      "hold_pct": 2.52,
+      "return_pct": -1.88
+     },
+     {
+      "label": "2025-09-17",
+      "hold_pct": -1.82,
+      "return_pct": -8.02
+     },
+     {
+      "label": "2025-10-29",
+      "hold_pct": -0.23,
+      "return_pct": 2.95
+     },
+     {
+      "label": "2025-12-10",
+      "hold_pct": 0.86,
+      "return_pct": -0.85
+     },
+     {
+      "label": "2026-01-21",
+      "hold_pct": -0.95,
+      "return_pct": 9.1
+     },
+     {
+      "label": "2026-03-04",
+      "hold_pct": 1.63,
+      "return_pct": -4.43
+     },
+     {
+      "label": "2026-04-15",
+      "hold_pct": -1.37,
+      "return_pct": -5.15
+     },
+     {
+      "label": "2026-05-27",
+      "hold_pct": -2.02,
+      "return_pct": -19.93
+     },
+     {
+      "label": "2026-07-08",
+      "hold_pct": 1.54,
+      "return_pct": -9.52
+     },
+     {
+      "label": "2026-08-19",
+      "hold_pct": -2.03,
+      "return_pct": 17.64
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "EURUSD=X",
+   "market": "EUR/USD",
+   "timeframe": "1h",
+   "side": "buy",
+   "side_label": "Buy-only",
+   "start": "2023-12-26",
+   "end": "2026-09-30",
+   "hold_pct": 2.84,
+   "full": {
+    "return_pct": -28.25,
+    "cagr_pct": -11.12,
+    "max_drawdown_pct": -39.96,
+    "sharpe": -0.52,
+    "profit_factor": 0.89,
+    "trades": 474,
+    "win_rate_pct": 33.5
+   },
+   "periods": {
+    "kind": "6-week window",
+    "count": 13,
+    "profitable": 7,
+    "avg_pct": 0.46,
+    "worst_pct": -12.41,
+    "chained_pct": 3.55,
+    "hold_chained_pct": 5.15,
+    "corr_with_hold": 0.62,
+    "rows": [
+     {
+      "label": "2025-04-02",
+      "hold_pct": 3.64,
+      "return_pct": 5.2
+     },
+     {
+      "label": "2025-05-14",
+      "hold_pct": 3.8,
+      "return_pct": -0.42
+     },
+     {
+      "label": "2025-06-25",
+      "hold_pct": -0.28,
+      "return_pct": 3.5
+     },
+     {
+      "label": "2025-08-06",
+      "hold_pct": 2.52,
+      "return_pct": 10.7
+     },
+     {
+      "label": "2025-09-17",
+      "hold_pct": -1.82,
+      "return_pct": -9.48
+     },
+     {
+      "label": "2025-10-29",
+      "hold_pct": -0.23,
+      "return_pct": -1.2
+     },
+     {
+      "label": "2025-12-10",
+      "hold_pct": 0.86,
+      "return_pct": 4.06
+     },
+     {
+      "label": "2026-01-21",
+      "hold_pct": -0.95,
+      "return_pct": 2.42
+     },
+     {
+      "label": "2026-03-04",
+      "hold_pct": 1.63,
+      "return_pct": 6.95
+     },
+     {
+      "label": "2026-04-15",
+      "hold_pct": -1.37,
+      "return_pct": -3.38
+     },
+     {
+      "label": "2026-05-27",
+      "hold_pct": -2.02,
+      "return_pct": -12.41
+     },
+     {
+      "label": "2026-07-08",
+      "hold_pct": 1.54,
+      "return_pct": -0.92
+     },
+     {
+      "label": "2026-08-19",
+      "hold_pct": -2.03,
+      "return_pct": 0.93
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "EURUSD=X",
+   "market": "EUR/USD",
+   "timeframe": "1h",
+   "side": "sell",
+   "side_label": "Sell-only",
+   "start": "2023-12-26",
+   "end": "2026-09-30",
+   "hold_pct": 2.84,
+   "full": {
+    "return_pct": -28.49,
+    "cagr_pct": -11.23,
+    "max_drawdown_pct": -44.66,
+    "sharpe": -0.53,
+    "profit_factor": 0.893,
+    "trades": 469,
+    "win_rate_pct": 33.5
+   },
+   "periods": {
+    "kind": "6-week window",
+    "count": 13,
+    "profitable": 6,
+    "avg_pct": -0.94,
+    "worst_pct": -12.04,
+    "chained_pct": -15.4,
+    "hold_chained_pct": 5.15,
+    "corr_with_hold": -0.66,
+    "rows": [
+     {
+      "label": "2025-04-02",
+      "hold_pct": 3.64,
+      "return_pct": 0.35
+     },
+     {
+      "label": "2025-05-14",
+      "hold_pct": 3.8,
+      "return_pct": -12.04
+     },
+     {
+      "label": "2025-06-25",
+      "hold_pct": -0.28,
+      "return_pct": 11.74
+     },
+     {
+      "label": "2025-08-06",
+      "hold_pct": 2.52,
+      "return_pct": -11.35
+     },
+     {
+      "label": "2025-09-17",
+      "hold_pct": -1.82,
+      "return_pct": 2.71
+     },
+     {
+      "label": "2025-10-29",
+      "hold_pct": -0.23,
+      "return_pct": 0.8
+     },
+     {
+      "label": "2025-12-10",
+      "hold_pct": 0.86,
+      "return_pct": -4.72
+     },
+     {
+      "label": "2026-01-21",
+      "hold_pct": -0.95,
+      "return_pct": 6.52
+     },
+     {
+      "label": "2026-03-04",
+      "hold_pct": 1.63,
+      "return_pct": -7.11
+     },
+     {
+      "label": "2026-04-15",
+      "hold_pct": -1.37,
+      "return_pct": -0.02
+     },
+     {
+      "label": "2026-05-27",
+      "hold_pct": -2.02,
+      "return_pct": -2.19
+     },
+     {
+      "label": "2026-07-08",
+      "hold_pct": 1.54,
+      "return_pct": -11.71
+     },
+     {
+      "label": "2026-08-19",
+      "hold_pct": -2.03,
+      "return_pct": 14.81
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "EURUSD=X",
+   "market": "EUR/USD",
+   "timeframe": "1d",
+   "side": "both",
+   "side_label": "Buy & sell",
+   "start": "2017-01-02",
+   "end": "2026-09-29",
+   "hold_pct": 8.0,
+   "full": {
+    "return_pct": -5.01,
+    "cagr_pct": -0.52,
+    "max_drawdown_pct": -15.71,
+    "sharpe": -0.1,
+    "profit_factor": 0.919,
+    "trades": 93,
+    "win_rate_pct": 32.3
+   },
+   "periods": {
+    "kind": "calendar year",
+    "count": 10,
+    "profitable": 3,
+    "avg_pct": -1.04,
+    "worst_pct": -4.36,
+    "chained_pct": -10.23,
+    "hold_chained_pct": 7.72,
+    "corr_with_hold": -0.38,
+    "rows": [
+     {
+      "label": "2017",
+      "hold_pct": 13.4,
+      "return_pct": -0.24
+     },
+     {
+      "label": "2018",
+      "hold_pct": -4.71,
+      "return_pct": 1.15
+     },
+     {
+      "label": "2019",
+      "hold_pct": -2.54,
+      "return_pct": -4.36
+     },
+     {
+      "label": "2020",
+      "hold_pct": 9.62,
+      "return_pct": -2.94
+     },
+     {
+      "label": "2021",
+      "hold_pct": -6.96,
+      "return_pct": 1.3
+     },
+     {
+      "label": "2022",
+      "hold_pct": -6.27,
+      "return_pct": 5.01
+     },
+     {
+      "label": "2023",
+      "hold_pct": 3.35,
+      "return_pct": -2.99
+     },
+     {
+      "label": "2024",
+      "hold_pct": -5.73,
+      "return_pct": -3.76
+     },
+     {
+      "label": "2025",
+      "hold_pct": 13.48,
+      "return_pct": -3.05
+     },
+     {
+      "label": "2026",
+      "hold_pct": -3.22,
+      "return_pct": -0.47
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "EURUSD=X",
+   "market": "EUR/USD",
+   "timeframe": "1d",
+   "side": "buy",
+   "side_label": "Buy-only",
+   "start": "2017-01-02",
+   "end": "2026-09-29",
+   "hold_pct": 8.0,
+   "full": {
+    "return_pct": -5.76,
+    "cagr_pct": -0.6,
+    "max_drawdown_pct": -13.7,
+    "sharpe": -0.17,
+    "profit_factor": 0.836,
+    "trades": 50,
+    "win_rate_pct": 30.0
+   },
+   "periods": {
+    "kind": "calendar year",
+    "count": 10,
+    "profitable": 5,
+    "avg_pct": -0.62,
+    "worst_pct": -4.23,
+    "chained_pct": -6.36,
+    "hold_chained_pct": 7.72,
+    "corr_with_hold": 0.75,
+    "rows": [
+     {
+      "label": "2017",
+      "hold_pct": 13.4,
+      "return_pct": 4.97
+     },
+     {
+      "label": "2018",
+      "hold_pct": -4.71,
+      "return_pct": -1.06
+     },
+     {
+      "label": "2019",
+      "hold_pct": -2.54,
+      "return_pct": -4.23
+     },
+     {
+      "label": "2020",
+      "hold_pct": 9.62,
+      "return_pct": 0.14
+     },
+     {
+      "label": "2021",
+      "hold_pct": -6.96,
+      "return_pct": -3.0
+     },
+     {
+      "label": "2022",
+      "hold_pct": -6.27,
+      "return_pct": 1.05
+     },
+     {
+      "label": "2023",
+      "hold_pct": 3.35,
+      "return_pct": 0.07
+     },
+     {
+      "label": "2024",
+      "hold_pct": -5.73,
+      "return_pct": -3.07
+     },
+     {
+      "label": "2025",
+      "hold_pct": 13.48,
+      "return_pct": 2.0
+     },
+     {
+      "label": "2026",
+      "hold_pct": -3.22,
+      "return_pct": -3.06
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "EURUSD=X",
+   "market": "EUR/USD",
+   "timeframe": "1d",
+   "side": "sell",
+   "side_label": "Sell-only",
+   "start": "2017-01-02",
+   "end": "2026-09-29",
+   "hold_pct": 8.0,
+   "full": {
+    "return_pct": -3.28,
+    "cagr_pct": -0.34,
+    "max_drawdown_pct": -9.44,
+    "sharpe": -0.09,
+    "profit_factor": 0.903,
+    "trades": 50,
+    "win_rate_pct": 32.0
+   },
+   "periods": {
+    "kind": "calendar year",
+    "count": 10,
+    "profitable": 5,
+    "avg_pct": -0.56,
+    "worst_pct": -4.94,
+    "chained_pct": -5.95,
+    "hold_chained_pct": 7.72,
+    "corr_with_hold": -0.9,
+    "rows": [
+     {
+      "label": "2017",
+      "hold_pct": 13.4,
+      "return_pct": -4.94
+     },
+     {
+      "label": "2018",
+      "hold_pct": -4.71,
+      "return_pct": 2.37
+     },
+     {
+      "label": "2019",
+      "hold_pct": -2.54,
+      "return_pct": -2.14
+     },
+     {
+      "label": "2020",
+      "hold_pct": 9.62,
+      "return_pct": -3.07
+     },
+     {
+      "label": "2021",
+      "hold_pct": -6.96,
+      "return_pct": 4.44
+     },
+     {
+      "label": "2022",
+      "hold_pct": -6.27,
+      "return_pct": 3.91
+     },
+     {
+      "label": "2023",
+      "hold_pct": 3.35,
+      "return_pct": -2.07
+     },
+     {
+      "label": "2024",
+      "hold_pct": -5.73,
+      "return_pct": 0.24
+     },
+     {
+      "label": "2025",
+      "hold_pct": 13.48,
+      "return_pct": -4.94
+     },
+     {
+      "label": "2026",
+      "hold_pct": -3.22,
+      "return_pct": 0.61
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "GBPUSD=X",
+   "market": "GBP/USD",
+   "timeframe": "1h",
+   "side": "both",
+   "side_label": "Buy & sell",
+   "start": "2023-12-26",
+   "end": "2026-09-30",
+   "hold_pct": 4.3,
+   "full": {
+    "return_pct": -12.83,
+    "cagr_pct": -4.76,
+    "max_drawdown_pct": -43.79,
+    "sharpe": -0.05,
+    "profit_factor": 0.971,
+    "trades": 863,
+    "win_rate_pct": 35.2
+   },
+   "periods": {
+    "kind": "6-week window",
+    "count": 13,
+    "profitable": 8,
+    "avg_pct": 3.26,
+    "worst_pct": -11.11,
+    "chained_pct": 43.48,
+    "hold_chained_pct": 2.4,
+    "corr_with_hold": -0.26,
+    "rows": [
+     {
+      "label": "2025-04-02",
+      "hold_pct": 2.96,
+      "return_pct": 12.64
+     },
+     {
+      "label": "2025-05-14",
+      "hold_pct": 2.34,
+      "return_pct": -7.94
+     },
+     {
+      "label": "2025-06-25",
+      "hold_pct": -2.32,
+      "return_pct": 13.66
+     },
+     {
+      "label": "2025-08-06",
+      "hold_pct": 2.66,
+      "return_pct": 1.33
+     },
+     {
+      "label": "2025-09-17",
+      "hold_pct": -2.77,
+      "return_pct": 6.06
+     },
+     {
+      "label": "2025-10-29",
+      "hold_pct": 0.19,
+      "return_pct": 9.48
+     },
+     {
+      "label": "2025-12-10",
+      "hold_pct": 1.03,
+      "return_pct": -7.68
+     },
+     {
+      "label": "2026-01-21",
+      "hold_pct": -0.64,
+      "return_pct": 13.73
+     },
+     {
+      "label": "2026-03-04",
+      "hold_pct": 1.68,
+      "return_pct": -0.5
+     },
+     {
+      "label": "2026-04-15",
+      "hold_pct": -0.87,
+      "return_pct": -9.85
+     },
+     {
+      "label": "2026-05-27",
+      "hold_pct": -0.81,
+      "return_pct": -11.11
+     },
+     {
+      "label": "2026-07-08",
+      "hold_pct": 1.42,
+      "return_pct": 6.08
+     },
+     {
+      "label": "2026-08-19",
+      "hold_pct": -2.26,
+      "return_pct": 16.51
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "GBPUSD=X",
+   "market": "GBP/USD",
+   "timeframe": "1h",
+   "side": "buy",
+   "side_label": "Buy-only",
+   "start": "2023-12-26",
+   "end": "2026-09-30",
+   "hold_pct": 4.3,
+   "full": {
+    "return_pct": -30.48,
+    "cagr_pct": -12.11,
+    "max_drawdown_pct": -39.03,
+    "sharpe": -0.58,
+    "profit_factor": 0.881,
+    "trades": 470,
+    "win_rate_pct": 33.2
+   },
+   "periods": {
+    "kind": "6-week window",
+    "count": 13,
+    "profitable": 7,
+    "avg_pct": 0.9,
+    "worst_pct": -12.93,
+    "chained_pct": 7.95,
+    "hold_chained_pct": 2.4,
+    "corr_with_hold": 0.48,
+    "rows": [
+     {
+      "label": "2025-04-02",
+      "hold_pct": 2.96,
+      "return_pct": 20.32
+     },
+     {
+      "label": "2025-05-14",
+      "hold_pct": 2.34,
+      "return_pct": -3.37
+     },
+     {
+      "label": "2025-06-25",
+      "hold_pct": -2.32,
+      "return_pct": 3.49
+     },
+     {
+      "label": "2025-08-06",
+      "hold_pct": 2.66,
+      "return_pct": 4.3
+     },
+     {
+      "label": "2025-09-17",
+      "hold_pct": -2.77,
+      "return_pct": -5.01
+     },
+     {
+      "label": "2025-10-29",
+      "hold_pct": 0.19,
+      "return_pct": 4.42
+     },
+     {
+      "label": "2025-12-10",
+      "hold_pct": 1.03,
+      "return_pct": -3.49
+     },
+     {
+      "label": "2026-01-21",
+      "hold_pct": -0.64,
+      "return_pct": 3.61
+     },
+     {
+      "label": "2026-03-04",
+      "hold_pct": 1.68,
+      "return_pct": 1.43
+     },
+     {
+      "label": "2026-04-15",
+      "hold_pct": -0.87,
+      "return_pct": -9.39
+     },
+     {
+      "label": "2026-05-27",
+      "hold_pct": -0.81,
+      "return_pct": -12.93
+     },
+     {
+      "label": "2026-07-08",
+      "hold_pct": 1.42,
+      "return_pct": 8.38
+     },
+     {
+      "label": "2026-08-19",
+      "hold_pct": -2.26,
+      "return_pct": -0.0
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "GBPUSD=X",
+   "market": "GBP/USD",
+   "timeframe": "1h",
+   "side": "sell",
+   "side_label": "Sell-only",
+   "start": "2023-12-26",
+   "end": "2026-09-30",
+   "hold_pct": 4.3,
+   "full": {
+    "return_pct": -17.13,
+    "cagr_pct": -6.46,
+    "max_drawdown_pct": -35.29,
+    "sharpe": -0.25,
+    "profit_factor": 0.936,
+    "trades": 468,
+    "win_rate_pct": 34.4
+   },
+   "periods": {
+    "kind": "6-week window",
+    "count": 13,
+    "profitable": 6,
+    "avg_pct": 0.99,
+    "worst_pct": -11.28,
+    "chained_pct": 9.31,
+    "hold_chained_pct": 2.4,
+    "corr_with_hold": -0.86,
+    "rows": [
+     {
+      "label": "2025-04-02",
+      "hold_pct": 2.96,
+      "return_pct": -4.73
+     },
+     {
+      "label": "2025-05-14",
+      "hold_pct": 2.34,
+      "return_pct": -5.07
+     },
+     {
+      "label": "2025-06-25",
+      "hold_pct": -2.32,
+      "return_pct": 8.42
+     },
+     {
+      "label": "2025-08-06",
+      "hold_pct": 2.66,
+      "return_pct": -6.88
+     },
+     {
+      "label": "2025-09-17",
+      "hold_pct": -2.77,
+      "return_pct": 14.51
+     },
+     {
+      "label": "2025-10-29",
+      "hold_pct": 0.19,
+      "return_pct": 5.76
+     },
+     {
+      "label": "2025-12-10",
+      "hold_pct": 1.03,
+      "return_pct": -11.28
+     },
+     {
+      "label": "2026-01-21",
+      "hold_pct": -0.64,
+      "return_pct": 9.56
+     },
+     {
+      "label": "2026-03-04",
+      "hold_pct": 1.68,
+      "return_pct": -5.91
+     },
+     {
+      "label": "2026-04-15",
+      "hold_pct": -0.87,
+      "return_pct": -0.29
+     },
+     {
+      "label": "2026-05-27",
+      "hold_pct": -0.81,
+      "return_pct": 1.58
+     },
+     {
+      "label": "2026-07-08",
+      "hold_pct": 1.42,
+      "return_pct": -4.23
+     },
+     {
+      "label": "2026-08-19",
+      "hold_pct": -2.26,
+      "return_pct": 11.43
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "GBPUSD=X",
+   "market": "GBP/USD",
+   "timeframe": "1d",
+   "side": "both",
+   "side_label": "Buy & sell",
+   "start": "2017-01-02",
+   "end": "2026-09-29",
+   "hold_pct": 7.33,
+   "full": {
+    "return_pct": 6.59,
+    "cagr_pct": 0.65,
+    "max_drawdown_pct": -9.91,
+    "sharpe": 0.17,
+    "profit_factor": 1.112,
+    "trades": 89,
+    "win_rate_pct": 36.0
+   },
+   "periods": {
+    "kind": "calendar year",
+    "count": 10,
+    "profitable": 5,
+    "avg_pct": 0.14,
+    "worst_pct": -4.06,
+    "chained_pct": 0.99,
+    "hold_chained_pct": 4.14,
+    "corr_with_hold": -0.47,
+    "rows": [
+     {
+      "label": "2017",
+      "hold_pct": 8.84,
+      "return_pct": -1.81
+     },
+     {
+      "label": "2018",
+      "hold_pct": -6.09,
+      "return_pct": 6.14
+     },
+     {
+      "label": "2019",
+      "hold_pct": 2.85,
+      "return_pct": -2.07
+     },
+     {
+      "label": "2020",
+      "hold_pct": 2.84,
+      "return_pct": -2.49
+     },
+     {
+      "label": "2021",
+      "hold_pct": -1.4,
+      "return_pct": -1.41
+     },
+     {
+      "label": "2022",
+      "hold_pct": -10.84,
+      "return_pct": 3.7
+     },
+     {
+      "label": "2023",
+      "hold_pct": 5.06,
+      "return_pct": 3.0
+     },
+     {
+      "label": "2024",
+      "hold_pct": -1.42,
+      "return_pct": 0.33
+     },
+     {
+      "label": "2025",
+      "hold_pct": 7.56,
+      "return_pct": 0.11
+     },
+     {
+      "label": "2026",
+      "hold_pct": -1.64,
+      "return_pct": -4.06
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "GBPUSD=X",
+   "market": "GBP/USD",
+   "timeframe": "1d",
+   "side": "buy",
+   "side_label": "Buy-only",
+   "start": "2017-01-02",
+   "end": "2026-09-29",
+   "hold_pct": 7.33,
+   "full": {
+    "return_pct": 0.09,
+    "cagr_pct": 0.01,
+    "max_drawdown_pct": -10.16,
+    "sharpe": 0.02,
+    "profit_factor": 1.003,
+    "trades": 50,
+    "win_rate_pct": 34.0
+   },
+   "periods": {
+    "kind": "calendar year",
+    "count": 10,
+    "profitable": 3,
+    "avg_pct": -0.18,
+    "worst_pct": -3.62,
+    "chained_pct": -2.06,
+    "hold_chained_pct": 4.14,
+    "corr_with_hold": 0.81,
+    "rows": [
+     {
+      "label": "2017",
+      "hold_pct": 8.84,
+      "return_pct": 3.24
+     },
+     {
+      "label": "2018",
+      "hold_pct": -6.09,
+      "return_pct": -0.11
+     },
+     {
+      "label": "2019",
+      "hold_pct": 2.85,
+      "return_pct": -0.96
+     },
+     {
+      "label": "2020",
+      "hold_pct": 2.84,
+      "return_pct": -1.41
+     },
+     {
+      "label": "2021",
+      "hold_pct": -1.4,
+      "return_pct": -1.01
+     },
+     {
+      "label": "2022",
+      "hold_pct": -10.84,
+      "return_pct": -3.62
+     },
+     {
+      "label": "2023",
+      "hold_pct": 5.06,
+      "return_pct": 3.05
+     },
+     {
+      "label": "2024",
+      "hold_pct": -1.42,
+      "return_pct": -1.13
+     },
+     {
+      "label": "2025",
+      "hold_pct": 7.56,
+      "return_pct": 2.17
+     },
+     {
+      "label": "2026",
+      "hold_pct": -1.64,
+      "return_pct": -2.07
+     }
+    ]
+   }
+  },
+  {
+   "symbol": "GBPUSD=X",
+   "market": "GBP/USD",
+   "timeframe": "1d",
+   "side": "sell",
+   "side_label": "Sell-only",
+   "start": "2017-01-02",
+   "end": "2026-09-29",
+   "hold_pct": 7.33,
+   "full": {
+    "return_pct": 7.18,
+    "cagr_pct": 0.71,
+    "max_drawdown_pct": -6.59,
+    "sharpe": 0.23,
+    "profit_factor": 1.212,
+    "trades": 53,
+    "win_rate_pct": 37.7
+   },
+   "periods": {
+    "kind": "calendar year",
+    "count": 10,
+    "profitable": 4,
+    "avg_pct": 0.61,
+    "worst_pct": -3.97,
+    "chained_pct": 5.74,
+    "hold_chained_pct": 4.14,
+    "corr_with_hold": -0.89,
+    "rows": [
+     {
+      "label": "2017",
+      "hold_pct": 8.84,
+      "return_pct": -3.97
+     },
+     {
+      "label": "2018",
+      "hold_pct": -6.09,
+      "return_pct": 4.12
+     },
+     {
+      "label": "2019",
+      "hold_pct": 2.85,
+      "return_pct": -0.16
+     },
+     {
+      "label": "2020",
+      "hold_pct": 2.84,
+      "return_pct": -1.09
+     },
+     {
+      "label": "2021",
+      "hold_pct": -1.4,
+      "return_pct": 1.93
+     },
+     {
+      "label": "2022",
+      "hold_pct": -10.84,
+      "return_pct": 8.06
+     },
+     {
+      "label": "2023",
+      "hold_pct": 5.06,
+      "return_pct": -1.06
+     },
+     {
+      "label": "2024",
+      "hold_pct": -1.42,
+      "return_pct": 1.48
+     },
+     {
+      "label": "2025",
+      "hold_pct": 7.56,
+      "return_pct": -1.06
+     },
+     {
+      "label": "2026",
+      "hold_pct": -1.64,
+      "return_pct": -2.13
+     }
+    ]
+   }
+  }
+ ],
+ "sensitivity": [
+  {
+   "account": "btc_daily_long",
+   "symbol": "BTC-USD",
+   "timeframe": "1d",
+   "side": "buy",
+   "default": {
+    "account": "btc_daily_long",
+    "variant": "default",
+    "return_pct": 65.18,
+    "cagr_pct": 7.72,
+    "max_drawdown_pct": -8.05,
+    "sharpe": 1.37,
+    "profit_factor": 2.067,
+    "trades": 90,
+    "win_rate_pct": 53.3
+   },
+   "variants": [
+    {
+     "account": "btc_daily_long",
+     "variant": "ema_fast=10",
+     "return_pct": 88.04,
+     "cagr_pct": 9.81,
+     "max_drawdown_pct": -7.99,
+     "sharpe": 1.71,
+     "profit_factor": 2.608,
+     "trades": 86,
+     "win_rate_pct": 59.3,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 10.0
+    },
+    {
+     "account": "btc_daily_long",
+     "variant": "ema_fast=15",
+     "return_pct": 84.25,
+     "cagr_pct": 9.48,
+     "max_drawdown_pct": -7.11,
+     "sharpe": 1.65,
+     "profit_factor": 2.466,
+     "trades": 88,
+     "win_rate_pct": 58.0,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 15.0
+    },
+    {
+     "account": "btc_daily_long",
+     "variant": "ema_fast=25",
+     "return_pct": 70.37,
+     "cagr_pct": 8.21,
+     "max_drawdown_pct": -6.51,
+     "sharpe": 1.48,
+     "profit_factor": 2.356,
+     "trades": 84,
+     "win_rate_pct": 56.0,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 25.0
+    },
+    {
+     "account": "btc_daily_long",
+     "variant": "ema_fast=30",
+     "return_pct": 60.32,
+     "cagr_pct": 7.24,
+     "max_drawdown_pct": -7.87,
+     "sharpe": 1.31,
+     "profit_factor": 2.033,
+     "trades": 90,
+     "win_rate_pct": 52.2,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 30.0
+    },
+    {
+     "account": "btc_daily_long",
+     "variant": "ema_slow=35",
+     "return_pct": 76.94,
+     "cagr_pct": 8.82,
+     "max_drawdown_pct": -8.05,
+     "sharpe": 1.54,
+     "profit_factor": 2.259,
+     "trades": 92,
+     "win_rate_pct": 55.4,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 35.0
+    },
+    {
+     "account": "btc_daily_long",
+     "variant": "ema_slow=40",
+     "return_pct": 78.65,
+     "cagr_pct": 8.98,
+     "max_drawdown_pct": -8.97,
+     "sharpe": 1.55,
+     "profit_factor": 2.214,
+     "trades": 94,
+     "win_rate_pct": 55.3,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 40.0
+    },
+    {
+     "account": "btc_daily_long",
+     "variant": "ema_slow=60",
+     "return_pct": 65.37,
+     "cagr_pct": 7.74,
+     "max_drawdown_pct": -7.45,
+     "sharpe": 1.4,
+     "profit_factor": 2.245,
+     "trades": 84,
+     "win_rate_pct": 54.8,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 60.0
+    },
+    {
+     "account": "btc_daily_long",
+     "variant": "ema_slow=75",
+     "return_pct": 55.75,
+     "cagr_pct": 6.78,
+     "max_drawdown_pct": -8.38,
+     "sharpe": 1.27,
+     "profit_factor": 1.977,
+     "trades": 87,
+     "win_rate_pct": 51.7,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 75.0
+    },
+    {
+     "account": "btc_daily_long",
+     "variant": "ema_slow=100",
+     "return_pct": 60.67,
+     "cagr_pct": 7.28,
+     "max_drawdown_pct": -7.13,
+     "sharpe": 1.36,
+     "profit_factor": 2.209,
+     "trades": 81,
+     "win_rate_pct": 54.3,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 100.0
+    },
+    {
+     "account": "btc_daily_long",
+     "variant": "rsi=45.0",
+     "return_pct": 65.18,
+     "cagr_pct": 7.72,
+     "max_drawdown_pct": -8.05,
+     "sharpe": 1.37,
+     "profit_factor": 2.067,
+     "trades": 90,
+     "win_rate_pct": 53.3,
+     "param": "rsi",
+     "param_label": "RSI threshold",
+     "value": 45.0
+    },
+    {
+     "account": "btc_daily_long",
+     "variant": "rsi=55.0",
+     "return_pct": 70.38,
+     "cagr_pct": 8.21,
+     "max_drawdown_pct": -7.75,
+     "sharpe": 1.5,
+     "profit_factor": 2.281,
+     "trades": 84,
+     "win_rate_pct": 56.0,
+     "param": "rsi",
+     "param_label": "RSI threshold",
+     "value": 55.0
+    },
+    {
+     "account": "btc_daily_long",
+     "variant": "stop_atr_multiplier=1.5",
+     "return_pct": 86.46,
+     "cagr_pct": 9.67,
+     "max_drawdown_pct": -13.06,
+     "sharpe": 1.32,
+     "profit_factor": 1.754,
+     "trades": 148,
+     "win_rate_pct": 48.6,
+     "param": "stop_atr_multiplier",
+     "param_label": "Stop distance (\u00d7 ATR)",
+     "value": 1.5
+    },
+    {
+     "account": "btc_daily_long",
+     "variant": "stop_atr_multiplier=2.5",
+     "return_pct": 41.61,
+     "cagr_pct": 5.29,
+     "max_drawdown_pct": -7.87,
+     "sharpe": 1.11,
+     "profit_factor": 1.919,
+     "trades": 70,
+     "win_rate_pct": 51.4,
+     "param": "stop_atr_multiplier",
+     "param_label": "Stop distance (\u00d7 ATR)",
+     "value": 2.5
+    },
+    {
+     "account": "btc_daily_long",
+     "variant": "stop_atr_multiplier=3.0",
+     "return_pct": 43.56,
+     "cagr_pct": 5.5,
+     "max_drawdown_pct": -5.52,
+     "sharpe": 1.4,
+     "profit_factor": 2.59,
+     "trades": 51,
+     "win_rate_pct": 58.8,
+     "param": "stop_atr_multiplier",
+     "param_label": "Stop distance (\u00d7 ATR)",
+     "value": 3.0
+    },
+    {
+     "account": "btc_daily_long",
+     "variant": "take_profit_r=1.5",
+     "return_pct": 61.96,
+     "cagr_pct": 7.4,
+     "max_drawdown_pct": -7.59,
+     "sharpe": 1.33,
+     "profit_factor": 1.802,
+     "trades": 128,
+     "win_rate_pct": 56.2,
+     "param": "take_profit_r",
+     "param_label": "Profit target (\u00d7 risk)",
+     "value": 1.5
+    },
+    {
+     "account": "btc_daily_long",
+     "variant": "take_profit_r=2.5",
+     "return_pct": 60.28,
+     "cagr_pct": 7.24,
+     "max_drawdown_pct": -9.03,
+     "sharpe": 1.23,
+     "profit_factor": 2.001,
+     "trades": 78,
+     "win_rate_pct": 47.4,
+     "param": "take_profit_r",
+     "param_label": "Profit target (\u00d7 risk)",
+     "value": 2.5
+    },
+    {
+     "account": "btc_daily_long",
+     "variant": "take_profit_r=3.0",
+     "return_pct": 63.6,
+     "cagr_pct": 7.56,
+     "max_drawdown_pct": -7.76,
+     "sharpe": 1.33,
+     "profit_factor": 2.362,
+     "trades": 62,
+     "win_rate_pct": 46.8,
+     "param": "take_profit_r",
+     "param_label": "Profit target (\u00d7 risk)",
+     "value": 3.0
+    }
+   ],
+   "profitable": 17,
+   "count": 17,
+   "min_pct": 41.61,
+   "max_pct": 88.04,
+   "median_pct": 65.18,
+   "default_rank": 9
+  },
+  {
+   "account": "eth_daily_long",
+   "symbol": "ETH-USD",
+   "timeframe": "1d",
+   "side": "buy",
+   "default": {
+    "account": "eth_daily_long",
+    "variant": "default",
+    "return_pct": 54.97,
+    "cagr_pct": 6.7,
+    "max_drawdown_pct": -8.5,
+    "sharpe": 1.15,
+    "profit_factor": 1.802,
+    "trades": 99,
+    "win_rate_pct": 49.5
+   },
+   "variants": [
+    {
+     "account": "eth_daily_long",
+     "variant": "ema_fast=10",
+     "return_pct": 64.75,
+     "cagr_pct": 7.68,
+     "max_drawdown_pct": -9.9,
+     "sharpe": 1.29,
+     "profit_factor": 1.985,
+     "trades": 96,
+     "win_rate_pct": 52.1,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 10.0
+    },
+    {
+     "account": "eth_daily_long",
+     "variant": "ema_fast=15",
+     "return_pct": 59.83,
+     "cagr_pct": 7.19,
+     "max_drawdown_pct": -9.9,
+     "sharpe": 1.24,
+     "profit_factor": 1.898,
+     "trades": 96,
+     "win_rate_pct": 51.0,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 15.0
+    },
+    {
+     "account": "eth_daily_long",
+     "variant": "ema_fast=25",
+     "return_pct": 56.52,
+     "cagr_pct": 6.86,
+     "max_drawdown_pct": -8.2,
+     "sharpe": 1.16,
+     "profit_factor": 1.853,
+     "trades": 98,
+     "win_rate_pct": 50.0,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 25.0
+    },
+    {
+     "account": "eth_daily_long",
+     "variant": "ema_fast=30",
+     "return_pct": 53.63,
+     "cagr_pct": 6.57,
+     "max_drawdown_pct": -10.63,
+     "sharpe": 1.13,
+     "profit_factor": 1.825,
+     "trades": 97,
+     "win_rate_pct": 49.5,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 30.0
+    },
+    {
+     "account": "eth_daily_long",
+     "variant": "ema_slow=35",
+     "return_pct": 66.23,
+     "cagr_pct": 7.82,
+     "max_drawdown_pct": -9.9,
+     "sharpe": 1.31,
+     "profit_factor": 1.95,
+     "trades": 101,
+     "win_rate_pct": 51.5,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 35.0
+    },
+    {
+     "account": "eth_daily_long",
+     "variant": "ema_slow=40",
+     "return_pct": 59.62,
+     "cagr_pct": 7.17,
+     "max_drawdown_pct": -9.9,
+     "sharpe": 1.22,
+     "profit_factor": 1.819,
+     "trades": 102,
+     "win_rate_pct": 50.0,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 40.0
+    },
+    {
+     "account": "eth_daily_long",
+     "variant": "ema_slow=60",
+     "return_pct": 63.05,
+     "cagr_pct": 7.51,
+     "max_drawdown_pct": -7.27,
+     "sharpe": 1.28,
+     "profit_factor": 2.026,
+     "trades": 94,
+     "win_rate_pct": 52.1,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 60.0
+    },
+    {
+     "account": "eth_daily_long",
+     "variant": "ema_slow=75",
+     "return_pct": 55.24,
+     "cagr_pct": 6.73,
+     "max_drawdown_pct": -10.04,
+     "sharpe": 1.17,
+     "profit_factor": 1.843,
+     "trades": 96,
+     "win_rate_pct": 50.0,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 75.0
+    },
+    {
+     "account": "eth_daily_long",
+     "variant": "ema_slow=100",
+     "return_pct": 39.57,
+     "cagr_pct": 5.06,
+     "max_drawdown_pct": -11.07,
+     "sharpe": 0.93,
+     "profit_factor": 1.593,
+     "trades": 94,
+     "win_rate_pct": 46.8,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 100.0
+    },
+    {
+     "account": "eth_daily_long",
+     "variant": "rsi=45.0",
+     "return_pct": 54.97,
+     "cagr_pct": 6.7,
+     "max_drawdown_pct": -8.5,
+     "sharpe": 1.15,
+     "profit_factor": 1.802,
+     "trades": 99,
+     "win_rate_pct": 49.5,
+     "param": "rsi",
+     "param_label": "RSI threshold",
+     "value": 45.0
+    },
+    {
+     "account": "eth_daily_long",
+     "variant": "rsi=55.0",
+     "return_pct": 63.19,
+     "cagr_pct": 7.52,
+     "max_drawdown_pct": -8.38,
+     "sharpe": 1.3,
+     "profit_factor": 2.033,
+     "trades": 91,
+     "win_rate_pct": 52.8,
+     "param": "rsi",
+     "param_label": "RSI threshold",
+     "value": 55.0
+    },
+    {
+     "account": "eth_daily_long",
+     "variant": "stop_atr_multiplier=1.5",
+     "return_pct": 77.24,
+     "cagr_pct": 8.85,
+     "max_drawdown_pct": -10.92,
+     "sharpe": 1.18,
+     "profit_factor": 1.625,
+     "trades": 160,
+     "win_rate_pct": 46.9,
+     "param": "stop_atr_multiplier",
+     "param_label": "Stop distance (\u00d7 ATR)",
+     "value": 1.5
+    },
+    {
+     "account": "eth_daily_long",
+     "variant": "stop_atr_multiplier=2.5",
+     "return_pct": 48.08,
+     "cagr_pct": 5.99,
+     "max_drawdown_pct": -7.54,
+     "sharpe": 1.2,
+     "profit_factor": 2.301,
+     "trades": 63,
+     "win_rate_pct": 55.6,
+     "param": "stop_atr_multiplier",
+     "param_label": "Stop distance (\u00d7 ATR)",
+     "value": 2.5
+    },
+    {
+     "account": "eth_daily_long",
+     "variant": "stop_atr_multiplier=3.0",
+     "return_pct": 31.89,
+     "cagr_pct": 4.19,
+     "max_drawdown_pct": -7.18,
+     "sharpe": 1.01,
+     "profit_factor": 1.783,
+     "trades": 65,
+     "win_rate_pct": 49.2,
+     "param": "stop_atr_multiplier",
+     "param_label": "Stop distance (\u00d7 ATR)",
+     "value": 3.0
+    },
+    {
+     "account": "eth_daily_long",
+     "variant": "take_profit_r=1.5",
+     "return_pct": 65.66,
+     "cagr_pct": 7.76,
+     "max_drawdown_pct": -8.06,
+     "sharpe": 1.35,
+     "profit_factor": 1.838,
+     "trades": 132,
+     "win_rate_pct": 56.8,
+     "param": "take_profit_r",
+     "param_label": "Profit target (\u00d7 risk)",
+     "value": 1.5
+    },
+    {
+     "account": "eth_daily_long",
+     "variant": "take_profit_r=2.5",
+     "return_pct": 65.53,
+     "cagr_pct": 7.75,
+     "max_drawdown_pct": -8.15,
+     "sharpe": 1.24,
+     "profit_factor": 2.244,
+     "trades": 75,
+     "win_rate_pct": 49.3,
+     "param": "take_profit_r",
+     "param_label": "Profit target (\u00d7 risk)",
+     "value": 2.5
+    },
+    {
+     "account": "eth_daily_long",
+     "variant": "take_profit_r=3.0",
+     "return_pct": 53.98,
+     "cagr_pct": 6.6,
+     "max_drawdown_pct": -8.73,
+     "sharpe": 1.09,
+     "profit_factor": 1.847,
+     "trades": 79,
+     "win_rate_pct": 40.5,
+     "param": "take_profit_r",
+     "param_label": "Profit target (\u00d7 risk)",
+     "value": 3.0
+    }
+   ],
+   "profitable": 17,
+   "count": 17,
+   "min_pct": 31.89,
+   "max_pct": 77.24,
+   "median_pct": 59.62,
+   "default_rank": 12
+  },
+  {
+   "account": "btc_hourly_long",
+   "symbol": "BTC-USD",
+   "timeframe": "1h",
+   "side": "buy",
+   "default": {
+    "account": "btc_hourly_long",
+    "variant": "default",
+    "return_pct": 99.08,
+    "cagr_pct": 41.75,
+    "max_drawdown_pct": -27.6,
+    "sharpe": 1.57,
+    "profit_factor": 1.185,
+    "trades": 497,
+    "win_rate_pct": 39.2
+   },
+   "variants": [
+    {
+     "account": "btc_hourly_long",
+     "variant": "ema_fast=10",
+     "return_pct": 132.56,
+     "cagr_pct": 53.37,
+     "max_drawdown_pct": -25.35,
+     "sharpe": 1.89,
+     "profit_factor": 1.226,
+     "trades": 499,
+     "win_rate_pct": 40.3,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 10.0
+    },
+    {
+     "account": "btc_hourly_long",
+     "variant": "ema_fast=15",
+     "return_pct": 166.29,
+     "cagr_pct": 64.26,
+     "max_drawdown_pct": -23.8,
+     "sharpe": 2.18,
+     "profit_factor": 1.273,
+     "trades": 486,
+     "win_rate_pct": 41.4,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 15.0
+    },
+    {
+     "account": "btc_hourly_long",
+     "variant": "ema_fast=25",
+     "return_pct": 91.82,
+     "cagr_pct": 39.11,
+     "max_drawdown_pct": -20.3,
+     "sharpe": 1.5,
+     "profit_factor": 1.191,
+     "trades": 492,
+     "win_rate_pct": 39.0,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 25.0
+    },
+    {
+     "account": "btc_hourly_long",
+     "variant": "ema_fast=30",
+     "return_pct": 61.28,
+     "cagr_pct": 27.4,
+     "max_drawdown_pct": -30.7,
+     "sharpe": 1.15,
+     "profit_factor": 1.136,
+     "trades": 477,
+     "win_rate_pct": 38.0,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 30.0
+    },
+    {
+     "account": "btc_hourly_long",
+     "variant": "ema_slow=35",
+     "return_pct": 143.76,
+     "cagr_pct": 57.06,
+     "max_drawdown_pct": -28.58,
+     "sharpe": 1.96,
+     "profit_factor": 1.231,
+     "trades": 506,
+     "win_rate_pct": 40.5,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 35.0
+    },
+    {
+     "account": "btc_hourly_long",
+     "variant": "ema_slow=40",
+     "return_pct": 144.68,
+     "cagr_pct": 57.36,
+     "max_drawdown_pct": -26.14,
+     "sharpe": 1.98,
+     "profit_factor": 1.24,
+     "trades": 503,
+     "win_rate_pct": 40.6,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 40.0
+    },
+    {
+     "account": "btc_hourly_long",
+     "variant": "ema_slow=60",
+     "return_pct": 98.08,
+     "cagr_pct": 41.39,
+     "max_drawdown_pct": -32.24,
+     "sharpe": 1.58,
+     "profit_factor": 1.191,
+     "trades": 483,
+     "win_rate_pct": 39.3,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 60.0
+    },
+    {
+     "account": "btc_hourly_long",
+     "variant": "ema_slow=75",
+     "return_pct": 85.8,
+     "cagr_pct": 36.87,
+     "max_drawdown_pct": -35.35,
+     "sharpe": 1.47,
+     "profit_factor": 1.164,
+     "trades": 472,
+     "win_rate_pct": 39.0,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 75.0
+    },
+    {
+     "account": "btc_hourly_long",
+     "variant": "ema_slow=100",
+     "return_pct": 74.8,
+     "cagr_pct": 32.71,
+     "max_drawdown_pct": -30.94,
+     "sharpe": 1.37,
+     "profit_factor": 1.165,
+     "trades": 449,
+     "win_rate_pct": 38.8,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 100.0
+    },
+    {
+     "account": "btc_hourly_long",
+     "variant": "rsi=45.0",
+     "return_pct": 94.98,
+     "cagr_pct": 40.26,
+     "max_drawdown_pct": -27.6,
+     "sharpe": 1.52,
+     "profit_factor": 1.179,
+     "trades": 499,
+     "win_rate_pct": 39.1,
+     "param": "rsi",
+     "param_label": "RSI threshold",
+     "value": 45.0
+    },
+    {
+     "account": "btc_hourly_long",
+     "variant": "rsi=55.0",
+     "return_pct": 110.05,
+     "cagr_pct": 45.65,
+     "max_drawdown_pct": -23.45,
+     "sharpe": 1.73,
+     "profit_factor": 1.233,
+     "trades": 457,
+     "win_rate_pct": 40.0,
+     "param": "rsi",
+     "param_label": "RSI threshold",
+     "value": 55.0
+    },
+    {
+     "account": "btc_hourly_long",
+     "variant": "stop_atr_multiplier=1.5",
+     "return_pct": 76.22,
+     "cagr_pct": 33.25,
+     "max_drawdown_pct": -34.04,
+     "sharpe": 1.1,
+     "profit_factor": 1.085,
+     "trades": 836,
+     "win_rate_pct": 37.2,
+     "param": "stop_atr_multiplier",
+     "param_label": "Stop distance (\u00d7 ATR)",
+     "value": 1.5
+    },
+    {
+     "account": "btc_hourly_long",
+     "variant": "stop_atr_multiplier=2.5",
+     "return_pct": 72.8,
+     "cagr_pct": 31.94,
+     "max_drawdown_pct": -21.47,
+     "sharpe": 1.52,
+     "profit_factor": 1.227,
+     "trades": 342,
+     "win_rate_pct": 39.8,
+     "param": "stop_atr_multiplier",
+     "param_label": "Stop distance (\u00d7 ATR)",
+     "value": 2.5
+    },
+    {
+     "account": "btc_hourly_long",
+     "variant": "stop_atr_multiplier=3.0",
+     "return_pct": 76.1,
+     "cagr_pct": 33.21,
+     "max_drawdown_pct": -14.29,
+     "sharpe": 1.77,
+     "profit_factor": 1.349,
+     "trades": 255,
+     "win_rate_pct": 41.6,
+     "param": "stop_atr_multiplier",
+     "param_label": "Stop distance (\u00d7 ATR)",
+     "value": 3.0
+    },
+    {
+     "account": "btc_hourly_long",
+     "variant": "take_profit_r=1.5",
+     "return_pct": 109.48,
+     "cagr_pct": 45.46,
+     "max_drawdown_pct": -23.67,
+     "sharpe": 1.71,
+     "profit_factor": 1.164,
+     "trades": 679,
+     "win_rate_pct": 45.8,
+     "param": "take_profit_r",
+     "param_label": "Profit target (\u00d7 risk)",
+     "value": 1.5
+    },
+    {
+     "account": "btc_hourly_long",
+     "variant": "take_profit_r=2.5",
+     "return_pct": 62.19,
+     "cagr_pct": 27.77,
+     "max_drawdown_pct": -26.91,
+     "sharpe": 1.13,
+     "profit_factor": 1.14,
+     "trades": 434,
+     "win_rate_pct": 33.0,
+     "param": "take_profit_r",
+     "param_label": "Profit target (\u00d7 risk)",
+     "value": 2.5
+    },
+    {
+     "account": "btc_hourly_long",
+     "variant": "take_profit_r=3.0",
+     "return_pct": 58.33,
+     "cagr_pct": 26.22,
+     "max_drawdown_pct": -23.69,
+     "sharpe": 1.07,
+     "profit_factor": 1.166,
+     "trades": 362,
+     "win_rate_pct": 29.3,
+     "param": "take_profit_r",
+     "param_label": "Profit target (\u00d7 risk)",
+     "value": 3.0
+    }
+   ],
+   "profitable": 17,
+   "count": 17,
+   "min_pct": 58.33,
+   "max_pct": 166.29,
+   "median_pct": 91.82,
+   "default_rank": 7
+  },
+  {
+   "account": "eth_hourly_long",
+   "symbol": "ETH-USD",
+   "timeframe": "1h",
+   "side": "buy",
+   "default": {
+    "account": "eth_hourly_long",
+    "variant": "default",
+    "return_pct": 85.75,
+    "cagr_pct": 36.92,
+    "max_drawdown_pct": -21.85,
+    "sharpe": 1.44,
+    "profit_factor": 1.163,
+    "trades": 533,
+    "win_rate_pct": 38.8
+   },
+   "variants": [
+    {
+     "account": "eth_hourly_long",
+     "variant": "ema_fast=10",
+     "return_pct": 110.37,
+     "cagr_pct": 45.85,
+     "max_drawdown_pct": -18.12,
+     "sharpe": 1.67,
+     "profit_factor": 1.193,
+     "trades": 550,
+     "win_rate_pct": 39.5,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 10.0
+    },
+    {
+     "account": "eth_hourly_long",
+     "variant": "ema_fast=15",
+     "return_pct": 79.05,
+     "cagr_pct": 34.39,
+     "max_drawdown_pct": -21.21,
+     "sharpe": 1.35,
+     "profit_factor": 1.147,
+     "trades": 539,
+     "win_rate_pct": 38.6,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 15.0
+    },
+    {
+     "account": "eth_hourly_long",
+     "variant": "ema_fast=25",
+     "return_pct": 61.14,
+     "cagr_pct": 27.39,
+     "max_drawdown_pct": -29.58,
+     "sharpe": 1.14,
+     "profit_factor": 1.116,
+     "trades": 535,
+     "win_rate_pct": 37.9,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 25.0
+    },
+    {
+     "account": "eth_hourly_long",
+     "variant": "ema_fast=30",
+     "return_pct": 52.53,
+     "cagr_pct": 23.89,
+     "max_drawdown_pct": -24.08,
+     "sharpe": 1.02,
+     "profit_factor": 1.107,
+     "trades": 538,
+     "win_rate_pct": 37.5,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 30.0
+    },
+    {
+     "account": "eth_hourly_long",
+     "variant": "ema_slow=35",
+     "return_pct": 81.84,
+     "cagr_pct": 35.45,
+     "max_drawdown_pct": -25.11,
+     "sharpe": 1.37,
+     "profit_factor": 1.15,
+     "trades": 555,
+     "win_rate_pct": 38.6,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 35.0
+    },
+    {
+     "account": "eth_hourly_long",
+     "variant": "ema_slow=40",
+     "return_pct": 88.35,
+     "cagr_pct": 37.89,
+     "max_drawdown_pct": -22.69,
+     "sharpe": 1.45,
+     "profit_factor": 1.158,
+     "trades": 540,
+     "win_rate_pct": 38.9,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 40.0
+    },
+    {
+     "account": "eth_hourly_long",
+     "variant": "ema_slow=60",
+     "return_pct": 66.31,
+     "cagr_pct": 29.45,
+     "max_drawdown_pct": -24.04,
+     "sharpe": 1.21,
+     "profit_factor": 1.127,
+     "trades": 538,
+     "win_rate_pct": 38.1,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 60.0
+    },
+    {
+     "account": "eth_hourly_long",
+     "variant": "ema_slow=75",
+     "return_pct": 55.92,
+     "cagr_pct": 25.28,
+     "max_drawdown_pct": -22.3,
+     "sharpe": 1.08,
+     "profit_factor": 1.119,
+     "trades": 530,
+     "win_rate_pct": 37.7,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 75.0
+    },
+    {
+     "account": "eth_hourly_long",
+     "variant": "ema_slow=100",
+     "return_pct": 46.75,
+     "cagr_pct": 21.49,
+     "max_drawdown_pct": -27.57,
+     "sharpe": 0.97,
+     "profit_factor": 1.108,
+     "trades": 496,
+     "win_rate_pct": 37.5,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 100.0
+    },
+    {
+     "account": "eth_hourly_long",
+     "variant": "rsi=45.0",
+     "return_pct": 85.75,
+     "cagr_pct": 36.92,
+     "max_drawdown_pct": -21.85,
+     "sharpe": 1.44,
+     "profit_factor": 1.163,
+     "trades": 533,
+     "win_rate_pct": 38.8,
+     "param": "rsi",
+     "param_label": "RSI threshold",
+     "value": 45.0
+    },
+    {
+     "account": "eth_hourly_long",
+     "variant": "rsi=55.0",
+     "return_pct": 74.01,
+     "cagr_pct": 32.46,
+     "max_drawdown_pct": -19.58,
+     "sharpe": 1.34,
+     "profit_factor": 1.15,
+     "trades": 490,
+     "win_rate_pct": 38.8,
+     "param": "rsi",
+     "param_label": "RSI threshold",
+     "value": 55.0
+    },
+    {
+     "account": "eth_hourly_long",
+     "variant": "stop_atr_multiplier=1.5",
+     "return_pct": 66.18,
+     "cagr_pct": 29.4,
+     "max_drawdown_pct": -32.78,
+     "sharpe": 1.0,
+     "profit_factor": 1.074,
+     "trades": 842,
+     "win_rate_pct": 37.4,
+     "param": "stop_atr_multiplier",
+     "param_label": "Stop distance (\u00d7 ATR)",
+     "value": 1.5
+    },
+    {
+     "account": "eth_hourly_long",
+     "variant": "stop_atr_multiplier=2.5",
+     "return_pct": 104.15,
+     "cagr_pct": 43.64,
+     "max_drawdown_pct": -14.75,
+     "sharpe": 1.93,
+     "profit_factor": 1.291,
+     "trades": 364,
+     "win_rate_pct": 41.2,
+     "param": "stop_atr_multiplier",
+     "param_label": "Stop distance (\u00d7 ATR)",
+     "value": 2.5
+    },
+    {
+     "account": "eth_hourly_long",
+     "variant": "stop_atr_multiplier=3.0",
+     "return_pct": 78.43,
+     "cagr_pct": 34.15,
+     "max_drawdown_pct": -13.49,
+     "sharpe": 1.83,
+     "profit_factor": 1.359,
+     "trades": 249,
+     "win_rate_pct": 42.2,
+     "param": "stop_atr_multiplier",
+     "param_label": "Stop distance (\u00d7 ATR)",
+     "value": 3.0
+    },
+    {
+     "account": "eth_hourly_long",
+     "variant": "take_profit_r=1.5",
+     "return_pct": 101.68,
+     "cagr_pct": 42.76,
+     "max_drawdown_pct": -20.37,
+     "sharpe": 1.63,
+     "profit_factor": 1.16,
+     "trades": 698,
+     "win_rate_pct": 45.9,
+     "param": "take_profit_r",
+     "param_label": "Profit target (\u00d7 risk)",
+     "value": 1.5
+    },
+    {
+     "account": "eth_hourly_long",
+     "variant": "take_profit_r=2.5",
+     "return_pct": 110.4,
+     "cagr_pct": 45.86,
+     "max_drawdown_pct": -17.61,
+     "sharpe": 1.66,
+     "profit_factor": 1.218,
+     "trades": 439,
+     "win_rate_pct": 34.9,
+     "param": "take_profit_r",
+     "param_label": "Profit target (\u00d7 risk)",
+     "value": 2.5
+    },
+    {
+     "account": "eth_hourly_long",
+     "variant": "take_profit_r=3.0",
+     "return_pct": 63.08,
+     "cagr_pct": 28.17,
+     "max_drawdown_pct": -22.95,
+     "sharpe": 1.14,
+     "profit_factor": 1.161,
+     "trades": 372,
+     "win_rate_pct": 29.6,
+     "param": "take_profit_r",
+     "param_label": "Profit target (\u00d7 risk)",
+     "value": 3.0
+    }
+   ],
+   "profitable": 17,
+   "count": 17,
+   "min_pct": 46.75,
+   "max_pct": 110.4,
+   "median_pct": 78.43,
+   "default_rank": 6
+  },
+  {
+   "account": "btc_hourly_both",
+   "symbol": "BTC-USD",
+   "timeframe": "1h",
+   "side": "both",
+   "default": {
+    "account": "btc_hourly_both",
+    "variant": "default",
+    "return_pct": 247.03,
+    "cagr_pct": 87.84,
+    "max_drawdown_pct": -24.03,
+    "sharpe": 2.14,
+    "profit_factor": 1.222,
+    "trades": 886,
+    "win_rate_pct": 39.3
+   },
+   "variants": [
+    {
+     "account": "btc_hourly_both",
+     "variant": "ema_fast=10",
+     "return_pct": 420.46,
+     "cagr_pct": 130.66,
+     "max_drawdown_pct": -21.86,
+     "sharpe": 2.79,
+     "profit_factor": 1.256,
+     "trades": 877,
+     "win_rate_pct": 40.8,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 10.0
+    },
+    {
+     "account": "btc_hourly_both",
+     "variant": "ema_fast=15",
+     "return_pct": 325.83,
+     "cagr_pct": 108.36,
+     "max_drawdown_pct": -27.34,
+     "sharpe": 2.46,
+     "profit_factor": 1.236,
+     "trades": 869,
+     "win_rate_pct": 40.2,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 15.0
+    },
+    {
+     "account": "btc_hourly_both",
+     "variant": "ema_fast=25",
+     "return_pct": 194.44,
+     "cagr_pct": 72.83,
+     "max_drawdown_pct": -23.58,
+     "sharpe": 1.88,
+     "profit_factor": 1.188,
+     "trades": 885,
+     "win_rate_pct": 38.6,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 25.0
+    },
+    {
+     "account": "btc_hourly_both",
+     "variant": "ema_fast=30",
+     "return_pct": 163.01,
+     "cagr_pct": 63.23,
+     "max_drawdown_pct": -23.44,
+     "sharpe": 1.72,
+     "profit_factor": 1.159,
+     "trades": 884,
+     "win_rate_pct": 38.2,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 30.0
+    },
+    {
+     "account": "btc_hourly_both",
+     "variant": "ema_slow=35",
+     "return_pct": 398.01,
+     "cagr_pct": 125.57,
+     "max_drawdown_pct": -21.05,
+     "sharpe": 2.7,
+     "profit_factor": 1.253,
+     "trades": 891,
+     "win_rate_pct": 40.6,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 35.0
+    },
+    {
+     "account": "btc_hourly_both",
+     "variant": "ema_slow=40",
+     "return_pct": 366.6,
+     "cagr_pct": 118.24,
+     "max_drawdown_pct": -22.78,
+     "sharpe": 2.6,
+     "profit_factor": 1.253,
+     "trades": 892,
+     "win_rate_pct": 40.4,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 40.0
+    },
+    {
+     "account": "btc_hourly_both",
+     "variant": "ema_slow=60",
+     "return_pct": 246.86,
+     "cagr_pct": 87.8,
+     "max_drawdown_pct": -24.81,
+     "sharpe": 2.16,
+     "profit_factor": 1.214,
+     "trades": 866,
+     "win_rate_pct": 39.4,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 60.0
+    },
+    {
+     "account": "btc_hourly_both",
+     "variant": "ema_slow=75",
+     "return_pct": 278.61,
+     "cagr_pct": 96.32,
+     "max_drawdown_pct": -22.47,
+     "sharpe": 2.31,
+     "profit_factor": 1.222,
+     "trades": 866,
+     "win_rate_pct": 39.7,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 75.0
+    },
+    {
+     "account": "btc_hourly_both",
+     "variant": "ema_slow=100",
+     "return_pct": 225.6,
+     "cagr_pct": 81.87,
+     "max_drawdown_pct": -23.38,
+     "sharpe": 2.09,
+     "profit_factor": 1.189,
+     "trades": 848,
+     "win_rate_pct": 39.3,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 100.0
+    },
+    {
+     "account": "btc_hourly_both",
+     "variant": "rsi=45.0",
+     "return_pct": 235.39,
+     "cagr_pct": 84.62,
+     "max_drawdown_pct": -24.38,
+     "sharpe": 2.11,
+     "profit_factor": 1.191,
+     "trades": 863,
+     "win_rate_pct": 39.3,
+     "param": "rsi",
+     "param_label": "RSI threshold",
+     "value": 45.0
+    },
+    {
+     "account": "btc_hourly_both",
+     "variant": "rsi=55.0",
+     "return_pct": 271.4,
+     "cagr_pct": 94.41,
+     "max_drawdown_pct": -26.02,
+     "sharpe": 2.28,
+     "profit_factor": 1.247,
+     "trades": 856,
+     "win_rate_pct": 39.7,
+     "param": "rsi",
+     "param_label": "RSI threshold",
+     "value": 55.0
+    },
+    {
+     "account": "btc_hourly_both",
+     "variant": "stop_atr_multiplier=1.5",
+     "return_pct": 358.72,
+     "cagr_pct": 116.38,
+     "max_drawdown_pct": -29.87,
+     "sharpe": 2.09,
+     "profit_factor": 1.149,
+     "trades": 1489,
+     "win_rate_pct": 38.3,
+     "param": "stop_atr_multiplier",
+     "param_label": "Stop distance (\u00d7 ATR)",
+     "value": 1.5
+    },
+    {
+     "account": "btc_hourly_both",
+     "variant": "stop_atr_multiplier=2.5",
+     "return_pct": 201.76,
+     "cagr_pct": 75.0,
+     "max_drawdown_pct": -20.48,
+     "sharpe": 2.34,
+     "profit_factor": 1.297,
+     "trades": 552,
+     "win_rate_pct": 41.1,
+     "param": "stop_atr_multiplier",
+     "param_label": "Stop distance (\u00d7 ATR)",
+     "value": 2.5
+    },
+    {
+     "account": "btc_hourly_both",
+     "variant": "stop_atr_multiplier=3.0",
+     "return_pct": 101.35,
+     "cagr_pct": 42.56,
+     "max_drawdown_pct": -22.13,
+     "sharpe": 1.77,
+     "profit_factor": 1.267,
+     "trades": 406,
+     "win_rate_pct": 39.9,
+     "param": "stop_atr_multiplier",
+     "param_label": "Stop distance (\u00d7 ATR)",
+     "value": 3.0
+    },
+    {
+     "account": "btc_hourly_both",
+     "variant": "take_profit_r=1.5",
+     "return_pct": 494.55,
+     "cagr_pct": 146.76,
+     "max_drawdown_pct": -19.61,
+     "sharpe": 3.03,
+     "profit_factor": 1.279,
+     "trades": 1187,
+     "win_rate_pct": 47.4,
+     "param": "take_profit_r",
+     "param_label": "Profit target (\u00d7 risk)",
+     "value": 1.5
+    },
+    {
+     "account": "btc_hourly_both",
+     "variant": "take_profit_r=2.5",
+     "return_pct": 226.34,
+     "cagr_pct": 82.08,
+     "max_drawdown_pct": -23.95,
+     "sharpe": 2.04,
+     "profit_factor": 1.216,
+     "trades": 706,
+     "win_rate_pct": 34.6,
+     "param": "take_profit_r",
+     "param_label": "Profit target (\u00d7 risk)",
+     "value": 2.5
+    },
+    {
+     "account": "btc_hourly_both",
+     "variant": "take_profit_r=3.0",
+     "return_pct": 142.89,
+     "cagr_pct": 56.77,
+     "max_drawdown_pct": -24.47,
+     "sharpe": 1.57,
+     "profit_factor": 1.2,
+     "trades": 591,
+     "win_rate_pct": 29.8,
+     "param": "take_profit_r",
+     "param_label": "Profit target (\u00d7 risk)",
+     "value": 3.0
+    }
+   ],
+   "profitable": 17,
+   "count": 17,
+   "min_pct": 101.35,
+   "max_pct": 494.55,
+   "median_pct": 246.86,
+   "default_rank": 9
+  },
+  {
+   "account": "eth_hourly_both",
+   "symbol": "ETH-USD",
+   "timeframe": "1h",
+   "side": "both",
+   "default": {
+    "account": "eth_hourly_both",
+    "variant": "default",
+    "return_pct": 238.64,
+    "cagr_pct": 85.71,
+    "max_drawdown_pct": -24.92,
+    "sharpe": 2.12,
+    "profit_factor": 1.169,
+    "trades": 901,
+    "win_rate_pct": 39.4
+   },
+   "variants": [
+    {
+     "account": "eth_hourly_both",
+     "variant": "ema_fast=10",
+     "return_pct": 632.39,
+     "cagr_pct": 174.67,
+     "max_drawdown_pct": -20.42,
+     "sharpe": 3.33,
+     "profit_factor": 1.266,
+     "trades": 888,
+     "win_rate_pct": 42.3,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 10.0
+    },
+    {
+     "account": "eth_hourly_both",
+     "variant": "ema_fast=15",
+     "return_pct": 363.53,
+     "cagr_pct": 117.78,
+     "max_drawdown_pct": -25.98,
+     "sharpe": 2.62,
+     "profit_factor": 1.206,
+     "trades": 894,
+     "win_rate_pct": 40.6,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 15.0
+    },
+    {
+     "account": "eth_hourly_both",
+     "variant": "ema_fast=25",
+     "return_pct": 210.72,
+     "cagr_pct": 77.77,
+     "max_drawdown_pct": -29.09,
+     "sharpe": 1.97,
+     "profit_factor": 1.145,
+     "trades": 901,
+     "win_rate_pct": 39.1,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 25.0
+    },
+    {
+     "account": "eth_hourly_both",
+     "variant": "ema_fast=30",
+     "return_pct": 142.65,
+     "cagr_pct": 56.81,
+     "max_drawdown_pct": -29.44,
+     "sharpe": 1.58,
+     "profit_factor": 1.119,
+     "trades": 905,
+     "win_rate_pct": 38.1,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 30.0
+    },
+    {
+     "account": "eth_hourly_both",
+     "variant": "ema_slow=35",
+     "return_pct": 393.8,
+     "cagr_pct": 124.88,
+     "max_drawdown_pct": -28.09,
+     "sharpe": 2.69,
+     "profit_factor": 1.201,
+     "trades": 922,
+     "win_rate_pct": 40.7,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 35.0
+    },
+    {
+     "account": "eth_hourly_both",
+     "variant": "ema_slow=40",
+     "return_pct": 352.06,
+     "cagr_pct": 115.03,
+     "max_drawdown_pct": -24.25,
+     "sharpe": 2.58,
+     "profit_factor": 1.209,
+     "trades": 902,
+     "win_rate_pct": 40.5,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 40.0
+    },
+    {
+     "account": "eth_hourly_both",
+     "variant": "ema_slow=60",
+     "return_pct": 193.75,
+     "cagr_pct": 72.78,
+     "max_drawdown_pct": -29.43,
+     "sharpe": 1.88,
+     "profit_factor": 1.145,
+     "trades": 909,
+     "win_rate_pct": 38.8,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 60.0
+    },
+    {
+     "account": "eth_hourly_both",
+     "variant": "ema_slow=75",
+     "return_pct": 158.37,
+     "cagr_pct": 61.88,
+     "max_drawdown_pct": -23.53,
+     "sharpe": 1.68,
+     "profit_factor": 1.132,
+     "trades": 907,
+     "win_rate_pct": 38.4,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 75.0
+    },
+    {
+     "account": "eth_hourly_both",
+     "variant": "ema_slow=100",
+     "return_pct": 127.1,
+     "cagr_pct": 51.63,
+     "max_drawdown_pct": -26.55,
+     "sharpe": 1.49,
+     "profit_factor": 1.116,
+     "trades": 888,
+     "win_rate_pct": 38.0,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 100.0
+    },
+    {
+     "account": "eth_hourly_both",
+     "variant": "rsi=45.0",
+     "return_pct": 217.59,
+     "cagr_pct": 79.76,
+     "max_drawdown_pct": -27.99,
+     "sharpe": 2.03,
+     "profit_factor": 1.16,
+     "trades": 887,
+     "win_rate_pct": 39.2,
+     "param": "rsi",
+     "param_label": "RSI threshold",
+     "value": 45.0
+    },
+    {
+     "account": "eth_hourly_both",
+     "variant": "rsi=55.0",
+     "return_pct": 207.5,
+     "cagr_pct": 76.84,
+     "max_drawdown_pct": -27.77,
+     "sharpe": 1.98,
+     "profit_factor": 1.158,
+     "trades": 879,
+     "win_rate_pct": 39.1,
+     "param": "rsi",
+     "param_label": "RSI threshold",
+     "value": 55.0
+    },
+    {
+     "account": "eth_hourly_both",
+     "variant": "stop_atr_multiplier=1.5",
+     "return_pct": 249.21,
+     "cagr_pct": 88.63,
+     "max_drawdown_pct": -25.74,
+     "sharpe": 1.76,
+     "profit_factor": 1.1,
+     "trades": 1476,
+     "win_rate_pct": 38.1,
+     "param": "stop_atr_multiplier",
+     "param_label": "Stop distance (\u00d7 ATR)",
+     "value": 1.5
+    },
+    {
+     "account": "eth_hourly_both",
+     "variant": "stop_atr_multiplier=2.5",
+     "return_pct": 292.09,
+     "cagr_pct": 100.04,
+     "max_drawdown_pct": -23.47,
+     "sharpe": 2.83,
+     "profit_factor": 1.281,
+     "trades": 594,
+     "win_rate_pct": 42.3,
+     "param": "stop_atr_multiplier",
+     "param_label": "Stop distance (\u00d7 ATR)",
+     "value": 2.5
+    },
+    {
+     "account": "eth_hourly_both",
+     "variant": "stop_atr_multiplier=3.0",
+     "return_pct": 203.31,
+     "cagr_pct": 75.6,
+     "max_drawdown_pct": -16.62,
+     "sharpe": 2.77,
+     "profit_factor": 1.371,
+     "trades": 404,
+     "win_rate_pct": 43.6,
+     "param": "stop_atr_multiplier",
+     "param_label": "Stop distance (\u00d7 ATR)",
+     "value": 3.0
+    },
+    {
+     "account": "eth_hourly_both",
+     "variant": "take_profit_r=1.5",
+     "return_pct": 243.14,
+     "cagr_pct": 86.95,
+     "max_drawdown_pct": -21.84,
+     "sharpe": 2.15,
+     "profit_factor": 1.153,
+     "trades": 1216,
+     "win_rate_pct": 45.8,
+     "param": "take_profit_r",
+     "param_label": "Profit target (\u00d7 risk)",
+     "value": 1.5
+    },
+    {
+     "account": "eth_hourly_both",
+     "variant": "take_profit_r=2.5",
+     "return_pct": 292.55,
+     "cagr_pct": 100.16,
+     "max_drawdown_pct": -24.3,
+     "sharpe": 2.34,
+     "profit_factor": 1.205,
+     "trades": 731,
+     "win_rate_pct": 35.3,
+     "param": "take_profit_r",
+     "param_label": "Profit target (\u00d7 risk)",
+     "value": 2.5
+    },
+    {
+     "account": "eth_hourly_both",
+     "variant": "take_profit_r=3.0",
+     "return_pct": 208.33,
+     "cagr_pct": 77.08,
+     "max_drawdown_pct": -26.27,
+     "sharpe": 1.97,
+     "profit_factor": 1.189,
+     "trades": 574,
+     "win_rate_pct": 31.2,
+     "param": "take_profit_r",
+     "param_label": "Profit target (\u00d7 risk)",
+     "value": 3.0
+    }
+   ],
+   "profitable": 17,
+   "count": 17,
+   "min_pct": 127.1,
+   "max_pct": 632.39,
+   "median_pct": 217.59,
+   "default_rank": 9
+  },
+  {
+   "account": "gold_daily_long",
+   "symbol": "GC=F",
+   "timeframe": "1d",
+   "side": "buy",
+   "default": {
+    "account": "gold_daily_long",
+    "variant": "default",
+    "return_pct": 42.58,
+    "cagr_pct": 3.72,
+    "max_drawdown_pct": -9.8,
+    "sharpe": 0.82,
+    "profit_factor": 1.66,
+    "trades": 103,
+    "win_rate_pct": 45.6
+   },
+   "variants": [
+    {
+     "account": "gold_daily_long",
+     "variant": "ema_fast=10",
+     "return_pct": 36.96,
+     "cagr_pct": 3.29,
+     "max_drawdown_pct": -10.32,
+     "sharpe": 0.72,
+     "profit_factor": 1.53,
+     "trades": 107,
+     "win_rate_pct": 43.9,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 10.0
+    },
+    {
+     "account": "gold_daily_long",
+     "variant": "ema_fast=15",
+     "return_pct": 35.78,
+     "cagr_pct": 3.2,
+     "max_drawdown_pct": -10.04,
+     "sharpe": 0.71,
+     "profit_factor": 1.579,
+     "trades": 99,
+     "win_rate_pct": 44.4,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 15.0
+    },
+    {
+     "account": "gold_daily_long",
+     "variant": "ema_fast=25",
+     "return_pct": 51.54,
+     "cagr_pct": 4.37,
+     "max_drawdown_pct": -7.23,
+     "sharpe": 0.95,
+     "profit_factor": 1.845,
+     "trades": 100,
+     "win_rate_pct": 48.0,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 25.0
+    },
+    {
+     "account": "gold_daily_long",
+     "variant": "ema_fast=30",
+     "return_pct": 48.42,
+     "cagr_pct": 4.15,
+     "max_drawdown_pct": -7.89,
+     "sharpe": 0.9,
+     "profit_factor": 1.723,
+     "trades": 105,
+     "win_rate_pct": 46.7,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 30.0
+    },
+    {
+     "account": "gold_daily_long",
+     "variant": "ema_slow=35",
+     "return_pct": 35.68,
+     "cagr_pct": 3.19,
+     "max_drawdown_pct": -9.79,
+     "sharpe": 0.71,
+     "profit_factor": 1.555,
+     "trades": 102,
+     "win_rate_pct": 44.1,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 35.0
+    },
+    {
+     "account": "gold_daily_long",
+     "variant": "ema_slow=40",
+     "return_pct": 41.18,
+     "cagr_pct": 3.61,
+     "max_drawdown_pct": -9.8,
+     "sharpe": 0.8,
+     "profit_factor": 1.65,
+     "trades": 101,
+     "win_rate_pct": 45.5,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 40.0
+    },
+    {
+     "account": "gold_daily_long",
+     "variant": "ema_slow=60",
+     "return_pct": 41.15,
+     "cagr_pct": 3.61,
+     "max_drawdown_pct": -10.73,
+     "sharpe": 0.8,
+     "profit_factor": 1.635,
+     "trades": 104,
+     "win_rate_pct": 45.2,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 60.0
+    },
+    {
+     "account": "gold_daily_long",
+     "variant": "ema_slow=75",
+     "return_pct": 37.04,
+     "cagr_pct": 3.29,
+     "max_drawdown_pct": -9.79,
+     "sharpe": 0.75,
+     "profit_factor": 1.56,
+     "trades": 104,
+     "win_rate_pct": 44.2,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 75.0
+    },
+    {
+     "account": "gold_daily_long",
+     "variant": "ema_slow=100",
+     "return_pct": 31.66,
+     "cagr_pct": 2.87,
+     "max_drawdown_pct": -9.64,
+     "sharpe": 0.64,
+     "profit_factor": 1.476,
+     "trades": 105,
+     "win_rate_pct": 42.9,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 100.0
+    },
+    {
+     "account": "gold_daily_long",
+     "variant": "rsi=45.0",
+     "return_pct": 42.58,
+     "cagr_pct": 3.72,
+     "max_drawdown_pct": -9.8,
+     "sharpe": 0.82,
+     "profit_factor": 1.66,
+     "trades": 103,
+     "win_rate_pct": 45.6,
+     "param": "rsi",
+     "param_label": "RSI threshold",
+     "value": 45.0
+    },
+    {
+     "account": "gold_daily_long",
+     "variant": "rsi=55.0",
+     "return_pct": 27.88,
+     "cagr_pct": 2.56,
+     "max_drawdown_pct": -10.49,
+     "sharpe": 0.59,
+     "profit_factor": 1.436,
+     "trades": 102,
+     "win_rate_pct": 42.2,
+     "param": "rsi",
+     "param_label": "RSI threshold",
+     "value": 55.0
+    },
+    {
+     "account": "gold_daily_long",
+     "variant": "stop_atr_multiplier=1.5",
+     "return_pct": 79.12,
+     "cagr_pct": 6.18,
+     "max_drawdown_pct": -10.63,
+     "sharpe": 1.02,
+     "profit_factor": 1.679,
+     "trades": 168,
+     "win_rate_pct": 45.8,
+     "param": "stop_atr_multiplier",
+     "param_label": "Stop distance (\u00d7 ATR)",
+     "value": 1.5
+    },
+    {
+     "account": "gold_daily_long",
+     "variant": "stop_atr_multiplier=2.5",
+     "return_pct": 31.61,
+     "cagr_pct": 2.87,
+     "max_drawdown_pct": -6.64,
+     "sharpe": 0.74,
+     "profit_factor": 1.783,
+     "trades": 70,
+     "win_rate_pct": 47.1,
+     "param": "stop_atr_multiplier",
+     "param_label": "Stop distance (\u00d7 ATR)",
+     "value": 2.5
+    },
+    {
+     "account": "gold_daily_long",
+     "variant": "stop_atr_multiplier=3.0",
+     "return_pct": 25.9,
+     "cagr_pct": 2.4,
+     "max_drawdown_pct": -6.83,
+     "sharpe": 0.7,
+     "profit_factor": 1.974,
+     "trades": 48,
+     "win_rate_pct": 50.0,
+     "param": "stop_atr_multiplier",
+     "param_label": "Stop distance (\u00d7 ATR)",
+     "value": 3.0
+    },
+    {
+     "account": "gold_daily_long",
+     "variant": "take_profit_r=1.5",
+     "return_pct": 48.94,
+     "cagr_pct": 4.18,
+     "max_drawdown_pct": -10.77,
+     "sharpe": 0.91,
+     "profit_factor": 1.68,
+     "trades": 130,
+     "win_rate_pct": 53.1,
+     "param": "take_profit_r",
+     "param_label": "Profit target (\u00d7 risk)",
+     "value": 1.5
+    },
+    {
+     "account": "gold_daily_long",
+     "variant": "take_profit_r=2.5",
+     "return_pct": 43.47,
+     "cagr_pct": 3.78,
+     "max_drawdown_pct": -9.66,
+     "sharpe": 0.8,
+     "profit_factor": 1.802,
+     "trades": 84,
+     "win_rate_pct": 41.7,
+     "param": "take_profit_r",
+     "param_label": "Profit target (\u00d7 risk)",
+     "value": 2.5
+    },
+    {
+     "account": "gold_daily_long",
+     "variant": "take_profit_r=3.0",
+     "return_pct": 36.16,
+     "cagr_pct": 3.23,
+     "max_drawdown_pct": -10.54,
+     "sharpe": 0.68,
+     "profit_factor": 1.786,
+     "trades": 67,
+     "win_rate_pct": 37.3,
+     "param": "take_profit_r",
+     "param_label": "Profit target (\u00d7 risk)",
+     "value": 3.0
+    }
+   ],
+   "profitable": 17,
+   "count": 17,
+   "min_pct": 25.9,
+   "max_pct": 79.12,
+   "median_pct": 37.04,
+   "default_rank": 6
+  },
+  {
+   "account": "gold_hourly_long",
+   "symbol": "GC=F",
+   "timeframe": "1h",
+   "side": "buy",
+   "default": {
+    "account": "gold_hourly_long",
+    "variant": "default",
+    "return_pct": 83.08,
+    "cagr_pct": 31.07,
+    "max_drawdown_pct": -22.09,
+    "sharpe": 1.55,
+    "profit_factor": 1.254,
+    "trades": 391,
+    "win_rate_pct": 39.6
+   },
+   "variants": [
+    {
+     "account": "gold_hourly_long",
+     "variant": "ema_fast=10",
+     "return_pct": 90.76,
+     "cagr_pct": 33.5,
+     "max_drawdown_pct": -23.38,
+     "sharpe": 1.64,
+     "profit_factor": 1.238,
+     "trades": 393,
+     "win_rate_pct": 40.0,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 10.0
+    },
+    {
+     "account": "gold_hourly_long",
+     "variant": "ema_fast=15",
+     "return_pct": 94.65,
+     "cagr_pct": 34.71,
+     "max_drawdown_pct": -20.93,
+     "sharpe": 1.68,
+     "profit_factor": 1.266,
+     "trades": 391,
+     "win_rate_pct": 40.1,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 15.0
+    },
+    {
+     "account": "gold_hourly_long",
+     "variant": "ema_fast=25",
+     "return_pct": 96.84,
+     "cagr_pct": 35.39,
+     "max_drawdown_pct": -18.72,
+     "sharpe": 1.73,
+     "profit_factor": 1.294,
+     "trades": 381,
+     "win_rate_pct": 40.4,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 25.0
+    },
+    {
+     "account": "gold_hourly_long",
+     "variant": "ema_fast=30",
+     "return_pct": 94.29,
+     "cagr_pct": 34.6,
+     "max_drawdown_pct": -13.56,
+     "sharpe": 1.68,
+     "profit_factor": 1.288,
+     "trades": 388,
+     "win_rate_pct": 40.2,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 30.0
+    },
+    {
+     "account": "gold_hourly_long",
+     "variant": "ema_slow=35",
+     "return_pct": 67.89,
+     "cagr_pct": 26.08,
+     "max_drawdown_pct": -27.11,
+     "sharpe": 1.31,
+     "profit_factor": 1.182,
+     "trades": 418,
+     "win_rate_pct": 38.8,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 35.0
+    },
+    {
+     "account": "gold_hourly_long",
+     "variant": "ema_slow=40",
+     "return_pct": 86.14,
+     "cagr_pct": 32.05,
+     "max_drawdown_pct": -21.29,
+     "sharpe": 1.57,
+     "profit_factor": 1.241,
+     "trades": 401,
+     "win_rate_pct": 39.6,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 40.0
+    },
+    {
+     "account": "gold_hourly_long",
+     "variant": "ema_slow=60",
+     "return_pct": 92.38,
+     "cagr_pct": 34.01,
+     "max_drawdown_pct": -17.65,
+     "sharpe": 1.66,
+     "profit_factor": 1.292,
+     "trades": 389,
+     "win_rate_pct": 40.1,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 60.0
+    },
+    {
+     "account": "gold_hourly_long",
+     "variant": "ema_slow=75",
+     "return_pct": 115.6,
+     "cagr_pct": 41.02,
+     "max_drawdown_pct": -16.78,
+     "sharpe": 1.96,
+     "profit_factor": 1.372,
+     "trades": 375,
+     "win_rate_pct": 41.3,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 75.0
+    },
+    {
+     "account": "gold_hourly_long",
+     "variant": "ema_slow=100",
+     "return_pct": 132.72,
+     "cagr_pct": 45.92,
+     "max_drawdown_pct": -15.78,
+     "sharpe": 2.15,
+     "profit_factor": 1.433,
+     "trades": 356,
+     "win_rate_pct": 42.4,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 100.0
+    },
+    {
+     "account": "gold_hourly_long",
+     "variant": "rsi=45.0",
+     "return_pct": 83.08,
+     "cagr_pct": 31.07,
+     "max_drawdown_pct": -22.09,
+     "sharpe": 1.55,
+     "profit_factor": 1.254,
+     "trades": 391,
+     "win_rate_pct": 39.6,
+     "param": "rsi",
+     "param_label": "RSI threshold",
+     "value": 45.0
+    },
+    {
+     "account": "gold_hourly_long",
+     "variant": "rsi=55.0",
+     "return_pct": 121.73,
+     "cagr_pct": 42.79,
+     "max_drawdown_pct": -17.72,
+     "sharpe": 2.06,
+     "profit_factor": 1.373,
+     "trades": 355,
+     "win_rate_pct": 42.0,
+     "param": "rsi",
+     "param_label": "RSI threshold",
+     "value": 55.0
+    },
+    {
+     "account": "gold_hourly_long",
+     "variant": "stop_atr_multiplier=1.5",
+     "return_pct": 203.98,
+     "cagr_pct": 64.44,
+     "max_drawdown_pct": -23.33,
+     "sharpe": 2.2,
+     "profit_factor": 1.281,
+     "trades": 627,
+     "win_rate_pct": 40.7,
+     "param": "stop_atr_multiplier",
+     "param_label": "Stop distance (\u00d7 ATR)",
+     "value": 1.5
+    },
+    {
+     "account": "gold_hourly_long",
+     "variant": "stop_atr_multiplier=2.5",
+     "return_pct": 96.77,
+     "cagr_pct": 35.37,
+     "max_drawdown_pct": -17.7,
+     "sharpe": 2.07,
+     "profit_factor": 1.419,
+     "trades": 269,
+     "win_rate_pct": 42.8,
+     "param": "stop_atr_multiplier",
+     "param_label": "Stop distance (\u00d7 ATR)",
+     "value": 2.5
+    },
+    {
+     "account": "gold_hourly_long",
+     "variant": "stop_atr_multiplier=3.0",
+     "return_pct": 87.73,
+     "cagr_pct": 32.55,
+     "max_drawdown_pct": -12.17,
+     "sharpe": 2.27,
+     "profit_factor": 1.574,
+     "trades": 184,
+     "win_rate_pct": 45.6,
+     "param": "stop_atr_multiplier",
+     "param_label": "Stop distance (\u00d7 ATR)",
+     "value": 3.0
+    },
+    {
+     "account": "gold_hourly_long",
+     "variant": "take_profit_r=1.5",
+     "return_pct": 138.83,
+     "cagr_pct": 47.62,
+     "max_drawdown_pct": -19.94,
+     "sharpe": 2.18,
+     "profit_factor": 1.305,
+     "trades": 519,
+     "win_rate_pct": 48.0,
+     "param": "take_profit_r",
+     "param_label": "Profit target (\u00d7 risk)",
+     "value": 1.5
+    },
+    {
+     "account": "gold_hourly_long",
+     "variant": "take_profit_r=2.5",
+     "return_pct": 109.44,
+     "cagr_pct": 39.2,
+     "max_drawdown_pct": -20.67,
+     "sharpe": 1.87,
+     "profit_factor": 1.36,
+     "trades": 313,
+     "win_rate_pct": 36.4,
+     "param": "take_profit_r",
+     "param_label": "Profit target (\u00d7 risk)",
+     "value": 2.5
+    },
+    {
+     "account": "gold_hourly_long",
+     "variant": "take_profit_r=3.0",
+     "return_pct": 122.23,
+     "cagr_pct": 42.94,
+     "max_drawdown_pct": -20.36,
+     "sharpe": 2.03,
+     "profit_factor": 1.459,
+     "trades": 246,
+     "win_rate_pct": 34.1,
+     "param": "take_profit_r",
+     "param_label": "Profit target (\u00d7 risk)",
+     "value": 3.0
+    }
+   ],
+   "profitable": 17,
+   "count": 17,
+   "min_pct": 67.89,
+   "max_pct": 203.98,
+   "median_pct": 96.77,
+   "default_rank": 16
+  },
+  {
+   "account": "gold_hourly_both",
+   "symbol": "GC=F",
+   "timeframe": "1h",
+   "side": "both",
+   "default": {
+    "account": "gold_hourly_both",
+    "variant": "default",
+    "return_pct": 140.65,
+    "cagr_pct": 48.12,
+    "max_drawdown_pct": -18.81,
+    "sharpe": 1.78,
+    "profit_factor": 1.249,
+    "trades": 618,
+    "win_rate_pct": 39.2
+   },
+   "variants": [
+    {
+     "account": "gold_hourly_both",
+     "variant": "ema_fast=10",
+     "return_pct": 214.72,
+     "cagr_pct": 67.01,
+     "max_drawdown_pct": -12.97,
+     "sharpe": 2.3,
+     "profit_factor": 1.334,
+     "trades": 601,
+     "win_rate_pct": 40.8,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 10.0
+    },
+    {
+     "account": "gold_hourly_both",
+     "variant": "ema_fast=15",
+     "return_pct": 155.4,
+     "cagr_pct": 52.11,
+     "max_drawdown_pct": -14.59,
+     "sharpe": 1.88,
+     "profit_factor": 1.259,
+     "trades": 624,
+     "win_rate_pct": 39.4,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 15.0
+    },
+    {
+     "account": "gold_hourly_both",
+     "variant": "ema_fast=25",
+     "return_pct": 141.06,
+     "cagr_pct": 48.23,
+     "max_drawdown_pct": -18.78,
+     "sharpe": 1.78,
+     "profit_factor": 1.256,
+     "trades": 609,
+     "win_rate_pct": 39.2,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 25.0
+    },
+    {
+     "account": "gold_hourly_both",
+     "variant": "ema_fast=30",
+     "return_pct": 94.72,
+     "cagr_pct": 34.73,
+     "max_drawdown_pct": -16.99,
+     "sharpe": 1.37,
+     "profit_factor": 1.184,
+     "trades": 621,
+     "win_rate_pct": 38.0,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 30.0
+    },
+    {
+     "account": "gold_hourly_both",
+     "variant": "ema_slow=35",
+     "return_pct": 190.61,
+     "cagr_pct": 61.16,
+     "max_drawdown_pct": -14.52,
+     "sharpe": 2.12,
+     "profit_factor": 1.293,
+     "trades": 632,
+     "win_rate_pct": 40.0,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 35.0
+    },
+    {
+     "account": "gold_hourly_both",
+     "variant": "ema_slow=40",
+     "return_pct": 160.96,
+     "cagr_pct": 53.58,
+     "max_drawdown_pct": -18.54,
+     "sharpe": 1.92,
+     "profit_factor": 1.277,
+     "trades": 619,
+     "win_rate_pct": 39.6,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 40.0
+    },
+    {
+     "account": "gold_hourly_both",
+     "variant": "ema_slow=60",
+     "return_pct": 161.54,
+     "cagr_pct": 53.74,
+     "max_drawdown_pct": -19.99,
+     "sharpe": 1.94,
+     "profit_factor": 1.317,
+     "trades": 601,
+     "win_rate_pct": 39.8,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 60.0
+    },
+    {
+     "account": "gold_hourly_both",
+     "variant": "ema_slow=75",
+     "return_pct": 164.07,
+     "cagr_pct": 54.4,
+     "max_drawdown_pct": -19.22,
+     "sharpe": 1.99,
+     "profit_factor": 1.309,
+     "trades": 577,
+     "win_rate_pct": 40.0,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 75.0
+    },
+    {
+     "account": "gold_hourly_both",
+     "variant": "ema_slow=100",
+     "return_pct": 203.94,
+     "cagr_pct": 64.42,
+     "max_drawdown_pct": -20.52,
+     "sharpe": 2.28,
+     "profit_factor": 1.368,
+     "trades": 552,
+     "win_rate_pct": 41.1,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 100.0
+    },
+    {
+     "account": "gold_hourly_both",
+     "variant": "rsi=45.0",
+     "return_pct": 135.18,
+     "cagr_pct": 46.61,
+     "max_drawdown_pct": -20.1,
+     "sharpe": 1.75,
+     "profit_factor": 1.265,
+     "trades": 608,
+     "win_rate_pct": 39.1,
+     "param": "rsi",
+     "param_label": "RSI threshold",
+     "value": 45.0
+    },
+    {
+     "account": "gold_hourly_both",
+     "variant": "rsi=55.0",
+     "return_pct": 158.32,
+     "cagr_pct": 52.89,
+     "max_drawdown_pct": -17.93,
+     "sharpe": 1.94,
+     "profit_factor": 1.271,
+     "trades": 588,
+     "win_rate_pct": 39.8,
+     "param": "rsi",
+     "param_label": "RSI threshold",
+     "value": 55.0
+    },
+    {
+     "account": "gold_hourly_both",
+     "variant": "stop_atr_multiplier=1.5",
+     "return_pct": 392.08,
+     "cagr_pct": 103.98,
+     "max_drawdown_pct": -20.57,
+     "sharpe": 2.44,
+     "profit_factor": 1.269,
+     "trades": 1043,
+     "win_rate_pct": 39.8,
+     "param": "stop_atr_multiplier",
+     "param_label": "Stop distance (\u00d7 ATR)",
+     "value": 1.5
+    },
+    {
+     "account": "gold_hourly_both",
+     "variant": "stop_atr_multiplier=2.5",
+     "return_pct": 154.59,
+     "cagr_pct": 51.9,
+     "max_drawdown_pct": -11.19,
+     "sharpe": 2.34,
+     "profit_factor": 1.429,
+     "trades": 377,
+     "win_rate_pct": 42.7,
+     "param": "stop_atr_multiplier",
+     "param_label": "Stop distance (\u00d7 ATR)",
+     "value": 2.5
+    },
+    {
+     "account": "gold_hourly_both",
+     "variant": "stop_atr_multiplier=3.0",
+     "return_pct": 93.57,
+     "cagr_pct": 34.37,
+     "max_drawdown_pct": -10.94,
+     "sharpe": 2.14,
+     "profit_factor": 1.565,
+     "trades": 220,
+     "win_rate_pct": 44.1,
+     "param": "stop_atr_multiplier",
+     "param_label": "Stop distance (\u00d7 ATR)",
+     "value": 3.0
+    },
+    {
+     "account": "gold_hourly_both",
+     "variant": "take_profit_r=1.5",
+     "return_pct": 288.46,
+     "cagr_pct": 83.5,
+     "max_drawdown_pct": -14.32,
+     "sharpe": 2.65,
+     "profit_factor": 1.328,
+     "trades": 837,
+     "win_rate_pct": 47.7,
+     "param": "take_profit_r",
+     "param_label": "Profit target (\u00d7 risk)",
+     "value": 1.5
+    },
+    {
+     "account": "gold_hourly_both",
+     "variant": "take_profit_r=2.5",
+     "return_pct": 170.97,
+     "cagr_pct": 56.19,
+     "max_drawdown_pct": -15.39,
+     "sharpe": 2.04,
+     "profit_factor": 1.337,
+     "trades": 449,
+     "win_rate_pct": 36.1,
+     "param": "take_profit_r",
+     "param_label": "Profit target (\u00d7 risk)",
+     "value": 2.5
+    },
+    {
+     "account": "gold_hourly_both",
+     "variant": "take_profit_r=3.0",
+     "return_pct": 182.17,
+     "cagr_pct": 59.05,
+     "max_drawdown_pct": -21.51,
+     "sharpe": 2.15,
+     "profit_factor": 1.46,
+     "trades": 351,
+     "win_rate_pct": 33.3,
+     "param": "take_profit_r",
+     "param_label": "Profit target (\u00d7 risk)",
+     "value": 3.0
+    }
+   ],
+   "profitable": 17,
+   "count": 17,
+   "min_pct": 93.57,
+   "max_pct": 392.08,
+   "median_pct": 161.54,
+   "default_rank": 15
+  },
+  {
+   "account": "usdjpy_hourly_long",
+   "symbol": "USDJPY=X",
+   "timeframe": "1h",
+   "side": "buy",
+   "default": {
+    "account": "usdjpy_hourly_long",
+    "variant": "default",
+    "return_pct": 72.7,
+    "cagr_pct": 21.56,
+    "max_drawdown_pct": -18.89,
+    "sharpe": 1.14,
+    "profit_factor": 1.171,
+    "trades": 462,
+    "win_rate_pct": 39.0
+   },
+   "variants": [
+    {
+     "account": "usdjpy_hourly_long",
+     "variant": "ema_fast=10",
+     "return_pct": 88.6,
+     "cagr_pct": 25.44,
+     "max_drawdown_pct": -18.84,
+     "sharpe": 1.31,
+     "profit_factor": 1.203,
+     "trades": 451,
+     "win_rate_pct": 39.7,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 10.0
+    },
+    {
+     "account": "usdjpy_hourly_long",
+     "variant": "ema_fast=15",
+     "return_pct": 88.78,
+     "cagr_pct": 25.48,
+     "max_drawdown_pct": -15.62,
+     "sharpe": 1.31,
+     "profit_factor": 1.208,
+     "trades": 442,
+     "win_rate_pct": 39.8,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 15.0
+    },
+    {
+     "account": "usdjpy_hourly_long",
+     "variant": "ema_fast=25",
+     "return_pct": 86.78,
+     "cagr_pct": 25.01,
+     "max_drawdown_pct": -18.02,
+     "sharpe": 1.31,
+     "profit_factor": 1.205,
+     "trades": 440,
+     "win_rate_pct": 39.8,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 25.0
+    },
+    {
+     "account": "usdjpy_hourly_long",
+     "variant": "ema_fast=30",
+     "return_pct": 74.46,
+     "cagr_pct": 22.0,
+     "max_drawdown_pct": -19.45,
+     "sharpe": 1.18,
+     "profit_factor": 1.169,
+     "trades": 455,
+     "win_rate_pct": 39.1,
+     "param": "ema_fast",
+     "param_label": "Fast moving average",
+     "value": 30.0
+    },
+    {
+     "account": "usdjpy_hourly_long",
+     "variant": "ema_slow=35",
+     "return_pct": 63.15,
+     "cagr_pct": 19.11,
+     "max_drawdown_pct": -20.14,
+     "sharpe": 1.02,
+     "profit_factor": 1.152,
+     "trades": 456,
+     "win_rate_pct": 38.6,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 35.0
+    },
+    {
+     "account": "usdjpy_hourly_long",
+     "variant": "ema_slow=40",
+     "return_pct": 80.83,
+     "cagr_pct": 23.57,
+     "max_drawdown_pct": -17.81,
+     "sharpe": 1.22,
+     "profit_factor": 1.185,
+     "trades": 449,
+     "win_rate_pct": 39.4,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 40.0
+    },
+    {
+     "account": "usdjpy_hourly_long",
+     "variant": "ema_slow=60",
+     "return_pct": 76.68,
+     "cagr_pct": 22.55,
+     "max_drawdown_pct": -21.31,
+     "sharpe": 1.2,
+     "profit_factor": 1.184,
+     "trades": 437,
+     "win_rate_pct": 39.4,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 60.0
+    },
+    {
+     "account": "usdjpy_hourly_long",
+     "variant": "ema_slow=75",
+     "return_pct": 75.22,
+     "cagr_pct": 22.19,
+     "max_drawdown_pct": -20.51,
+     "sharpe": 1.2,
+     "profit_factor": 1.184,
+     "trades": 432,
+     "win_rate_pct": 39.4,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 75.0
+    },
+    {
+     "account": "usdjpy_hourly_long",
+     "variant": "ema_slow=100",
+     "return_pct": 68.46,
+     "cagr_pct": 20.48,
+     "max_drawdown_pct": -16.21,
+     "sharpe": 1.13,
+     "profit_factor": 1.175,
+     "trades": 427,
+     "win_rate_pct": 39.1,
+     "param": "ema_slow",
+     "param_label": "Slow moving average",
+     "value": 100.0
+    },
+    {
+     "account": "usdjpy_hourly_long",
+     "variant": "rsi=45.0",
+     "return_pct": 74.21,
+     "cagr_pct": 21.93,
+     "max_drawdown_pct": -18.89,
+     "sharpe": 1.15,
+     "profit_factor": 1.173,
+     "trades": 464,
+     "win_rate_pct": 39.0,
+     "param": "rsi",
+     "param_label": "RSI threshold",
+     "value": 45.0
+    },
+    {
+     "account": "usdjpy_hourly_long",
+     "variant": "rsi=55.0",
+     "return_pct": 82.08,
+     "cagr_pct": 23.87,
+     "max_drawdown_pct": -16.5,
+     "sharpe": 1.28,
+     "profit_factor": 1.206,
+     "trades": 428,
+     "win_rate_pct": 39.7,
+     "param": "rsi",
+     "param_label": "RSI threshold",
+     "value": 55.0
+    },
+    {
+     "account": "usdjpy_hourly_long",
+     "variant": "stop_atr_multiplier=1.5",
+     "return_pct": 66.04,
+     "cagr_pct": 19.86,
+     "max_drawdown_pct": -29.42,
+     "sharpe": 0.87,
+     "profit_factor": 1.093,
+     "trades": 749,
+     "win_rate_pct": 37.8,
+     "param": "stop_atr_multiplier",
+     "param_label": "Stop distance (\u00d7 ATR)",
+     "value": 1.5
+    },
+    {
+     "account": "usdjpy_hourly_long",
+     "variant": "stop_atr_multiplier=2.5",
+     "return_pct": 66.05,
+     "cagr_pct": 19.86,
+     "max_drawdown_pct": -13.55,
+     "sharpe": 1.27,
+     "profit_factor": 1.261,
+     "trades": 314,
+     "win_rate_pct": 40.1,
+     "param": "stop_atr_multiplier",
+     "param_label": "Stop distance (\u00d7 ATR)",
+     "value": 2.5
+    },
+    {
+     "account": "usdjpy_hourly_long",
+     "variant": "stop_atr_multiplier=3.0",
+     "return_pct": 66.14,
+     "cagr_pct": 19.88,
+     "max_drawdown_pct": -15.0,
+     "sharpe": 1.46,
+     "profit_factor": 1.361,
+     "trades": 223,
+     "win_rate_pct": 42.1,
+     "param": "stop_atr_multiplier",
+     "param_label": "Stop distance (\u00d7 ATR)",
+     "value": 3.0
+    },
+    {
+     "account": "usdjpy_hourly_long",
+     "variant": "take_profit_r=1.5",
+     "return_pct": 106.68,
+     "cagr_pct": 29.61,
+     "max_drawdown_pct": -16.79,
+     "sharpe": 1.5,
+     "profit_factor": 1.212,
+     "trades": 598,
+     "win_rate_pct": 46.8,
+     "param": "take_profit_r",
+     "param_label": "Profit target (\u00d7 risk)",
+     "value": 1.5
+    },
+    {
+     "account": "usdjpy_hourly_long",
+     "variant": "take_profit_r=2.5",
+     "return_pct": 44.39,
+     "cagr_pct": 14.02,
+     "max_drawdown_pct": -21.99,
+     "sharpe": 0.8,
+     "profit_factor": 1.135,
+     "trades": 374,
+     "win_rate_pct": 32.9,
+     "param": "take_profit_r",
+     "param_label": "Profit target (\u00d7 risk)",
+     "value": 2.5
+    },
+    {
+     "account": "usdjpy_hourly_long",
+     "variant": "take_profit_r=3.0",
+     "return_pct": 65.63,
+     "cagr_pct": 19.75,
+     "max_drawdown_pct": -18.2,
+     "sharpe": 1.06,
+     "profit_factor": 1.222,
+     "trades": 312,
+     "win_rate_pct": 30.4,
+     "param": "take_profit_r",
+     "param_label": "Profit target (\u00d7 risk)",
+     "value": 3.0
+    }
+   ],
+   "profitable": 17,
+   "count": 17,
+   "min_pct": 44.39,
+   "max_pct": 106.68,
+   "median_pct": 74.46,
+   "default_rank": 11
+  }
+ ]
+}

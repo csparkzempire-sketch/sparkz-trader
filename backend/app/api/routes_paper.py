@@ -17,16 +17,13 @@ from pydantic import BaseModel, Field
 from app.api.schemas import (
     PaperAccountResponse,
     PaperPositionOut,
-    PaperRunPosition,
     PaperRunSummary,
-    PaperRunTrade,
     PaperStartRequest,
     PaperTradeOut,
 )
-from app.data.downloader import DownloadError, download_ohlcv
 from app.paper import state as paper_state
-from app.paper.evaluation import evaluate
 from app.paper.runner import list_states
+from app.paper.summary import latest_price, summarize
 from app.paper.scheduler import FeedStatus, paper_feed_scheduler
 
 router = APIRouter()
@@ -177,56 +174,11 @@ def feed_status(account_name: str = "default") -> FeedStatusResponse:
 # viewing the dashboard can't change an account.
 
 
-def _latest_price(symbol: str) -> tuple[float | None, object, str | None]:
-    """Most recent 1h close as a live-ish mark. Failure is reported, not raised:
-    the page still shows balances without a price."""
-    try:
-        df = download_ohlcv(symbol, "1h", period="2d")
-        last = df.iloc[-1]
-        return float(last["close"]), last["timestamp"], None
-    except (DownloadError, IndexError) as exc:
-        return None, None, str(exc)
+def _latest_price(symbol: str):
+    return latest_price(symbol)
 
 
 @router.get("/runs", response_model=list[PaperRunSummary])
 def list_paper_runs() -> list[PaperRunSummary]:
-    states = list_states()
-    prices = {s.config.symbol: _latest_price(s.config.symbol) for s in states}
-    out = []
-    for s in states:
-        c, a = s.config, s.account
-        price, price_at, price_error = prices[c.symbol]
-        positions = []
-        unrealized_total = 0.0
-        for p in a.open_positions.values():
-            unrealized = stop_d = target_d = None
-            if price is not None:
-                unrealized = (price - p.entry_price) * p.size * (1 if p.direction == "BUY" else -1)
-                unrealized_total += unrealized
-                stop_d = (p.stop_price / price - 1) * 100
-                target_d = (p.target_price / price - 1) * 100
-            positions.append(PaperRunPosition(
-                symbol=p.symbol, direction=p.direction, size=p.size, entry_price=p.entry_price,
-                stop_price=p.stop_price, target_price=p.target_price, opened_at=p.opened_at,
-                unrealized_pnl=unrealized, stop_distance_pct=stop_d, target_distance_pct=target_d,
-            ))
-        equity = a.balance + unrealized_total
-        trades = [
-            PaperRunTrade(
-                symbol=t.symbol, direction=t.direction, entry_price=t.entry_price, exit_price=t.exit_price,
-                size=t.size, pnl=t.pnl, opened_at=t.opened_at, closed_at=t.closed_at, reason=t.reason,
-            )
-            for t in reversed(a.trade_history)  # newest first
-        ]
-        out.append(PaperRunSummary(
-            account_name=c.account_name, symbol=c.symbol, timeframe=c.timeframe, strategy=c.strategy,
-            starting_balance=c.starting_balance, balance=a.balance, equity=equity,
-            return_pct=(equity / c.starting_balance - 1) * 100 if c.starting_balance else 0.0,
-            last_processed=s.last_processed, latest_price=price, latest_price_at=price_at,
-            price_error=price_error, open_positions=positions, closed_trades=trades,
-            winning_trades=sum(1 for t in a.trade_history if t.pnl > 0),
-            halted=s.halted,
-            evaluation=evaluate(s),
-            log=list(reversed(s.log[-50:])),
-        ))
-    return out
+    # Looked up at call time so tests can swap in a fixed price.
+    return summarize(list_states(), lambda symbol: _latest_price(symbol))
