@@ -448,6 +448,30 @@ full API smoke-test suite.
 
 ---
 
+## Hosting on Vercel
+
+The repo is set up to deploy as one Vercel project: `vercel.json` builds the dashboard
+(`frontend/`) as a static site and serves the FastAPI backend as a Python function
+(`api/index.py`) under `/api`, the same path the dashboard uses locally.
+
+1. On vercel.com, **Add New → Project**, import this GitHub repository and keep the
+   settings from `vercel.json` (leave Root Directory empty; no environment variables needed).
+2. To show the live paper accounts, set **Settings → Git → Production Branch** to
+   `paper-trading`. That branch merges `main` every hour and carries `data/paper/`, so each
+   hourly paper run redeploys the site with fresh accounts. Deployed from `main`, the
+   dashboard works but lists no paper accounts.
+
+Limits of the serverless setup:
+- Functions can only write to `/tmp`, which is cleared when the function goes cold. Market
+  data, trained models, reports and the SQLite database live there, so they're rebuilt as
+  needed and nothing created through the hosted API is kept.
+- Paper accounts are shown read-only from the deployed files; the hourly routine, not the
+  site, advances them. The background paper feed (`/paper/feed/start`) doesn't run on Vercel.
+- Requests stop after 300 seconds (`maxDuration`). A backtest or model training on a year of
+  hourly bars takes a few seconds.
+- The function installs the root `requirements.txt`, which omits pyarrow to stay under
+  Vercel's bundle size limit; the data cache then uses pickle files instead of parquet.
+
 ## Risk warnings (read this)
 
 - **Overfitting**: it is easy to make a backtest look good by tuning parameters

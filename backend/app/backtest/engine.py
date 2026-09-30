@@ -116,6 +116,9 @@ class BacktestEngine:
         # bar i's *executable* signal is what was known at bar i-1's close.
         executable_signal = df[signal_col].shift(1)
         executable_probability = df[probability_col].shift(1) if probability_col else None
+        # Stops/targets are sized from the ATR of the SIGNAL bar (i-1), known when the order is sent.
+        # Bar i's own ATR includes bar i's high/low, which isn't known at its open (look-ahead).
+        entry_atr = df["atr"].shift(1)
 
         portfolio = Portfolio(initial_capital=self.config.initial_capital)
         risk_state = RiskState(equity=self.config.initial_capital, peak_equity=self.config.initial_capital)
@@ -132,14 +135,33 @@ class BacktestEngine:
                 risk_state.daily_loss = 0.0
             current_day = bar_day
 
-            # 1. Manage any open positions first: check stop/target against
-            # THIS bar's high/low (the bar has fully happened by the time we
-            # evaluate it in this loop — no look-ahead). Every open position
-            # is checked, not just one, since several can now be open at once.
+            # 1. Manage positions opened on earlier bars: check stop/target
+            # against THIS bar's high/low (the bar has fully happened by the
+            # time we evaluate it in this loop — no look-ahead). Every open
+            # position is checked, since several can be open at once.
             if portfolio.open_positions:
                 self._check_exits(portfolio, risk_state, row, ts)
 
-            # 2. Record equity mark-to-market at this bar's close.
+            # 2. Consider a new entry at this bar's OPEN using the EXECUTABLE
+            # (shifted) signal. Sizing and the risk checks use risk_state as
+            # marked at the previous bar's close — all that's known at the open.
+            # A new position can be opened even while others are already
+            # open — RiskManager.check_new_trade (via max_simultaneous_positions,
+            # max_exposure_pct, etc.) is what actually gates this.
+            sig = executable_signal.iloc[i]
+            if sig in ("BUY", "SELL") and not pd.isna(entry_atr.iloc[i]):
+                held = set(portfolio.open_positions)
+                self._try_enter(
+                    portfolio, risk_state, row, ts, sig, float(entry_atr.iloc[i]),
+                    float(executable_probability.iloc[i]) if executable_probability is not None and not pd.isna(executable_probability.iloc[i]) else None,
+                )
+                # A position entered at the open lives through the rest of this
+                # bar, so its stop/target can already be hit here (stop first).
+                new = set(portfolio.open_positions) - held
+                if new:
+                    self._check_exits(portfolio, risk_state, row, ts, only=new)
+
+            # 3. Record equity mark-to-market at this bar's close.
             portfolio.record_equity(ts, row["close"])
             risk_state.equity = portfolio.equity(row["close"])
             risk_state.peak_equity = portfolio.peak_equity
@@ -148,18 +170,6 @@ class BacktestEngine:
             if portfolio.current_drawdown >= 1.0:
                 warnings.append(f"Equity reached zero or below at {ts}; halting further trading.")
                 break
-
-            # 3. Consider a new entry using the EXECUTABLE (shifted) signal.
-            # A new position can be opened even while others are already
-            # open — RiskManager.check_new_trade (via max_simultaneous_positions,
-            # max_exposure_pct, etc.) is what actually gates this, not the
-            # portfolio itself.
-            sig = executable_signal.iloc[i]
-            if sig in ("BUY", "SELL") and not pd.isna(row.get("atr")):
-                self._try_enter(
-                    portfolio, risk_state, row, ts, sig,
-                    float(executable_probability.iloc[i]) if executable_probability is not None and not pd.isna(executable_probability.iloc[i]) else None,
-                )
 
         # Close any positions still open at the end of the data (mark at last close).
         if portfolio.open_positions:
@@ -201,8 +211,8 @@ class BacktestEngine:
         )
         return result
 
-    def _try_enter(self, portfolio: Portfolio, risk_state: RiskState, row, ts, direction: str, probability: float | None) -> None:
-        atr_value = row["atr"]
+    def _try_enter(self, portfolio: Portfolio, risk_state: RiskState, row, ts, direction: str, atr_value: float,
+                   probability: float | None) -> None:
         if pd.isna(atr_value) or atr_value <= 0:
             return
 
@@ -250,7 +260,7 @@ class BacktestEngine:
         risk_state.current_exposure += size_result.dollar_risk
         risk_state.bars_since_last_trade = 0
 
-    def _check_exits(self, portfolio: Portfolio, risk_state: RiskState, row, ts) -> None:
+    def _check_exits(self, portfolio: Portfolio, risk_state: RiskState, row, ts, only: set | None = None) -> None:
         """Check every currently open position against this bar's high/low.
 
         Iterates over a snapshot of the open positions so positions closed
@@ -259,6 +269,8 @@ class BacktestEngine:
         (opened on a different bar) also exits this same bar.
         """
         for position_id, pos in list(portfolio.open_positions.items()):
+            if only is not None and position_id not in only:
+                continue
             hit_stop = False
             hit_target = False
             if pos.direction == "BUY":
