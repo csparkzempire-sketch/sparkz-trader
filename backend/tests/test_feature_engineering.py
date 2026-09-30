@@ -106,6 +106,21 @@ def test_dataset_buildable_with_sporadic_zero_volume(synthetic_ohlcv: pd.DataFra
     assert not np.isinf(dataset.X_train.to_numpy(dtype=float)).any()
 
 
+def test_mostly_zero_volume_skips_volume_features_and_keeps_all_rows(synthetic_ohlcv: pd.DataFrame):
+    """Regression test for real BTC-USD 1h data from Yahoo, where volume is 0
+    on about every other bar. volume_change was then undefined on ~50% of
+    rows, and build_dataset silently dropped half the training history."""
+    df = synthetic_ohlcv.copy()
+    df.loc[df.index[::2], "volume"] = 0.0
+    featured = build_feature_matrix(df)
+    assert "volume_change" not in featured.columns
+    assert "volume_avg" not in featured.columns
+
+    # No rows lost to undefined volume features: at least as many usable
+    # rows as the same prices with clean volume.
+    assert len(build_dataset(df).full_df) >= len(build_dataset(synthetic_ohlcv).full_df)
+
+
 # --- Multi-timeframe features -----------------------------------------
 #
 # This is the highest-risk part of the whole feature pipeline for
