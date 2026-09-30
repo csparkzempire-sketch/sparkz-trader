@@ -7,7 +7,7 @@ so they are embedded at build time from backend/app/research/results.json.
 
 Usage: python status_page/build.py  ->  status_page/index.html, then publish that
 file to the existing artifact (https://claude.ai/artifact/Xik2JHzjHWHw4gKiKN7Gb8).
-Design reference: Figma file "Sparkz Paper Desk — Classic redesign".
+Publish background.jpg and background-wide.jpg alongside it (the page's CSS loads them by relative path).
 """
 
 import json
