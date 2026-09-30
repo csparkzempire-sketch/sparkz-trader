@@ -105,7 +105,7 @@ def main(argv=None) -> None:
             r.pop("curve", None)
         _print(out)
     elif a.cmd in ("stress", "robustness", "sensitivity", "walk-forward"):
-        from app.backtest.runner import prepare_features, run_backtest
+        from app.backtest.runner import prepare_features
         from app.data.repository import load_candles
 
         s = _settings(a)
@@ -115,18 +115,14 @@ def main(argv=None) -> None:
             return
         f = prepare_features(load_candles(s.market.symbol, s.market.timeframe), s)
         if a.cmd == "robustness":
-            from app.backtest.monte_carlo import perturbation_runs, sequence_tests
-            base = run_backtest(s, features=f)
-            _print({"sequence": sequence_tests([b.pnl for b in base.baskets], s.risk.initial_capital,
-                                               s.risk.max_account_drawdown_percent),
-                    "perturbation": perturbation_runs(s, f, n=a.runs)})
+            from app.backtest.studies import robustness_study
+            _print(robustness_study(s, f, a.runs))
         elif a.cmd == "sensitivity":
             from app.backtest.monte_carlo import sensitivity
             _print(sensitivity(s, f))
         else:
-            from app.backtest.walk_forward import period_stability, walk_forward
-            _print({"walk_forward": walk_forward(s, f),
-                    "periods": period_stability(s, f, "W-MON" if s.market.timeframe in ("15m", "30m") else "MS")})
+            from app.backtest.studies import walk_forward_study
+            _print(walk_forward_study(s, f))
     elif a.cmd.startswith("paper-"):
         from app.paper import simulator
 

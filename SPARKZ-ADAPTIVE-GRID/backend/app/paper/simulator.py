@@ -26,13 +26,13 @@ from datetime import date, datetime
 import pandas as pd
 
 from app.backtest.engine import EngineState, GridEngine
-from app.backtest.runner import prepare_features
+from app.backtest.runner import basket_rows, prepare_features
 from app.config import Settings
 from app.data.downloader import download
 from app.data.repository import load_candles, save_candles
 from app.data.validator import closed_candles
-from app.models.database import (Basket as BasketRow, BasketPosition, CompletedBasket, EquitySnapshot, PaperAccount,
-                                 RiskEvent, StrategySignal, session_factory)
+from app.models.database import (Basket as BasketRow, CompletedBasket, EquitySnapshot, PaperAccount, RiskEvent,
+                                 StrategySignal, session_factory)
 from app.risk.drawdown import DrawdownTracker
 from app.risk.exposure import leverage, margin_usage_pct
 from app.risk.risk_manager import RiskState
@@ -155,15 +155,7 @@ def step(name: str, candles: pd.DataFrame | None = None, now: datetime | None = 
         a.balance, a.equity, a.halted = st.balance, equity, eng.risk.state.halted
         a.last_bar, a.updated_at = ts.iloc[-1].to_pydatetime(), utc_now()
         for b in new_baskets:
-            s.add(CompletedBasket(paper_account_id=a.id, basket_uid=b.uid, direction=b.direction, opened_at=b.opened_at,
-                                  closed_at=b.closed_at, positions=b.positions, total_lots=b.total_lots,
-                                  avg_entry=b.avg_entry, exit_price=b.exit_price, pnl=b.pnl, pnl_pct=b.pnl_pct, mae=b.mae,
-                                  mfe=b.mfe, bars_held=b.bars_held, regime=b.regime, vol_regime=b.vol_regime,
-                                  close_reason=b.close_reason, max_notional=b.max_notional, max_margin=b.max_margin))
-            for e in b.entries:
-                s.add(BasketPosition(paper_account_id=a.id, basket_uid=b.uid, seq=e["seq"], direction=b.direction,
-                                     lots=e["lots"], entry_time=pd.Timestamp(e["time"]).to_pydatetime(),
-                                     entry_price=e["price"], exit_time=b.closed_at, exit_price=b.exit_price))
+            s.add_all(basket_rows(b, paper_account_id=a.id))
             s.query(BasketRow).filter_by(paper_account_id=a.id, basket_uid=b.uid).update({"status": "CLOSED"})
         if st.basket is not None:
             bk = st.basket

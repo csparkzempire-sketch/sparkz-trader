@@ -2,12 +2,11 @@
 
 from __future__ import annotations
 
-import numpy as np
 import pytest
 
 from app.backtest.comparison import compare
 from app.backtest.monte_carlo import perturbation_runs, sensitivity, sequence_tests
-from app.backtest.runner import prepare_features, run_backtest
+from app.backtest.runner import prepare_features
 from app.backtest.stress_test import inject_spike, overlay_ramp, run_stress, synthetic
 from app.backtest.walk_forward import period_stability, walk_forward
 from app.config import list_presets, load_config, load_preset

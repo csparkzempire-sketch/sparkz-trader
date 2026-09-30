@@ -6,10 +6,10 @@ from fastapi import APIRouter, HTTPException
 
 from app.api.common import settings_from
 from app.backtest.comparison import compare
-from app.backtest.monte_carlo import perturbation_runs, sensitivity, sequence_tests
+from app.backtest.monte_carlo import sensitivity
 from app.backtest.runner import prepare_features, run_backtest
 from app.backtest.stress_test import run_stress
-from app.backtest.walk_forward import period_stability, walk_forward
+from app.backtest.studies import robustness_study, walk_forward_study
 from app.data.repository import load_candles
 from app.models.database import Backtest, session_factory
 from app.models.schemas import CompareRequest, RobustnessRequest, RunRequest
@@ -73,11 +73,7 @@ def stress(req: RunRequest):
 def robustness(req: RobustnessRequest):
     s = settings_from(req.preset, req.overrides)
     f = _features(s)
-    base = run_backtest(s, features=f)
-    return {"baseline": {k: base.metrics.get(k) for k in ("net_pnl", "return_pct", "max_drawdown_pct", "baskets", "profit_factor")},
-            "sequence": sequence_tests([b.pnl for b in base.baskets], s.risk.initial_capital,
-                                       s.risk.max_account_drawdown_percent),
-            "perturbation": perturbation_runs(s, f, n=req.runs)}
+    return robustness_study(s, f, req.runs)
 
 
 @router.post("/sensitivity")
@@ -89,5 +85,4 @@ def sensitivity_sweep(req: RunRequest):
 @router.post("/walk-forward")
 def walk_forward_run(req: RunRequest):
     s = settings_from(req.preset, req.overrides)
-    f = _features(s)
-    return {"walk_forward": walk_forward(s, f), "periods": period_stability(s, f, "W-MON" if s.market.timeframe in ("15m", "30m") else "MS")}
+    return walk_forward_study(s, _features(s))

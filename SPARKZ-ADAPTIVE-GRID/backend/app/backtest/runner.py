@@ -82,6 +82,19 @@ def run_backtest(settings: Settings, candles: pd.DataFrame | None = None, featur
     return res
 
 
+def basket_rows(b: CompletedBasketRecord, **owner) -> list:
+    """CompletedBasket + BasketPosition rows for a closed basket; `owner` is backtest_id=.. or paper_account_id=.."""
+    rows = [CompletedBasket(**owner, basket_uid=b.uid, direction=b.direction, opened_at=b.opened_at, closed_at=b.closed_at,
+                            positions=b.positions, total_lots=b.total_lots, avg_entry=b.avg_entry, exit_price=b.exit_price,
+                            pnl=b.pnl, pnl_pct=b.pnl_pct, mae=b.mae, mfe=b.mfe, bars_held=b.bars_held, regime=b.regime,
+                            vol_regime=b.vol_regime, close_reason=b.close_reason, max_notional=b.max_notional,
+                            max_margin=b.max_margin)]
+    rows += [BasketPosition(**owner, basket_uid=b.uid, seq=e["seq"], direction=b.direction, lots=e["lots"],
+                            entry_time=pd.Timestamp(e["time"]).to_pydatetime(), entry_price=e["price"],
+                            exit_time=b.closed_at, exit_price=b.exit_price) for e in b.entries]
+    return rows
+
+
 def _param_set(s, settings: Settings) -> int:
     cfg = settings.model_dump(mode="json")
     h = hashlib.sha256(json.dumps(cfg, sort_keys=True).encode()).hexdigest()
@@ -107,15 +120,7 @@ def save_result(res: BacktestResult, name: str, kind: str = "backtest", db=None)
             if isinstance(v, (int, float)) and not isinstance(v, bool):
                 s.add(BacktestMetric(backtest_id=bt.id, name=k, value=float(v)))
         for b in res.baskets:
-            s.add(CompletedBasket(backtest_id=bt.id, basket_uid=b.uid, direction=b.direction, opened_at=b.opened_at,
-                                  closed_at=b.closed_at, positions=b.positions, total_lots=b.total_lots,
-                                  avg_entry=b.avg_entry, exit_price=b.exit_price, pnl=b.pnl, pnl_pct=b.pnl_pct,
-                                  mae=b.mae, mfe=b.mfe, bars_held=b.bars_held, regime=b.regime, vol_regime=b.vol_regime,
-                                  close_reason=b.close_reason, max_notional=b.max_notional, max_margin=b.max_margin))
-            for e in b.entries:
-                s.add(BasketPosition(backtest_id=bt.id, basket_uid=b.uid, seq=e["seq"], direction=b.direction,
-                                     lots=e["lots"], entry_time=pd.Timestamp(e["time"]).to_pydatetime(),
-                                     entry_price=e["price"], exit_time=b.closed_at, exit_price=b.exit_price))
+            s.add_all(basket_rows(b, backtest_id=bt.id))
         for e in res.risk_events:
             s.add(RiskEvent(backtest_id=bt.id, ts=pd.Timestamp(e["ts"]).to_pydatetime(), kind=e["kind"], detail=e["detail"]))
         for g in res.signals:
