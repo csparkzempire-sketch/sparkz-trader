@@ -220,3 +220,24 @@ def test_no_drawdown_warning_when_limit_is_not_hit():
     result = _engine_with_drawdown_limit(0.5).run(_losing_then_signals_df())
     assert not any("drawdown" in w.lower() for w in result.warnings)
     assert len(result.portfolio.closed_trades) > 1
+
+
+def test_stop_uses_the_signal_bars_atr_not_the_entry_bars():
+    """The entry bar's ATR includes that bar's own high/low, unknown at its open. The stop must be
+    sized from the ATR known when the order was sent (the signal bar), or a wide entry bar would
+    quietly widen its own stop."""
+    rows = [
+        {"open": 1.1000, "high": 1.1010, "low": 1.0990, "close": 1.1000, "atr": 0.0010, "signal": "HOLD"},
+        {"open": 1.1000, "high": 1.1010, "low": 1.0990, "close": 1.1010, "atr": 0.0010, "signal": "BUY"},   # signal bar
+        {"open": 1.1010, "high": 1.1015, "low": 1.0985, "close": 1.1012, "atr": 0.0050, "signal": "HOLD"},  # wild entry bar
+        {"open": 1.1012, "high": 1.1020, "low": 1.1005, "close": 1.1015, "atr": 0.0050, "signal": "HOLD"},
+    ]
+    config = BacktestConfig(
+        symbol="TEST", timeframe="1h", initial_capital=10_000, risk_per_trade=0.01,
+        stop_atr_multiplier=2.0, take_profit_r=2.0, spread_pips=0.0, slippage_pips=0.0, pip_size=0.0001,
+    )
+    trade = BacktestEngine(config).run(_make_df(rows), signal_col="signal").portfolio.closed_trades[0]
+    # stop = entry - 2 x 0.0010 (signal bar ATR) = 1.0990, which the entry bar's low (1.0985) hits.
+    # With the entry bar's own ATR (0.0050) the stop would sit at 1.0910 and survive.
+    assert trade.stop_price == pytest.approx(1.1010 - 2 * 0.0010)
+    assert trade.reason == "STOP"
