@@ -1,5 +1,7 @@
 # SPARKZ TRADER
 
+[![CI](https://github.com/csparkzempire-sketch/sparkz-trader/actions/workflows/ci.yml/badge.svg)](https://github.com/csparkzempire-sketch/sparkz-trader/actions/workflows/ci.yml)
+
 A quantitative research, backtesting, and paper-trading platform for FX (starting
 with EUR/USD). Built for C-Sparkz Empire.
 
@@ -473,6 +475,10 @@ skip the check.
 cd backend
 pytest
 ```
+
+GitHub Actions (`.github/workflows/ci.yml`) runs on every pull request and every push to `main`. It runs three
+test suites: this one, `SPARKZ-ADAPTIVE-GRID/backend` and `SPARKZ-TRADER-V2/backend`. It also builds all three
+dashboards. Pushes to the `paper-trading` branch don't trigger it.
 
 162 tests covering: data validation, indicator correctness (including an
 explicit look-ahead-bias check), signal rules, position sizing, stop/target
