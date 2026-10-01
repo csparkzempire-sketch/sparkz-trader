@@ -41,7 +41,7 @@ from app.backtest.engine import BacktestConfig, BacktestEngine
 from app.config import settings
 from app.data.validator import closed_candles
 from app.paper.evaluation import _backtest, targets_history
-from app.paper.runner import PAPER_DIR, load_state
+from app.paper.runner import PAPER_DIR, account_settings, load_state
 from app.risk.risk_manager import RiskManager
 
 OUT = Path(__file__).with_name("random_entry.json")
@@ -52,8 +52,8 @@ def _net_return(result, initial: float) -> float:
     return (result.portfolio.cash / initial - 1) * 100
 
 
-def _init(f: pd.DataFrame, symbol: str, timeframe: str) -> None:
-    cfg = settings.model_copy(update={"max_drawdown_pct": 0.5})    # as in the targets backtest
+def _init(f: pd.DataFrame, symbol: str, timeframe: str, fee_bps: float = 0.0) -> None:
+    cfg = settings.model_copy(update={"max_drawdown_pct": 0.5, "fee_bps": fee_bps})  # as in the targets backtest
     _W.update(f=f, cfg=cfg, bt=BacktestConfig.from_settings(cfg, symbol, timeframe))
 
 
@@ -85,11 +85,12 @@ def random_direction(signal: pd.Series, rng) -> np.ndarray:
     return out
 
 
-def targets_window(candles: pd.DataFrame, targets: dict | None, symbol: str, timeframe: str, strategy: str):
+def targets_window(candles: pd.DataFrame, targets: dict | None, symbol: str, timeframe: str, strategy: str,
+                   cfg=None):
     """Backtest over the history the account's targets used (the cache can reach further back than
     the targets' window). Returns (real backtest, features)."""
-    hist = targets_history(candles, targets, timeframe, strategy) if targets else None
-    return _backtest(candles if hist is None else hist, symbol, timeframe, strategy)
+    hist = targets_history(candles, targets, timeframe, strategy, cfg) if targets else None
+    return _backtest(candles if hist is None else hist, symbol, timeframe, strategy, cfg)
 
 
 def check_account(path: Path, runs: int, use_cached: bool = True) -> dict:
@@ -98,7 +99,7 @@ def check_account(path: Path, runs: int, use_cached: bool = True) -> dict:
     st = load_state(path)
     c = st.config
     candles = closed_candles(_load_market_data(c.symbol, c.timeframe, use_cached), c.timeframe)
-    real, f = targets_window(candles, st.targets, c.symbol, c.timeframe, c.strategy)
+    real, f = targets_window(candles, st.targets, c.symbol, c.timeframe, c.strategy, account_settings(c))
     real_ret = _net_return(real, real.config.initial_capital)
     cols = [f"ema_{settings.ema_fast}", f"ema_{settings.ema_slow}", "rsi"]
     eligible = ~f[cols].isna().any(axis=1).to_numpy()
@@ -113,7 +114,7 @@ def check_account(path: Path, runs: int, use_cached: bool = True) -> dict:
            "window": [str(f["timestamp"].iloc[0]), str(f["timestamp"].iloc[-1])],
            "real_return_pct": real_ret, "real_trades": len(real.portfolio.closed_trades),
            "buy_and_hold_pct": float((f["close"].iloc[-1] / f["close"].iloc[0] - 1) * 100), "tests": {}}
-    with ProcessPoolExecutor(workers, initializer=_init, initargs=(f, c.symbol, c.timeframe)) as pool:
+    with ProcessPoolExecutor(workers, initializer=_init, initargs=(f, c.symbol, c.timeframe, c.fee_bps)) as pool:
         for name, sigs in tests.items():
             pairs = list(pool.map(_run, sigs, chunksize=4))
             r = np.asarray([x[0] for x in pairs])

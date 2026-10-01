@@ -206,6 +206,7 @@ class PaperRunSummary(BaseModel):
     symbol: str
     timeframe: str
     strategy: str
+    fee_bps: float = 0.0  # exchange/broker fee per side, basis points (0 = spread and slippage only)
     starting_balance: float
     balance: float
     equity: float

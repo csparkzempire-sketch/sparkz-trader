@@ -329,7 +329,7 @@ function card(a) {
   const log = a.log.length ? `<ul class="log">${a.log.map((l) => `<li>${esc(l)}</li>`).join("")}</ul>` : "";
   return `<article class="card ${cls}" data-acc="${esc(a.account_name)}">
     <div class="card-head"><div><h3>${MARKET[a.symbol] || esc(a.symbol)} · ${TF[a.timeframe] || a.timeframe}</h3>
-      <div class="meta">${STRAT[a.strategy] || esc(a.strategy)} · ${esc(a.account_name)}</div></div>${statusLabel(a)}</div>
+      <div class="meta">${STRAT[a.strategy] || esc(a.strategy)}${a.fee_bps ? ` · fee ${(a.fee_bps / 100).toFixed(2)}% per side` : ""} · ${esc(a.account_name)}</div></div>${statusLabel(a)}</div>
     ${a.research ? `<div class="research"><span class="tag ${esc(a.research.group)}">${esc(a.research.label)}</span><span>${esc(a.research.summary)}</span></div>` : ""}
     ${a.halted ? `<div class="flat"><span class="halt-note">Halted by the drawdown limit since ${esc(a.halted)}. No new trades until resumed.</span></div>` : ""}
     <div class="figs">

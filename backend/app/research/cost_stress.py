@@ -45,8 +45,9 @@ MIN_QUARTER_SHARE = 0.6
 MIN_QUARTER_TRADES = 10
 
 
-def run_at(f: pd.DataFrame, symbol: str, timeframe: str, mult: float):
-    cfg = settings.model_copy(update={"max_drawdown_pct": 0.5})  # as in the targets backtest
+def run_at(f: pd.DataFrame, symbol: str, timeframe: str, mult: float, fee_bps: float = 0.0):
+    # As in the targets backtest. The multiplier scales spread and slippage; an account's own fee stays fixed.
+    cfg = settings.model_copy(update={"max_drawdown_pct": 0.5, "fee_bps": fee_bps})
     bt = BacktestConfig.from_settings(cfg, symbol, timeframe)
     bt = dataclasses.replace(bt, spread_pips=bt.spread_pips * mult, slippage_pips=bt.slippage_pips * mult)
     return BacktestEngine(bt, risk_manager=RiskManager(cfg)).run(f), bt
@@ -85,7 +86,7 @@ def check_account(path: Path, use_cached: bool) -> dict:
 
     runs = {}
     for m in MULTIPLIERS:
-        res, bt = run_at(f, c.symbol, c.timeframe, m)
+        res, bt = run_at(f, c.symbol, c.timeframe, m, c.fee_bps)
         met = compute_metrics(res.portfolio, c.timeframe, c.symbol)
         pf = met.profit_factor if isinstance(met.profit_factor, float) and np.isfinite(met.profit_factor) else None
         runs[m] = {"return_pct": met.total_return_pct, "profit_factor": pf, "trades": met.total_trades,

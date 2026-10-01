@@ -61,6 +61,7 @@ def summarize(states: list[PaperRunState], price_fn: Callable[[str], PriceResult
         ]
         out.append(PaperRunSummary(
             account_name=c.account_name, symbol=c.symbol, timeframe=c.timeframe, strategy=c.strategy,
+            fee_bps=c.fee_bps,
             starting_balance=c.starting_balance, balance=a.balance, equity=equity,
             return_pct=(equity / c.starting_balance - 1) * 100 if c.starting_balance else 0.0,
             last_processed=s.last_processed, latest_price=price, latest_price_at=price_at,

@@ -47,6 +47,7 @@ class BacktestConfig:
     slippage_pips: float = 0.3
     commission_per_trade: float = 0.0
     pip_size: float = 0.0001
+    fee_bps: float = 0.0
     max_simultaneous_positions: int | None = None  # None = use the global settings default (1)
 
     @classmethod
@@ -63,6 +64,7 @@ class BacktestConfig:
             slippage_pips=costs.slippage_pips,
             commission_per_trade=cfg.commission_per_trade,
             pip_size=costs.pip_size,
+            fee_bps=cfg.fee_bps,
             max_simultaneous_positions=cfg.max_simultaneous_positions,
         )
 
@@ -100,6 +102,7 @@ class BacktestEngine:
             slippage_pips=config.slippage_pips,
             commission_per_trade=config.commission_per_trade,
             pip_size=config.pip_size,
+            fee_bps=config.fee_bps,
         )
 
     def run(self, df: pd.DataFrame, signal_col: str = "signal", probability_col: str | None = None) -> BacktestResult:

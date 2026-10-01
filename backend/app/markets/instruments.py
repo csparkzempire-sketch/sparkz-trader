@@ -98,6 +98,7 @@ def execution_costs(symbol: str, cfg: Settings | None = None) -> ExecutionCosts:
         slippage_pips=costs.slippage_pips,
         commission_per_trade=cfg.commission_per_trade,
         pip_size=costs.pip_size,
+        fee_bps=cfg.fee_bps,
     )
 
 

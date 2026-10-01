@@ -383,6 +383,15 @@ download no longer reaches back to the window's start (Yahoo keeps about two
 years of hourly bars), the command stops. Add `--new-window` to use the latest
 data instead.
 
+**Exchange fees.** Backtests and paper fills charge each instrument's spread and
+slippage, but no commission. To paper-trade with a fee, give it when the account is
+created, in basis points per side:
+```bash
+python -m app.cli paper-trade --account btc_hourly_both_fee10 --symbol BTC-USD \
+  --timeframe 1h --strategy baseline --fee-bps 10      # 0.1% per side, a typical crypto taker fee
+```
+The fee is charged on entry and exit in paper fills, and the account's targets backtest includes it.
+
 Strategies: `baseline` (buy and sell) or `baseline_long_only` (the same
 rules with the SELL side removed). `baseline_long_only` also works with
 `backtest --strategy`.

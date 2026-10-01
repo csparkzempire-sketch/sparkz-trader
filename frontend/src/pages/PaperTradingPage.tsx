@@ -117,6 +117,7 @@ function AccountPanel({ run: r }: { run: PaperRunSummary }) {
       <div className="panel-header flex flex-wrap items-center justify-between gap-2">
         <span>
           {r.account_name} · {r.symbol} · {r.timeframe} · {STRATEGY_LABELS[r.strategy] ?? r.strategy}
+          {r.fee_bps ? ` · fee ${(r.fee_bps / 100).toFixed(2)}% per side` : ""}
           {r.research && (
             <span className={`ml-2 badge ${RESEARCH_BADGE[r.research.group]}`} title={r.research.summary}>
               {r.research.label}

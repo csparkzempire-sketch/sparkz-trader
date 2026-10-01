@@ -255,6 +255,7 @@ export interface PaperRunSummary {
   symbol: string;
   timeframe: string;
   strategy: string;
+  fee_bps?: number;
   starting_balance: number;
   balance: number;
   equity: number;
