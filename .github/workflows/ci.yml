@@ -1,0 +1,65 @@
+# Runs every test suite and builds every dashboard on each pull request and on pushes to main.
+# The hourly paper-trading routine pushes to the `paper-trading` branch, which deliberately does not trigger CI.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python-tests:
+    name: tests (${{ matrix.project }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        project:
+          - backend                       # original Sparkz Trader
+          - SPARKZ-ADAPTIVE-GRID/backend  # V1 grid research
+          - SPARKZ-TRADER-V2/backend      # V2 simulator
+    defaults:
+      run:
+        working-directory: ${{ matrix.project }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: ${{ matrix.project }}/requirements.txt
+      - run: pip install -r requirements.txt
+      - run: python -m pytest -q
+
+  frontend-build:
+    name: build (${{ matrix.project }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        project:
+          - frontend
+          - SPARKZ-ADAPTIVE-GRID/frontend
+          - SPARKZ-TRADER-V2/frontend
+    defaults:
+      run:
+        working-directory: ${{ matrix.project }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: ${{ matrix.project }}/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build          # type-checks (tsc -b) and bundles

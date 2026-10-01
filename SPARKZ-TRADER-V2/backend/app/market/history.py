@@ -42,13 +42,24 @@ def validate(df: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
 
 
 def load_history(symbol: str, timeframe: str) -> pd.DataFrame:
+    """Stored candles merged with the daily archive (data/archive/, see market/archive.py)."""
+    from app.market.archive import load_archive
+
     p = path_for(symbol, timeframe)
-    if not p.exists():
+    parts = []
+    if p.exists():
+        df = pd.read_csv(p)
+        df["timestamp"] = pd.to_datetime(df["timestamp"], utc=True)
+        parts.append(df)
+    arch = load_archive(symbol, timeframe)
+    if len(arch):
+        parts.append(arch)
+    if not parts:
         raise FileNotFoundError(f"no stored candles for {symbol} {timeframe}; run "
                                 f"`python -m app.cli download --symbol {symbol} --timeframe {timeframe}`")
-    df = pd.read_csv(p)
-    df["timestamp"] = pd.to_datetime(df["timestamp"], utc=True)
-    return df
+    if len(parts) == 1:
+        return parts[0]
+    return validate(pd.concat(parts, ignore_index=True))[0]
 
 
 def merge_into_store(new: pd.DataFrame, symbol: str, timeframe: str) -> tuple[pd.DataFrame, dict]:
