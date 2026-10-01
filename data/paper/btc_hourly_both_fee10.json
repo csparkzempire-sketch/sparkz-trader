@@ -1,0 +1,63 @@
+{
+  "config": {
+    "account_name": "btc_hourly_both_fee10",
+    "symbol": "BTC-USD",
+    "timeframe": "1h",
+    "strategy": "baseline",
+    "starting_balance": 10000.0,
+    "fee_bps": 10.0
+  },
+  "last_processed": "2026-10-01T08:00:00+00:00",
+  "account": {
+    "balance": 10000.0,
+    "is_active": true,
+    "open_positions": [],
+    "trade_history": [],
+    "risk_state": {
+      "equity": 10000.0,
+      "peak_equity": 10000.0,
+      "open_positions": 0,
+      "current_exposure": 0.0,
+      "daily_loss": 0.0,
+      "current_day": null,
+      "bars_since_last_trade": 10000
+    }
+  },
+  "log": [],
+  "halted": null,
+  "targets": {
+    "source": "backtest 2024-10-02 to 2026-10-01",
+    "last_bar": "2026-10-01T08:00:00+00:00",
+    "set_at": "2026-10-01T09:08:25+00:00",
+    "backtest_trades": 427,
+    "backtest_return_pct": -37.7853,
+    "profit_factor": 0.87,
+    "win_rate_pct": 33.96,
+    "max_drawdown_pct": -50.1243,
+    "avg_hold_bars": 14.39
+  },
+  "norms": {
+    "set_at": "2026-10-01T09:08:27+00:00",
+    "days": 729,
+    "trades": 427,
+    "max_losing_streak": 16,
+    "losing_streaks": {
+      "1": 14,
+      "2": 18,
+      "3": 8,
+      "4": 5,
+      "5": 3,
+      "6": 7,
+      "7": 4,
+      "9": 3,
+      "10": 1,
+      "12": 2,
+      "13": 2,
+      "16": 1
+    },
+    "daily_limit_pct": 3.0,
+    "daily_limit_days": 38,
+    "max_daily_limit_days_in_week": 4,
+    "worst_week_pct": -14.23
+  }
+}
