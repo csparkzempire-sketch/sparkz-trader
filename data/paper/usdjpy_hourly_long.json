@@ -7,11 +7,21 @@
     "starting_balance": 10000.0,
     "fee_bps": 0.0
   },
-  "last_processed": "2026-10-01T16:00:00+00:00",
+  "last_processed": "2026-10-01T17:00:00+00:00",
   "account": {
     "balance": 9896.288940509061,
     "is_active": true,
-    "open_positions": [],
+    "open_positions": [
+      {
+        "symbol": "USDJPY=X",
+        "direction": "BUY",
+        "entry_price": 158.07899645996093,
+        "stop_price": 157.43707291544592,
+        "target_price": 159.36284354899092,
+        "size": 154.1661623891047,
+        "opened_at": "2026-10-01T17:00:00+00:00"
+      }
+    ],
     "trade_history": [
       {
         "symbol": "USDJPY=X",
@@ -28,8 +38,8 @@
     "risk_state": {
       "equity": 9896.288940509061,
       "peak_equity": 10000.0,
-      "open_positions": 0,
-      "current_exposure": 0.0,
+      "open_positions": 1,
+      "current_exposure": 98.9628894050906,
       "daily_loss": -103.71105949093908,
       "current_day": "2026-10-01",
       "bars_since_last_trade": 10000
@@ -37,7 +47,8 @@
   },
   "log": [
     "2026-10-01 00:00 OPEN BUY USDJPY=X @ 157.93, size 218.297617, stop 157.48, target 158.85",
-    "2026-10-01 14:00 CLOSE BUY USDJPY=X STOP @ 157.46, pnl -103.71, balance 9896.29"
+    "2026-10-01 14:00 CLOSE BUY USDJPY=X STOP @ 157.46, pnl -103.71, balance 9896.29",
+    "2026-10-01 17:00 OPEN BUY USDJPY=X @ 158.08, size 154.166162, stop 157.44, target 159.36"
   ],
   "halted": null,
   "targets": {
