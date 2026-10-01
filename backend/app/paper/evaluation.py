@@ -192,7 +192,7 @@ def early_check(wins: int, n: int, win_rate_pct: float) -> dict | None:
     return {
         "status": status, "wins": wins, "trades": n, "expected_wins": round(expected, 1),
         "probability": round(tail, 4),
-        "text": (f"{wins} win{'s' if wins != 1 else ''} in {n} trades: a result this "
+        "text": (f"{wins} win{'s' if wins != 1 else ''} in {n} trade{'s' if n != 1 else ''}: a result this "
                  f"{'poor' if low else 'good'} or worse happens {_share(tail)} of the time at the backtest's "
                  f"{win_rate_pct:.1f}% win rate, so it's {text}.").replace("this good or worse", "this good or better"),
     }
