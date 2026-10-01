@@ -1,0 +1,9 @@
+# Signal-confirmed grid: ATR spacing, at most one add per closed bar, and adds stop for good once a
+# closed bar breaks the entry thesis. (With adds allowed several times inside one bar the thesis,
+# checked at bar close, came too late to change anything in tests.)
+name: signal_grid
+market: {symbol: XAUUSD, timeframe: 15m}
+grid: {mode: SIGNAL_CONFIRMED, atr_multiplier: 0.5, min_bars_between_adds: 1}
+sizing: {mode: FIXED, base_lot: 0.01}
+target: {mode: FIXED_PROFIT, fixed_usd: 10}
+risk: {max_positions: 5, max_basket_loss_percent: 2.0}

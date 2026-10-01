@@ -1,0 +1,10 @@
+# VIDEO_STYLE_MODE: an approximation of the behaviour shown in the reference video
+# (XAUUSD 15m, small fixed grid, growing lots, small fixed basket profit target).
+# It is NOT the video's proprietary algorithm, whose rules are not public.
+name: video_style
+video_style_mode: true
+market: {symbol: XAUUSD, timeframe: 15m}
+grid: {mode: FIXED, distance: 2.0}
+sizing: {mode: LINEAR, base_lot: 0.01}
+target: {mode: FIXED_PROFIT, fixed_usd: 10}
+risk: {max_positions: 5, max_basket_loss_percent: 2.0}

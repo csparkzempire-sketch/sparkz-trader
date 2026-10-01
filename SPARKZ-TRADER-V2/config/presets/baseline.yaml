@@ -1,0 +1,8 @@
+# Baseline: one position per basket, no grid, symmetric 10 USD target / 10 USD stop.
+# The reference every grid variant is compared with: same entries, no averaging down.
+name: baseline
+market: {symbol: XAUUSD, timeframe: 15m}
+grid: {mode: NONE}
+sizing: {mode: FIXED, base_lot: 0.01}
+target: {mode: RISK_MULTIPLE, risk_multiple: 1.0}
+risk: {max_positions: 1, max_basket_loss_usd: 10, max_basket_loss_percent: 2.0}
