@@ -1,0 +1,1948 @@
+{
+ "multipliers": [
+  1.0,
+  1.5,
+  2.0,
+  3.0,
+  4.0,
+  6.0
+ ],
+ "accounts": [
+  {
+   "account": "btc_hourly_both",
+   "symbol": "BTC-USD",
+   "timeframe": "1h",
+   "strategy": "baseline",
+   "window": [
+    "2024-10-02 13:00:00+00:00",
+    "2026-10-01 07:00:00+00:00"
+   ],
+   "round_trip_cost_bp_at_1x": 5.66,
+   "break_even_multiplier": 2.97,
+   "break_even_round_trip_bp": 16.8,
+   "quarters_profitable_at_2x": "6/8",
+   "runs": {
+    "1.0": {
+     "return_pct": 211.0776,
+     "profit_factor": 1.167,
+     "trades": 1001,
+     "win_rate_pct": 38.46,
+     "max_drawdown_pct": -22.8451,
+     "quarters": {
+      "2024Q4": {
+       "trades": 119,
+       "net_pnl": 3810.2702689005782
+      },
+      "2025Q1": {
+       "trades": 135,
+       "net_pnl": 605.5083427403326
+      },
+      "2025Q2": {
+       "trades": 124,
+       "net_pnl": 900.4500319934789
+      },
+      "2025Q3": {
+       "trades": 129,
+       "net_pnl": 1514.274404908396
+      },
+      "2025Q4": {
+       "trades": 136,
+       "net_pnl": 3311.465266640084
+      },
+      "2026Q1": {
+       "trades": 139,
+       "net_pnl": 6882.71272781928
+      },
+      "2026Q2": {
+       "trades": 119,
+       "net_pnl": 2154.3045434377973
+      },
+      "2026Q3": {
+       "trades": 98,
+       "net_pnl": 2524.466586441395
+      },
+      "2026Q4": {
+       "trades": 2,
+       "net_pnl": -595.6961968060864
+      }
+     }
+    },
+    "1.5": {
+     "return_pct": 129.1484,
+     "profit_factor": 1.116,
+     "trades": 1003,
+     "win_rate_pct": 37.89,
+     "max_drawdown_pct": -23.9261,
+     "quarters": {
+      "2024Q4": {
+       "trades": 116,
+       "net_pnl": 3220.3434683849846
+      },
+      "2025Q1": {
+       "trades": 137,
+       "net_pnl": 98.7839920042191
+      },
+      "2025Q2": {
+       "trades": 124,
+       "net_pnl": 598.04192167292
+      },
+      "2025Q3": {
+       "trades": 129,
+       "net_pnl": 1086.9077429294912
+      },
+      "2025Q4": {
+       "trades": 139,
+       "net_pnl": 2123.705775131428
+      },
+      "2026Q1": {
+       "trades": 139,
+       "net_pnl": 4773.442449866419
+      },
+      "2026Q2": {
+       "trades": 122,
+       "net_pnl": -87.23950296745915
+      },
+      "2026Q3": {
+       "trades": 95,
+       "net_pnl": 1549.9294031800634
+      },
+      "2026Q4": {
+       "trades": 2,
+       "net_pnl": -449.07917483907136
+      }
+     }
+    },
+    "2.0": {
+     "return_pct": 72.1187,
+     "profit_factor": 1.072,
+     "trades": 1003,
+     "win_rate_pct": 37.39,
+     "max_drawdown_pct": -27.4143,
+     "quarters": {
+      "2024Q4": {
+       "trades": 116,
+       "net_pnl": 3029.427308620022
+      },
+      "2025Q1": {
+       "trades": 137,
+       "net_pnl": -465.1306662791167
+      },
+      "2025Q2": {
+       "trades": 124,
+       "net_pnl": 347.17826932157755
+      },
+      "2025Q3": {
+       "trades": 129,
+       "net_pnl": 343.2004954010853
+      },
+      "2025Q4": {
+       "trades": 139,
+       "net_pnl": 1628.1370050404464
+      },
+      "2026Q1": {
+       "trades": 140,
+       "net_pnl": 4168.242036292914
+      },
+      "2026Q2": {
+       "trades": 120,
+       "net_pnl": -1672.483558826671
+      },
+      "2026Q3": {
+       "trades": 96,
+       "net_pnl": 178.33281722463732
+      },
+      "2026Q4": {
+       "trades": 2,
+       "net_pnl": -345.0353027254499
+      }
+     }
+    },
+    "3.0": {
+     "return_pct": -1.9133,
+     "profit_factor": 0.998,
+     "trades": 1021,
+     "win_rate_pct": 36.43,
+     "max_drawdown_pct": -43.5152,
+     "quarters": {
+      "2024Q4": {
+       "trades": 115,
+       "net_pnl": 1707.3380579776604
+      },
+      "2025Q1": {
+       "trades": 143,
+       "net_pnl": -1133.2126519653766
+      },
+      "2025Q2": {
+       "trades": 131,
+       "net_pnl": -847.3786312131555
+      },
+      "2025Q3": {
+       "trades": 130,
+       "net_pnl": -775.9658079217479
+      },
+      "2025Q4": {
+       "trades": 140,
+       "net_pnl": 1269.692885552634
+      },
+      "2026Q1": {
+       "trades": 141,
+       "net_pnl": 2273.2731456922484
+      },
+      "2026Q2": {
+       "trades": 120,
+       "net_pnl": -1525.130330642115
+      },
+      "2026Q3": {
+       "trades": 99,
+       "net_pnl": -954.5077776667769
+      },
+      "2026Q4": {
+       "trades": 2,
+       "net_pnl": -205.43777131504504
+      }
+     }
+    },
+    "4.0": {
+     "return_pct": -38.6401,
+     "profit_factor": 0.884,
+     "trades": 494,
+     "win_rate_pct": 33.81,
+     "max_drawdown_pct": -50.285,
+     "quarters": {
+      "2024Q4": {
+       "trades": 114,
+       "net_pnl": 830.5144922902897
+      },
+      "2025Q1": {
+       "trades": 143,
+       "net_pnl": -1890.181875615179
+      },
+      "2025Q2": {
+       "trades": 129,
+       "net_pnl": -789.5329968356352
+      },
+      "2025Q3": {
+       "trades": 108,
+       "net_pnl": -2014.8146056988023
+      }
+     }
+    },
+    "6.0": {
+     "return_pct": -42.6307,
+     "profit_factor": 0.825,
+     "trades": 395,
+     "win_rate_pct": 33.92,
+     "max_drawdown_pct": -50.2702,
+     "quarters": {
+      "2024Q4": {
+       "trades": 125,
+       "net_pnl": -729.15309901404
+      },
+      "2025Q1": {
+       "trades": 142,
+       "net_pnl": -2397.498723768184
+      },
+      "2025Q2": {
+       "trades": 120,
+       "net_pnl": -902.8141720053417
+      },
+      "2025Q3": {
+       "trades": 8,
+       "net_pnl": -233.60537726535262
+      }
+     }
+    }
+   },
+   "checks": {
+    "net_return_positive": true,
+    "profit_factor_at_least_1.05": true,
+    "quarters_profitable_60pct": true
+   },
+   "passed": true
+  },
+  {
+   "account": "btc_hourly_long",
+   "symbol": "BTC-USD",
+   "timeframe": "1h",
+   "strategy": "baseline_long_only",
+   "window": [
+    "2024-10-02 13:00:00+00:00",
+    "2026-10-01 07:00:00+00:00"
+   ],
+   "round_trip_cost_bp_at_1x": 5.66,
+   "break_even_multiplier": 2.53,
+   "break_even_round_trip_bp": 14.3,
+   "quarters_profitable_at_2x": "5/8",
+   "runs": {
+    "1.0": {
+     "return_pct": 72.468,
+     "profit_factor": 1.126,
+     "trades": 555,
+     "win_rate_pct": 38.02,
+     "max_drawdown_pct": -30.0491,
+     "quarters": {
+      "2024Q4": {
+       "trades": 74,
+       "net_pnl": 4459.241045578525
+      },
+      "2025Q1": {
+       "trades": 64,
+       "net_pnl": -466.7854310493326
+      },
+      "2025Q2": {
+       "trades": 69,
+       "net_pnl": 1329.4044637880702
+      },
+      "2025Q3": {
+       "trades": 78,
+       "net_pnl": 1354.3379910558895
+      },
+      "2025Q4": {
+       "trades": 66,
+       "net_pnl": 50.796683390095154
+      },
+      "2026Q1": {
+       "trades": 58,
+       "net_pnl": 434.25642767311666
+      },
+      "2026Q2": {
+       "trades": 72,
+       "net_pnl": -2438.2446773816537
+      },
+      "2026Q3": {
+       "trades": 73,
+       "net_pnl": 2578.0807068939475
+      },
+      "2026Q4": {
+       "trades": 1,
+       "net_pnl": -54.291114185719714
+      }
+     }
+    },
+    "1.5": {
+     "return_pct": 48.0031,
+     "profit_factor": 1.09,
+     "trades": 553,
+     "win_rate_pct": 37.61,
+     "max_drawdown_pct": -33.74,
+     "quarters": {
+      "2024Q4": {
+       "trades": 71,
+       "net_pnl": 3913.770549119182
+      },
+      "2025Q1": {
+       "trades": 66,
+       "net_pnl": -827.2255152461851
+      },
+      "2025Q2": {
+       "trades": 69,
+       "net_pnl": 1104.7312018064038
+      },
+      "2025Q3": {
+       "trades": 78,
+       "net_pnl": 1066.4356583523486
+      },
+      "2025Q4": {
+       "trades": 67,
+       "net_pnl": -250.82892427488184
+      },
+      "2026Q1": {
+       "trades": 58,
+       "net_pnl": 262.5616008767504
+      },
+      "2026Q2": {
+       "trades": 70,
+       "net_pnl": -2449.165448805711
+      },
+      "2026Q3": {
+       "trades": 73,
+       "net_pnl": 2029.6332884332269
+      },
+      "2026Q4": {
+       "trades": 1,
+       "net_pnl": -49.60569027511408
+      }
+     }
+    },
+    "2.0": {
+     "return_pct": 30.1188,
+     "profit_factor": 1.059,
+     "trades": 549,
+     "win_rate_pct": 37.34,
+     "max_drawdown_pct": -37.2214,
+     "quarters": {
+      "2024Q4": {
+       "trades": 71,
+       "net_pnl": 3785.417441574375
+      },
+      "2025Q1": {
+       "trades": 66,
+       "net_pnl": -915.0237580258378
+      },
+      "2025Q2": {
+       "trades": 69,
+       "net_pnl": 952.1837849099763
+      },
+      "2025Q3": {
+       "trades": 78,
+       "net_pnl": 431.63546696233726
+      },
+      "2025Q4": {
+       "trades": 67,
+       "net_pnl": -372.7264133935653
+      },
+      "2026Q1": {
+       "trades": 58,
+       "net_pnl": 125.52803541413533
+      },
+      "2026Q2": {
+       "trades": 68,
+       "net_pnl": -2488.6462115224385
+      },
+      "2026Q3": {
+       "trades": 71,
+       "net_pnl": 1539.7714059423274
+      },
+      "2026Q4": {
+       "trades": 1,
+       "net_pnl": -46.26398324202946
+      }
+     }
+    },
+    "3.0": {
+     "return_pct": -26.6471,
+     "profit_factor": 0.937,
+     "trades": 518,
+     "win_rate_pct": 34.75,
+     "max_drawdown_pct": -50.0318,
+     "quarters": {
+      "2024Q4": {
+       "trades": 72,
+       "net_pnl": 2984.991433154189
+      },
+      "2025Q1": {
+       "trades": 66,
+       "net_pnl": -1045.268390746358
+      },
+      "2025Q2": {
+       "trades": 76,
+       "net_pnl": 55.16040452528608
+      },
+      "2025Q3": {
+       "trades": 82,
+       "net_pnl": -777.0343673745183
+      },
+      "2025Q4": {
+       "trades": 70,
+       "net_pnl": -535.8897546681058
+      },
+      "2026Q1": {
+       "trades": 59,
+       "net_pnl": -194.6735274266478
+      },
+      "2026Q2": {
+       "trades": 66,
+       "net_pnl": -2126.3388664143417
+      },
+      "2026Q3": {
+       "trades": 27,
+       "net_pnl": -1025.658175030048
+      }
+     }
+    },
+    "4.0": {
+     "return_pct": -31.8318,
+     "profit_factor": 0.912,
+     "trades": 486,
+     "win_rate_pct": 34.98,
+     "max_drawdown_pct": -50.3633,
+     "quarters": {
+      "2024Q4": {
+       "trades": 72,
+       "net_pnl": 2350.59802395135
+      },
+      "2025Q1": {
+       "trades": 66,
+       "net_pnl": -1812.367222694638
+      },
+      "2025Q2": {
+       "trades": 71,
+       "net_pnl": 142.61892888816038
+      },
+      "2025Q3": {
+       "trades": 83,
+       "net_pnl": -1056.0480973595345
+      },
+      "2025Q4": {
+       "trades": 67,
+       "net_pnl": -606.0790851797556
+      },
+      "2026Q1": {
+       "trades": 61,
+       "net_pnl": -502.1860975179355
+      },
+      "2026Q2": {
+       "trades": 66,
+       "net_pnl": -1699.7138742699656
+      }
+     }
+    },
+    "6.0": {
+     "return_pct": -34.5609,
+     "profit_factor": 0.869,
+     "trades": 370,
+     "win_rate_pct": 35.41,
+     "max_drawdown_pct": -50.0551,
+     "quarters": {
+      "2024Q4": {
+       "trades": 75,
+       "net_pnl": 2173.2322860086406
+      },
+      "2025Q1": {
+       "trades": 67,
+       "net_pnl": -2511.8583472645932
+      },
+      "2025Q2": {
+       "trades": 72,
+       "net_pnl": -626.3380296316448
+      },
+      "2025Q3": {
+       "trades": 96,
+       "net_pnl": -2015.870515745693
+      },
+      "2025Q4": {
+       "trades": 60,
+       "net_pnl": -475.25634419661145
+      }
+     }
+    }
+   },
+   "checks": {
+    "net_return_positive": true,
+    "profit_factor_at_least_1.05": true,
+    "quarters_profitable_60pct": true
+   },
+   "passed": true
+  },
+  {
+   "account": "eth_hourly_both",
+   "symbol": "ETH-USD",
+   "timeframe": "1h",
+   "strategy": "baseline",
+   "window": [
+    "2024-10-02 13:00:00+00:00",
+    "2026-10-01 07:00:00+00:00"
+   ],
+   "round_trip_cost_bp_at_1x": 11.77,
+   "break_even_multiplier": 2.8,
+   "break_even_round_trip_bp": 32.9,
+   "quarters_profitable_at_2x": "6/8",
+   "runs": {
+    "1.0": {
+     "return_pct": 275.5874,
+     "profit_factor": 1.159,
+     "trades": 989,
+     "win_rate_pct": 39.53,
+     "max_drawdown_pct": -25.8664,
+     "quarters": {
+      "2024Q4": {
+       "trades": 119,
+       "net_pnl": 3275.880137890795
+      },
+      "2025Q1": {
+       "trades": 139,
+       "net_pnl": 3423.1319941518545
+      },
+      "2025Q2": {
+       "trades": 128,
+       "net_pnl": 477.699924316899
+      },
+      "2025Q3": {
+       "trades": 136,
+       "net_pnl": 10335.870667673293
+      },
+      "2025Q4": {
+       "trades": 121,
+       "net_pnl": 1754.115100860495
+      },
+      "2026Q1": {
+       "trades": 114,
+       "net_pnl": 12604.311673803015
+      },
+      "2026Q2": {
+       "trades": 113,
+       "net_pnl": 5076.75959641457
+      },
+      "2026Q3": {
+       "trades": 116,
+       "net_pnl": -8177.56985115451
+      },
+      "2026Q4": {
+       "trades": 3,
+       "net_pnl": -1211.460811299599
+      }
+     }
+    },
+    "1.5": {
+     "return_pct": 132.1516,
+     "profit_factor": 1.096,
+     "trades": 994,
+     "win_rate_pct": 38.53,
+     "max_drawdown_pct": -32.3563,
+     "quarters": {
+      "2024Q4": {
+       "trades": 120,
+       "net_pnl": 2867.672639905833
+      },
+      "2025Q1": {
+       "trades": 138,
+       "net_pnl": 2692.3904210196115
+      },
+      "2025Q2": {
+       "trades": 136,
+       "net_pnl": -1250.15588824467
+      },
+      "2025Q3": {
+       "trades": 131,
+       "net_pnl": 6768.519183937478
+      },
+      "2025Q4": {
+       "trades": 120,
+       "net_pnl": 1223.2417429073207
+      },
+      "2026Q1": {
+       "trades": 116,
+       "net_pnl": 8262.7757750585
+      },
+      "2026Q2": {
+       "trades": 108,
+       "net_pnl": 1586.197991120127
+      },
+      "2026Q3": {
+       "trades": 122,
+       "net_pnl": -8169.582937921025
+      },
+      "2026Q4": {
+       "trades": 3,
+       "net_pnl": -765.8985173008264
+      }
+     }
+    },
+    "2.0": {
+     "return_pct": 68.0885,
+     "profit_factor": 1.059,
+     "trades": 1009,
+     "win_rate_pct": 38.06,
+     "max_drawdown_pct": -33.3724,
+     "quarters": {
+      "2024Q4": {
+       "trades": 123,
+       "net_pnl": 2193.037977545866
+      },
+      "2025Q1": {
+       "trades": 140,
+       "net_pnl": 1951.7467409168187
+      },
+      "2025Q2": {
+       "trades": 139,
+       "net_pnl": -1917.0120795848422
+      },
+      "2025Q3": {
+       "trades": 134,
+       "net_pnl": 4895.183701935041
+      },
+      "2025Q4": {
+       "trades": 119,
+       "net_pnl": 374.2537898411142
+      },
+      "2026Q1": {
+       "trades": 118,
+       "net_pnl": 5440.330154818588
+      },
+      "2026Q2": {
+       "trades": 111,
+       "net_pnl": 495.948697202365
+      },
+      "2026Q3": {
+       "trades": 122,
+       "net_pnl": -6057.70560487267
+      },
+      "2026Q4": {
+       "trades": 3,
+       "net_pnl": -566.9326347562012
+      }
+     }
+    },
+    "3.0": {
+     "return_pct": -17.11,
+     "profit_factor": 0.98,
+     "trades": 979,
+     "win_rate_pct": 36.98,
+     "max_drawdown_pct": -50.9002,
+     "quarters": {
+      "2024Q4": {
+       "trades": 122,
+       "net_pnl": 1505.7038094942582
+      },
+      "2025Q1": {
+       "trades": 137,
+       "net_pnl": 957.902139400893
+      },
+      "2025Q2": {
+       "trades": 141,
+       "net_pnl": -1912.194133345982
+      },
+      "2025Q3": {
+       "trades": 133,
+       "net_pnl": 2615.067126443085
+      },
+      "2025Q4": {
+       "trades": 121,
+       "net_pnl": -829.1637539320816
+      },
+      "2026Q1": {
+       "trades": 123,
+       "net_pnl": 1769.3427551310024
+      },
+      "2026Q2": {
+       "trades": 109,
+       "net_pnl": -1752.136885118898
+      },
+      "2026Q3": {
+       "trades": 93,
+       "net_pnl": -4065.5214598496827
+      }
+     }
+    },
+    "4.0": {
+     "return_pct": -35.8673,
+     "profit_factor": 0.88,
+     "trades": 422,
+     "win_rate_pct": 35.07,
+     "max_drawdown_pct": -50.0158,
+     "quarters": {
+      "2024Q4": {
+       "trades": 128,
+       "net_pnl": 611.1815407336156
+      },
+      "2025Q1": {
+       "trades": 139,
+       "net_pnl": -1055.1100987812465
+      },
+      "2025Q2": {
+       "trades": 144,
+       "net_pnl": -2661.799075359533
+      },
+      "2025Q3": {
+       "trades": 11,
+       "net_pnl": -481.00296290216636
+      }
+     }
+    },
+    "6.0": {
+     "return_pct": -47.483,
+     "profit_factor": 0.759,
+     "trades": 293,
+     "win_rate_pct": 33.11,
+     "max_drawdown_pct": -50.6295,
+     "quarters": {
+      "2024Q4": {
+       "trades": 118,
+       "net_pnl": -1285.6145677941827
+      },
+      "2025Q1": {
+       "trades": 139,
+       "net_pnl": -2338.820084680905
+      },
+      "2025Q2": {
+       "trades": 36,
+       "net_pnl": -1123.8665461236608
+      }
+     }
+    }
+   },
+   "checks": {
+    "net_return_positive": true,
+    "profit_factor_at_least_1.05": true,
+    "quarters_profitable_60pct": true
+   },
+   "passed": true
+  },
+  {
+   "account": "eth_hourly_long",
+   "symbol": "ETH-USD",
+   "timeframe": "1h",
+   "strategy": "baseline_long_only",
+   "window": [
+    "2024-10-02 13:00:00+00:00",
+    "2026-10-01 07:00:00+00:00"
+   ],
+   "round_trip_cost_bp_at_1x": 11.77,
+   "break_even_multiplier": 2.46,
+   "break_even_round_trip_bp": 29.0,
+   "quarters_profitable_at_2x": "4/8",
+   "runs": {
+    "1.0": {
+     "return_pct": 84.6247,
+     "profit_factor": 1.153,
+     "trades": 582,
+     "win_rate_pct": 38.66,
+     "max_drawdown_pct": -24.1349,
+     "quarters": {
+      "2024Q4": {
+       "trades": 85,
+       "net_pnl": 711.3369185775978
+      },
+      "2025Q1": {
+       "trades": 57,
+       "net_pnl": -286.4872942881938
+      },
+      "2025Q2": {
+       "trades": 79,
+       "net_pnl": 694.425939183654
+      },
+      "2025Q3": {
+       "trades": 99,
+       "net_pnl": 5067.186203874902
+      },
+      "2025Q4": {
+       "trades": 58,
+       "net_pnl": 407.0814320600522
+      },
+      "2026Q1": {
+       "trades": 58,
+       "net_pnl": 1878.1557001419592
+      },
+      "2026Q2": {
+       "trades": 61,
+       "net_pnl": -1459.2687611244676
+      },
+      "2026Q3": {
+       "trades": 84,
+       "net_pnl": 1548.1734588923543
+      },
+      "2026Q4": {
+       "trades": 1,
+       "net_pnl": -98.13172350693668
+      }
+     }
+    },
+    "1.5": {
+     "return_pct": 44.2438,
+     "profit_factor": 1.086,
+     "trades": 588,
+     "win_rate_pct": 37.93,
+     "max_drawdown_pct": -25.547,
+     "quarters": {
+      "2024Q4": {
+       "trades": 85,
+       "net_pnl": 551.9742100651594
+      },
+      "2025Q1": {
+       "trades": 58,
+       "net_pnl": -488.87690420999417
+      },
+      "2025Q2": {
+       "trades": 84,
+       "net_pnl": 243.88622509576385
+      },
+      "2025Q3": {
+       "trades": 98,
+       "net_pnl": 3786.784855478155
+      },
+      "2025Q4": {
+       "trades": 55,
+       "net_pnl": 1121.0178016741038
+      },
+      "2026Q1": {
+       "trades": 58,
+       "net_pnl": 1019.5930016012378
+      },
+      "2026Q2": {
+       "trades": 60,
+       "net_pnl": -1804.2051454416392
+      },
+      "2026Q3": {
+       "trades": 89,
+       "net_pnl": 76.18407865617772
+      },
+      "2026Q4": {
+       "trades": 1,
+       "net_pnl": -81.98108370468674
+      }
+     }
+    },
+    "2.0": {
+     "return_pct": 20.0623,
+     "profit_factor": 1.041,
+     "trades": 593,
+     "win_rate_pct": 37.61,
+     "max_drawdown_pct": -26.8524,
+     "quarters": {
+      "2024Q4": {
+       "trades": 84,
+       "net_pnl": 504.3098475565288
+      },
+      "2025Q1": {
+       "trades": 58,
+       "net_pnl": -585.9758819110094
+      },
+      "2025Q2": {
+       "trades": 83,
+       "net_pnl": -132.6426026416254
+      },
+      "2025Q3": {
+       "trades": 99,
+       "net_pnl": 3267.723163136077
+      },
+      "2025Q4": {
+       "trades": 54,
+       "net_pnl": 646.8566408528523
+      },
+      "2026Q1": {
+       "trades": 60,
+       "net_pnl": 417.4861874431375
+      },
+      "2026Q2": {
+       "trades": 63,
+       "net_pnl": -1805.938189341216
+      },
+      "2026Q3": {
+       "trades": 91,
+       "net_pnl": -211.2811411338289
+      },
+      "2026Q4": {
+       "trades": 1,
+       "net_pnl": -94.30408610072269
+      }
+     }
+    },
+    "3.0": {
+     "return_pct": -23.3994,
+     "profit_factor": 0.947,
+     "trades": 593,
+     "win_rate_pct": 36.42,
+     "max_drawdown_pct": -41.0863,
+     "quarters": {
+      "2024Q4": {
+       "trades": 82,
+       "net_pnl": 158.97275345002438
+      },
+      "2025Q1": {
+       "trades": 58,
+       "net_pnl": -755.7999345836985
+      },
+      "2025Q2": {
+       "trades": 87,
+       "net_pnl": -582.2530494509422
+      },
+      "2025Q3": {
+       "trades": 98,
+       "net_pnl": 2402.3851940416635
+      },
+      "2025Q4": {
+       "trades": 53,
+       "net_pnl": 152.18957619176265
+      },
+      "2026Q1": {
+       "trades": 59,
+       "net_pnl": -167.45717806864968
+      },
+      "2026Q2": {
+       "trades": 65,
+       "net_pnl": -2254.049097713662
+      },
+      "2026Q3": {
+       "trades": 90,
+       "net_pnl": -1226.2131846252973
+      },
+      "2026Q4": {
+       "trades": 1,
+       "net_pnl": -67.71618012414649
+      }
+     }
+    },
+    "4.0": {
+     "return_pct": -40.269,
+     "profit_factor": 0.883,
+     "trades": 511,
+     "win_rate_pct": 35.62,
+     "max_drawdown_pct": -50.1643,
+     "quarters": {
+      "2024Q4": {
+       "trades": 84,
+       "net_pnl": 235.23226773516444
+      },
+      "2025Q1": {
+       "trades": 57,
+       "net_pnl": -1387.1389154757114
+      },
+      "2025Q2": {
+       "trades": 89,
+       "net_pnl": -1292.7349364210586
+      },
+      "2025Q3": {
+       "trades": 100,
+       "net_pnl": 1573.647296675154
+      },
+      "2025Q4": {
+       "trades": 51,
+       "net_pnl": -95.03090869434872
+      },
+      "2026Q1": {
+       "trades": 62,
+       "net_pnl": -920.9375141024858
+      },
+      "2026Q2": {
+       "trades": 68,
+       "net_pnl": -2139.939713973993
+      }
+     }
+    },
+    "6.0": {
+     "return_pct": -46.0446,
+     "profit_factor": 0.636,
+     "trades": 174,
+     "win_rate_pct": 29.31,
+     "max_drawdown_pct": -50.1246,
+     "quarters": {
+      "2024Q4": {
+       "trades": 78,
+       "net_pnl": -951.7324142001211
+      },
+      "2025Q1": {
+       "trades": 66,
+       "net_pnl": -2519.6052812906937
+      },
+      "2025Q2": {
+       "trades": 30,
+       "net_pnl": -1133.1270173813466
+      }
+     }
+    }
+   },
+   "checks": {
+    "net_return_positive": true,
+    "profit_factor_at_least_1.05": false,
+    "quarters_profitable_60pct": false
+   },
+   "passed": false
+  },
+  {
+   "account": "gold_hourly_both",
+   "symbol": "GC=F",
+   "timeframe": "1h",
+   "strategy": "baseline",
+   "window": [
+    "2024-05-09 17:00:00+00:00",
+    "2026-10-01 07:00:00+00:00"
+   ],
+   "round_trip_cost_bp_at_1x": 2.95,
+   "break_even_multiplier": 3.42,
+   "break_even_round_trip_bp": 10.1,
+   "quarters_profitable_at_2x": "8/10",
+   "runs": {
+    "1.0": {
+     "return_pct": 223.5369,
+     "profit_factor": 1.29,
+     "trades": 678,
+     "win_rate_pct": 40.41,
+     "max_drawdown_pct": -19.6523,
+     "quarters": {
+      "2024Q2": {
+       "trades": 40,
+       "net_pnl": -575.9216253202011
+      },
+      "2024Q3": {
+       "trades": 82,
+       "net_pnl": 376.7543510173402
+      },
+      "2024Q4": {
+       "trades": 69,
+       "net_pnl": 1562.7613614707845
+      },
+      "2025Q1": {
+       "trades": 75,
+       "net_pnl": 1393.1813334942776
+      },
+      "2025Q2": {
+       "trades": 61,
+       "net_pnl": 2074.840932835549
+      },
+      "2025Q3": {
+       "trades": 73,
+       "net_pnl": 4987.645466284824
+      },
+      "2025Q4": {
+       "trades": 54,
+       "net_pnl": 4254.295751937285
+      },
+      "2026Q1": {
+       "trades": 73,
+       "net_pnl": 5695.7544558671825
+      },
+      "2026Q2": {
+       "trades": 80,
+       "net_pnl": 1538.7174822390593
+      },
+      "2026Q3": {
+       "trades": 70,
+       "net_pnl": 1027.9449638581473
+      },
+      "2026Q4": {
+       "trades": 1,
+       "net_pnl": 17.712080936737337
+      }
+     }
+    },
+    "1.5": {
+     "return_pct": 130.6918,
+     "profit_factor": 1.21,
+     "trades": 694,
+     "win_rate_pct": 39.05,
+     "max_drawdown_pct": -24.0237,
+     "quarters": {
+      "2024Q2": {
+       "trades": 40,
+       "net_pnl": -644.5067687123283
+      },
+      "2024Q3": {
+       "trades": 87,
+       "net_pnl": -546.4430326685138
+      },
+      "2024Q4": {
+       "trades": 68,
+       "net_pnl": 1083.425521354283
+      },
+      "2025Q1": {
+       "trades": 80,
+       "net_pnl": 199.74352119596648
+      },
+      "2025Q2": {
+       "trades": 63,
+       "net_pnl": 1681.1694706049375
+      },
+      "2025Q3": {
+       "trades": 71,
+       "net_pnl": 3213.2574177812326
+      },
+      "2025Q4": {
+       "trades": 61,
+       "net_pnl": 2401.53750261094
+      },
+      "2026Q1": {
+       "trades": 73,
+       "net_pnl": 4044.853362592098
+      },
+      "2026Q2": {
+       "trades": 80,
+       "net_pnl": 1002.9504041941148
+      },
+      "2026Q3": {
+       "trades": 70,
+       "net_pnl": 623.8900061610897
+      },
+      "2026Q4": {
+       "trades": 1,
+       "net_pnl": 9.306943790364167
+      }
+     }
+    },
+    "2.0": {
+     "return_pct": 103.4831,
+     "profit_factor": 1.177,
+     "trades": 698,
+     "win_rate_pct": 38.83,
+     "max_drawdown_pct": -28.0902,
+     "quarters": {
+      "2024Q2": {
+       "trades": 40,
+       "net_pnl": -712.6059555711411
+      },
+      "2024Q3": {
+       "trades": 90,
+       "net_pnl": -961.9115428001044
+      },
+      "2024Q4": {
+       "trades": 69,
+       "net_pnl": 814.0455350917878
+      },
+      "2025Q1": {
+       "trades": 78,
+       "net_pnl": 252.64696700714615
+      },
+      "2025Q2": {
+       "trades": 63,
+       "net_pnl": 1502.778949994548
+      },
+      "2025Q3": {
+       "trades": 71,
+       "net_pnl": 2839.788376950792
+      },
+      "2025Q4": {
+       "trades": 59,
+       "net_pnl": 1991.5651177157717
+      },
+      "2026Q1": {
+       "trades": 73,
+       "net_pnl": 3596.826300015551
+      },
+      "2026Q2": {
+       "trades": 80,
+       "net_pnl": 810.0959713252029
+      },
+      "2026Q3": {
+       "trades": 74,
+       "net_pnl": 209.80233164994888
+      },
+      "2026Q4": {
+       "trades": 1,
+       "net_pnl": 5.277927527347943
+      }
+     }
+    },
+    "3.0": {
+     "return_pct": 35.6391,
+     "profit_factor": 1.079,
+     "trades": 706,
+     "win_rate_pct": 37.54,
+     "max_drawdown_pct": -42.0402,
+     "quarters": {
+      "2024Q2": {
+       "trades": 38,
+       "net_pnl": -1182.0112375789192
+      },
+      "2024Q3": {
+       "trades": 92,
+       "net_pnl": -1568.7965615283242
+      },
+      "2024Q4": {
+       "trades": 77,
+       "net_pnl": -155.56418632672384
+      },
+      "2025Q1": {
+       "trades": 80,
+       "net_pnl": -146.02033585754916
+      },
+      "2025Q2": {
+       "trades": 60,
+       "net_pnl": 1036.1948023334767
+      },
+      "2025Q3": {
+       "trades": 72,
+       "net_pnl": 1784.3606487235775
+      },
+      "2025Q4": {
+       "trades": 58,
+       "net_pnl": 1109.265180602608
+      },
+      "2026Q1": {
+       "trades": 73,
+       "net_pnl": 2402.4165712483677
+      },
+      "2026Q2": {
+       "trades": 81,
+       "net_pnl": 285.6306194714766
+      },
+      "2026Q3": {
+       "trades": 74,
+       "net_pnl": -1.1743651827435713
+      },
+      "2026Q4": {
+       "trades": 1,
+       "net_pnl": -0.39144764786821884
+      }
+     }
+    },
+    "4.0": {
+     "return_pct": -48.274,
+     "profit_factor": 0.67,
+     "trades": 254,
+     "win_rate_pct": 29.92,
+     "max_drawdown_pct": -50.2026,
+     "quarters": {
+      "2024Q2": {
+       "trades": 38,
+       "net_pnl": -1304.2062800465262
+      },
+      "2024Q3": {
+       "trades": 103,
+       "net_pnl": -2449.4346088298116
+      },
+      "2024Q4": {
+       "trades": 69,
+       "net_pnl": -81.59935636109141
+      },
+      "2025Q1": {
+       "trades": 44,
+       "net_pnl": -992.1640702453623
+      }
+     }
+    },
+    "6.0": {
+     "return_pct": -49.109,
+     "profit_factor": 0.464,
+     "trades": 134,
+     "win_rate_pct": 24.63,
+     "max_drawdown_pct": -50.5536,
+     "quarters": {
+      "2024Q2": {
+       "trades": 45,
+       "net_pnl": -2281.8579342384805
+      },
+      "2024Q3": {
+       "trades": 89,
+       "net_pnl": -2629.042524813409
+      }
+     }
+    }
+   },
+   "checks": {
+    "net_return_positive": true,
+    "profit_factor_at_least_1.05": true,
+    "quarters_profitable_60pct": true
+   },
+   "passed": true
+  },
+  {
+   "account": "gold_hourly_long",
+   "symbol": "GC=F",
+   "timeframe": "1h",
+   "strategy": "baseline_long_only",
+   "window": [
+    "2024-05-09 17:00:00+00:00",
+    "2026-10-01 07:00:00+00:00"
+   ],
+   "round_trip_cost_bp_at_1x": 2.95,
+   "break_even_multiplier": 3.96,
+   "break_even_round_trip_bp": 11.7,
+   "quarters_profitable_at_2x": "8/10",
+   "runs": {
+    "1.0": {
+     "return_pct": 100.3557,
+     "profit_factor": 1.258,
+     "trades": 430,
+     "win_rate_pct": 40.0,
+     "max_drawdown_pct": -25.6283,
+     "quarters": {
+      "2024Q2": {
+       "trades": 27,
+       "net_pnl": -976.1204976516505
+      },
+      "2024Q3": {
+       "trades": 60,
+       "net_pnl": 827.9672453930909
+      },
+      "2024Q4": {
+       "trades": 41,
+       "net_pnl": 200.72610579230275
+      },
+      "2025Q1": {
+       "trades": 52,
+       "net_pnl": 1579.869855017823
+      },
+      "2025Q2": {
+       "trades": 35,
+       "net_pnl": 1089.1894079011986
+      },
+      "2025Q3": {
+       "trades": 58,
+       "net_pnl": 3377.12683937655
+      },
+      "2025Q4": {
+       "trades": 43,
+       "net_pnl": 3892.1785492090094
+      },
+      "2026Q1": {
+       "trades": 42,
+       "net_pnl": 2987.786362656565
+      },
+      "2026Q2": {
+       "trades": 36,
+       "net_pnl": -3349.8318531457808
+      },
+      "2026Q3": {
+       "trades": 36,
+       "net_pnl": 406.6828719522551
+      }
+     }
+    },
+    "1.5": {
+     "return_pct": 64.8541,
+     "profit_factor": 1.186,
+     "trades": 432,
+     "win_rate_pct": 38.89,
+     "max_drawdown_pct": -25.9337,
+     "quarters": {
+      "2024Q2": {
+       "trades": 27,
+       "net_pnl": -1020.0960901300899
+      },
+      "2024Q3": {
+       "trades": 60,
+       "net_pnl": 426.10425176167155
+      },
+      "2024Q4": {
+       "trades": 38,
+       "net_pnl": 135.81869805880757
+      },
+      "2025Q1": {
+       "trades": 56,
+       "net_pnl": 635.4356285505955
+      },
+      "2025Q2": {
+       "trades": 35,
+       "net_pnl": 919.6599654822156
+      },
+      "2025Q3": {
+       "trades": 57,
+       "net_pnl": 2563.8234834762316
+      },
+      "2025Q4": {
+       "trades": 45,
+       "net_pnl": 2897.3543908492334
+      },
+      "2026Q1": {
+       "trades": 42,
+       "net_pnl": 2436.3111681101805
+      },
+      "2026Q2": {
+       "trades": 36,
+       "net_pnl": -2801.6846391644035
+      },
+      "2026Q3": {
+       "trades": 36,
+       "net_pnl": 292.68785534907056
+      }
+     }
+    },
+    "2.0": {
+     "return_pct": 52.945,
+     "profit_factor": 1.159,
+     "trades": 431,
+     "win_rate_pct": 38.75,
+     "max_drawdown_pct": -26.2378,
+     "quarters": {
+      "2024Q2": {
+       "trades": 27,
+       "net_pnl": -1063.865805981941
+      },
+      "2024Q3": {
+       "trades": 63,
+       "net_pnl": 20.026859885627132
+      },
+      "2024Q4": {
+       "trades": 38,
+       "net_pnl": 64.92478612054038
+      },
+      "2025Q1": {
+       "trades": 54,
+       "net_pnl": 707.199305760775
+      },
+      "2025Q2": {
+       "trades": 35,
+       "net_pnl": 847.3732152893165
+      },
+      "2025Q3": {
+       "trades": 57,
+       "net_pnl": 2340.8697041253836
+      },
+      "2025Q4": {
+       "trades": 43,
+       "net_pnl": 2547.601889991186
+      },
+      "2026Q1": {
+       "trades": 42,
+       "net_pnl": 2239.5390528018697
+      },
+      "2026Q2": {
+       "trades": 36,
+       "net_pnl": -2641.7035859150315
+      },
+      "2026Q3": {
+       "trades": 36,
+       "net_pnl": 232.53564277458463
+      }
+     }
+    },
+    "3.0": {
+     "return_pct": 21.9956,
+     "profit_factor": 1.073,
+     "trades": 436,
+     "win_rate_pct": 37.84,
+     "max_drawdown_pct": -29.3642,
+     "quarters": {
+      "2024Q2": {
+       "trades": 26,
+       "net_pnl": -1317.8123765881305
+      },
+      "2024Q3": {
+       "trades": 65,
+       "net_pnl": -383.38769720465655
+      },
+      "2024Q4": {
+       "trades": 41,
+       "net_pnl": -337.2279264232062
+      },
+      "2025Q1": {
+       "trades": 54,
+       "net_pnl": 462.8592392206358
+      },
+      "2025Q2": {
+       "trades": 35,
+       "net_pnl": 678.8604913838678
+      },
+      "2025Q3": {
+       "trades": 57,
+       "net_pnl": 1841.175455638382
+      },
+      "2025Q4": {
+       "trades": 43,
+       "net_pnl": 1685.9925764156906
+      },
+      "2026Q1": {
+       "trades": 43,
+       "net_pnl": 1621.5658087163354
+      },
+      "2026Q2": {
+       "trades": 36,
+       "net_pnl": -2175.4657051082727
+      },
+      "2026Q3": {
+       "trades": 36,
+       "net_pnl": 123.00158690276788
+      }
+     }
+    },
+    "4.0": {
+     "return_pct": -1.0006,
+     "profit_factor": 0.996,
+     "trades": 429,
+     "win_rate_pct": 37.06,
+     "max_drawdown_pct": -32.8524,
+     "quarters": {
+      "2024Q2": {
+       "trades": 26,
+       "net_pnl": -1400.7891927262174
+      },
+      "2024Q3": {
+       "trades": 66,
+       "net_pnl": -680.5023449143162
+      },
+      "2024Q4": {
+       "trades": 36,
+       "net_pnl": -438.55947023801394
+      },
+      "2025Q1": {
+       "trades": 52,
+       "net_pnl": 227.56362175312793
+      },
+      "2025Q2": {
+       "trades": 35,
+       "net_pnl": 571.552921545564
+      },
+      "2025Q3": {
+       "trades": 58,
+       "net_pnl": 1130.3998436160862
+      },
+      "2025Q4": {
+       "trades": 41,
+       "net_pnl": 1291.67184456267
+      },
+      "2026Q1": {
+       "trades": 41,
+       "net_pnl": 1223.6810582735786
+      },
+      "2026Q2": {
+       "trades": 37,
+       "net_pnl": -1968.2026705864187
+      },
+      "2026Q3": {
+       "trades": 37,
+       "net_pnl": -56.876490220000065
+      }
+     }
+    },
+    "6.0": {
+     "return_pct": -48.1132,
+     "profit_factor": 0.566,
+     "trades": 177,
+     "win_rate_pct": 28.81,
+     "max_drawdown_pct": -50.2094,
+     "quarters": {
+      "2024Q2": {
+       "trades": 28,
+       "net_pnl": -1759.2979041314152
+      },
+      "2024Q3": {
+       "trades": 68,
+       "net_pnl": -1422.7071956258308
+      },
+      "2024Q4": {
+       "trades": 40,
+       "net_pnl": -661.8547798744374
+      },
+      "2025Q1": {
+       "trades": 41,
+       "net_pnl": -967.4643412624046
+      }
+     }
+    }
+   },
+   "checks": {
+    "net_return_positive": true,
+    "profit_factor_at_least_1.05": true,
+    "quarters_profitable_60pct": true
+   },
+   "passed": true
+  },
+  {
+   "account": "usdjpy_hourly_long",
+   "symbol": "USDJPY=X",
+   "timeframe": "1h",
+   "strategy": "baseline_long_only",
+   "window": [
+    "2023-12-15 13:00:00+00:00",
+    "2026-10-01 07:00:00+00:00"
+   ],
+   "round_trip_cost_bp_at_1x": 2.22,
+   "break_even_multiplier": 1.95,
+   "break_even_round_trip_bp": 4.3,
+   "quarters_profitable_at_2x": "5/11",
+   "runs": {
+    "1.0": {
+     "return_pct": 61.0202,
+     "profit_factor": 1.145,
+     "trades": 491,
+     "win_rate_pct": 38.49,
+     "max_drawdown_pct": -18.9963,
+     "quarters": {
+      "2023Q4": {
+       "trades": 5,
+       "net_pnl": -509.0653521340477
+      },
+      "2024Q1": {
+       "trades": 45,
+       "net_pnl": 339.6447301536819
+      },
+      "2024Q2": {
+       "trades": 70,
+       "net_pnl": 1300.401470385138
+      },
+      "2024Q3": {
+       "trades": 33,
+       "net_pnl": -789.0495462419447
+      },
+      "2024Q4": {
+       "trades": 52,
+       "net_pnl": 1987.8271317442234
+      },
+      "2025Q1": {
+       "trades": 31,
+       "net_pnl": -647.2930765041278
+      },
+      "2025Q2": {
+       "trades": 41,
+       "net_pnl": 1001.7513926223064
+      },
+      "2025Q3": {
+       "trades": 45,
+       "net_pnl": 1672.9961423516313
+      },
+      "2025Q4": {
+       "trades": 39,
+       "net_pnl": 1971.2268624882454
+      },
+      "2026Q1": {
+       "trades": 48,
+       "net_pnl": 1082.5116446806474
+      },
+      "2026Q2": {
+       "trades": 39,
+       "net_pnl": -8.153422325504948
+      },
+      "2026Q3": {
+       "trades": 42,
+       "net_pnl": -1453.619567156269
+      },
+      "2026Q4": {
+       "trades": 1,
+       "net_pnl": 152.84240442249617
+      }
+     }
+    },
+    "1.5": {
+     "return_pct": 14.003,
+     "profit_factor": 1.035,
+     "trades": 505,
+     "win_rate_pct": 36.83,
+     "max_drawdown_pct": -30.0919,
+     "quarters": {
+      "2023Q4": {
+       "trades": 5,
+       "net_pnl": -517.7475408251834
+      },
+      "2024Q1": {
+       "trades": 46,
+       "net_pnl": 142.68458803481553
+      },
+      "2024Q2": {
+       "trades": 69,
+       "net_pnl": 880.0885739252791
+      },
+      "2024Q3": {
+       "trades": 32,
+       "net_pnl": -690.0756265363229
+      },
+      "2024Q4": {
+       "trades": 55,
+       "net_pnl": 1759.2570773436196
+      },
+      "2025Q1": {
+       "trades": 30,
+       "net_pnl": -867.6701654558223
+      },
+      "2025Q2": {
+       "trades": 40,
+       "net_pnl": 972.040336852965
+      },
+      "2025Q3": {
+       "trades": 45,
+       "net_pnl": 1414.6756781460956
+      },
+      "2025Q4": {
+       "trades": 39,
+       "net_pnl": 1249.7715105859006
+      },
+      "2026Q1": {
+       "trades": 57,
+       "net_pnl": -177.39392837810263
+      },
+      "2026Q2": {
+       "trades": 43,
+       "net_pnl": -1179.8649636706016
+      },
+      "2026Q3": {
+       "trades": 43,
+       "net_pnl": -1689.5307415088944
+      },
+      "2026Q4": {
+       "trades": 1,
+       "net_pnl": 104.06072934046145
+      }
+     }
+    },
+    "2.0": {
+     "return_pct": -1.5167,
+     "profit_factor": 0.996,
+     "trades": 495,
+     "win_rate_pct": 36.57,
+     "max_drawdown_pct": -33.1515,
+     "quarters": {
+      "2023Q4": {
+       "trades": 5,
+       "net_pnl": -526.4236264618517
+      },
+      "2024Q1": {
+       "trades": 47,
+       "net_pnl": -50.015541452720456
+      },
+      "2024Q2": {
+       "trades": 67,
+       "net_pnl": 612.2410812183531
+      },
+      "2024Q3": {
+       "trades": 32,
+       "net_pnl": -704.5375260238945
+      },
+      "2024Q4": {
+       "trades": 52,
+       "net_pnl": 1608.3103272462854
+      },
+      "2025Q1": {
+       "trades": 30,
+       "net_pnl": -868.8684851322854
+      },
+      "2025Q2": {
+       "trades": 39,
+       "net_pnl": 645.979578925237
+      },
+      "2025Q3": {
+       "trades": 45,
+       "net_pnl": 1183.578622638837
+      },
+      "2025Q4": {
+       "trades": 39,
+       "net_pnl": 1032.3467679104308
+      },
+      "2026Q1": {
+       "trades": 52,
+       "net_pnl": -376.6168534076553
+      },
+      "2026Q2": {
+       "trades": 43,
+       "net_pnl": -1204.175111833854
+      },
+      "2026Q3": {
+       "trades": 43,
+       "net_pnl": -1589.7893241408703
+      },
+      "2026Q4": {
+       "trades": 1,
+       "net_pnl": 86.30491173865448
+      }
+     }
+    },
+    "3.0": {
+     "return_pct": -39.7848,
+     "profit_factor": 0.873,
+     "trades": 509,
+     "win_rate_pct": 34.77,
+     "max_drawdown_pct": -45.2356,
+     "quarters": {
+      "2023Q4": {
+       "trades": 6,
+       "net_pnl": -654.7386313042086
+      },
+      "2024Q1": {
+       "trades": 49,
+       "net_pnl": -446.9367254082561
+      },
+      "2024Q2": {
+       "trades": 68,
+       "net_pnl": -103.18548876364936
+      },
+      "2024Q3": {
+       "trades": 35,
+       "net_pnl": -1198.1681503139248
+      },
+      "2024Q4": {
+       "trades": 55,
+       "net_pnl": 871.7478835855384
+      },
+      "2025Q1": {
+       "trades": 29,
+       "net_pnl": -892.5246511940071
+      },
+      "2025Q2": {
+       "trades": 40,
+       "net_pnl": 79.54122017620921
+      },
+      "2025Q3": {
+       "trades": 48,
+       "net_pnl": 640.6907836255639
+      },
+      "2025Q4": {
+       "trades": 41,
+       "net_pnl": 389.11436296574885
+      },
+      "2026Q1": {
+       "trades": 47,
+       "net_pnl": -202.30279117323636
+      },
+      "2026Q2": {
+       "trades": 47,
+       "net_pnl": -1375.7509009783387
+      },
+      "2026Q3": {
+       "trades": 43,
+       "net_pnl": -1134.3388002515198
+      },
+      "2026Q4": {
+       "trades": 1,
+       "net_pnl": 48.374529849087246
+      }
+     }
+    },
+    "4.0": {
+     "return_pct": -49.6126,
+     "profit_factor": 0.788,
+     "trades": 433,
+     "win_rate_pct": 33.72,
+     "max_drawdown_pct": -50.5113,
+     "quarters": {
+      "2023Q4": {
+       "trades": 6,
+       "net_pnl": -676.9859373036195
+      },
+      "2024Q1": {
+       "trades": 49,
+       "net_pnl": -1135.1927710502453
+      },
+      "2024Q2": {
+       "trades": 67,
+       "net_pnl": -502.78521002401277
+      },
+      "2024Q3": {
+       "trades": 36,
+       "net_pnl": -1205.579376482673
+      },
+      "2024Q4": {
+       "trades": 51,
+       "net_pnl": 526.9498159232132
+      },
+      "2025Q1": {
+       "trades": 30,
+       "net_pnl": -868.4094561175423
+      },
+      "2025Q2": {
+       "trades": 42,
+       "net_pnl": -138.78003722475134
+      },
+      "2025Q3": {
+       "trades": 51,
+       "net_pnl": -30.8110362426995
+      },
+      "2025Q4": {
+       "trades": 41,
+       "net_pnl": -4.484228063027601
+      },
+      "2026Q1": {
+       "trades": 47,
+       "net_pnl": -414.17484077370045
+      },
+      "2026Q2": {
+       "trades": 13,
+       "net_pnl": -511.00616235197816
+      }
+     }
+    },
+    "6.0": {
+     "return_pct": -50.6311,
+     "profit_factor": 0.515,
+     "trades": 155,
+     "win_rate_pct": 27.1,
+     "max_drawdown_pct": -50.8811,
+     "quarters": {
+      "2023Q4": {
+       "trades": 6,
+       "net_pnl": -721.3521042601704
+      },
+      "2024Q1": {
+       "trades": 53,
+       "net_pnl": -1865.0186335781577
+      },
+      "2024Q2": {
+       "trades": 59,
+       "net_pnl": -1333.0241464976568
+      },
+      "2024Q3": {
+       "trades": 35,
+       "net_pnl": -1027.8217022484387
+      },
+      "2024Q4": {
+       "trades": 2,
+       "net_pnl": -115.89111847948837
+      }
+     }
+    }
+   },
+   "checks": {
+    "net_return_positive": false,
+    "profit_factor_at_least_1.05": false,
+    "quarters_profitable_60pct": false
+   },
+   "passed": false
+  }
+ ]
+}
