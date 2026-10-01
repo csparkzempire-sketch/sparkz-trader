@@ -6,19 +6,19 @@
     "strategy": "baseline",
     "starting_balance": 10000.0
   },
-  "last_processed": "2026-10-01T04:00:00+00:00",
+  "last_processed": "2026-10-01T05:00:00+00:00",
   "account": {
-    "balance": 9694.947279309716,
+    "balance": 9595.188993149277,
     "is_active": true,
     "open_positions": [
       {
         "symbol": "BTC-USD",
-        "direction": "SELL",
-        "entry_price": 83419.1328125,
-        "stop_price": 84282.03700115436,
-        "target_price": 81693.3244351913,
-        "size": 0.11235253469366469,
-        "opened_at": "2026-10-01T02:00:00+00:00"
+        "direction": "BUY",
+        "entry_price": 84277.0078125,
+        "stop_price": 83425.56893359197,
+        "target_price": 85979.88557031604,
+        "size": 0.11269380845581248,
+        "opened_at": "2026-10-01T05:00:00+00:00"
       }
     ],
     "trade_history": [
@@ -54,14 +54,25 @@
         "opened_at": "2026-09-30T13:00:00+00:00",
         "closed_at": "2026-09-30T14:00:00+00:00",
         "reason": "STOP"
+      },
+      {
+        "symbol": "BTC-USD",
+        "direction": "SELL",
+        "entry_price": 83419.1328125,
+        "exit_price": 84307.03700115436,
+        "size": 0.11235253469366469,
+        "pnl": -99.75828616043877,
+        "opened_at": "2026-10-01T02:00:00+00:00",
+        "closed_at": "2026-10-01T05:00:00+00:00",
+        "reason": "STOP"
       }
     ],
     "risk_state": {
-      "equity": 9694.947279309716,
+      "equity": 9595.188993149277,
       "peak_equity": 10000.0,
       "open_positions": 1,
-      "current_exposure": 96.94947279309716,
-      "daily_loss": 0.0,
+      "current_exposure": 95.95188993149277,
+      "daily_loss": -99.75828616043877,
       "current_day": "2026-10-01",
       "bars_since_last_trade": 10000
     }
@@ -77,7 +88,9 @@
     "2026-09-30 15:00 BUY signal skipped: max_daily_loss_pct breached (3.15% >= 3.00%)",
     "2026-09-30 16:00 BUY signal skipped: max_daily_loss_pct breached (3.15% >= 3.00%)",
     "2026-09-30 18:00 BUY signal skipped: max_daily_loss_pct breached (3.15% >= 3.00%)",
-    "2026-10-01 02:00 OPEN SELL BTC-USD @ 83419.13, size 0.112353, stop 84282.04, target 81693.32"
+    "2026-10-01 02:00 OPEN SELL BTC-USD @ 83419.13, size 0.112353, stop 84282.04, target 81693.32",
+    "2026-10-01 05:00 CLOSE SELL BTC-USD STOP @ 84307.04, pnl -99.76, balance 9595.19",
+    "2026-10-01 05:00 OPEN BUY BTC-USD @ 84277.01, size 0.112694, stop 83425.57, target 85979.89"
   ],
   "halted": null,
   "targets": {

@@ -6,19 +6,19 @@
     "strategy": "baseline",
     "starting_balance": 10000.0
   },
-  "last_processed": "2026-10-01T04:00:00+00:00",
+  "last_processed": "2026-10-01T05:00:00+00:00",
   "account": {
-    "balance": 9690.230579480161,
+    "balance": 9588.971088472977,
     "is_active": true,
     "open_positions": [
       {
         "symbol": "ETH-USD",
-        "direction": "SELL",
-        "entry_price": 2681.5400390625,
-        "stop_price": 2714.899524970779,
-        "target_price": 2614.821067245942,
-        "size": 2.9047901415876596,
-        "opened_at": "2026-10-01T00:00:00+00:00"
+        "direction": "BUY",
+        "entry_price": 2718.0,
+        "stop_price": 2686.645687134321,
+        "target_price": 2780.708625731357,
+        "size": 3.0582622331900295,
+        "opened_at": "2026-10-01T05:00:00+00:00"
       }
     ],
     "trade_history": [
@@ -54,14 +54,25 @@
         "opened_at": "2026-09-30T13:00:00+00:00",
         "closed_at": "2026-09-30T14:00:00+00:00",
         "reason": "STOP"
+      },
+      {
+        "symbol": "ETH-USD",
+        "direction": "SELL",
+        "entry_price": 2681.5400390625,
+        "exit_price": 2716.399524970779,
+        "size": 2.9047901415876596,
+        "pnl": -101.2594910071831,
+        "opened_at": "2026-10-01T00:00:00+00:00",
+        "closed_at": "2026-10-01T05:00:00+00:00",
+        "reason": "STOP"
       }
     ],
     "risk_state": {
-      "equity": 9690.230579480161,
+      "equity": 9588.971088472977,
       "peak_equity": 10000.0,
       "open_positions": 1,
-      "current_exposure": 96.90230579480162,
-      "daily_loss": 0.0,
+      "current_exposure": 95.88971088472978,
+      "daily_loss": -101.2594910071831,
       "current_day": "2026-10-01",
       "bars_since_last_trade": 10000
     }
@@ -77,7 +88,9 @@
     "2026-09-30 19:00 SELL signal skipped: max_daily_loss_pct breached (3.20% >= 3.00%)",
     "2026-09-30 20:00 SELL signal skipped: max_daily_loss_pct breached (3.20% >= 3.00%)",
     "2026-09-30 21:00 SELL signal skipped: max_daily_loss_pct breached (3.20% >= 3.00%)",
-    "2026-10-01 00:00 OPEN SELL ETH-USD @ 2681.54, size 2.904790, stop 2714.90, target 2614.82"
+    "2026-10-01 00:00 OPEN SELL ETH-USD @ 2681.54, size 2.904790, stop 2714.90, target 2614.82",
+    "2026-10-01 05:00 CLOSE SELL ETH-USD STOP @ 2716.40, pnl -101.26, balance 9588.97",
+    "2026-10-01 05:00 OPEN BUY ETH-USD @ 2718.00, size 3.058262, stop 2686.65, target 2780.71"
   ],
   "halted": null,
   "targets": {
