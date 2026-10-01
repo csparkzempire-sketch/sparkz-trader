@@ -240,6 +240,7 @@ function EvaluationSection({ evaluation: e, accountName }: { evaluation: PaperEv
       <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
         <span className={`text-sm font-semibold ${tone}`}>{e.verdict}</span>
         {e.targets_source && <span className="text-[11px] text-base-muted">Targets fixed from {e.targets_source}</span>}
+        {e.targets_reset_reason && <span className="text-[11px] text-base-muted">Targets reset: {e.targets_reset_reason}</span>}
       </div>
       <div className="h-1.5 bg-base-bg rounded overflow-hidden border border-base-border mb-3" title="Closed trades toward the evaluation point">
         <div className="h-full bg-accent-brand" style={{ width: `${progress}%` }} />
