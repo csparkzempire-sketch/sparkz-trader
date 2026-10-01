@@ -21,6 +21,7 @@ and never crash the loop.
 from __future__ import annotations
 
 import asyncio
+import threading
 import time
 from dataclasses import replace
 from datetime import datetime, timezone
@@ -28,6 +29,7 @@ from typing import Callable
 
 import pandas as pd
 
+from app.backtest.metrics import clean
 from app.config import Settings
 from app.database.repository import Repository
 from app.engine.health import build_health
@@ -54,6 +56,7 @@ class PaperRunner:
         self.running = False
         self._stop = False
         self.listeners: list[Callable[[dict], None]] = []
+        self.lock = threading.RLock()      # the loop thread, the API and the WebSocket share the robot
 
     # ------------------------------------------------------------------ setup
     def start(self) -> None:
@@ -75,6 +78,17 @@ class PaperRunner:
 
     # ------------------------------------------------------------------ one step
     def step(self) -> None:
+        with self.lock:
+            self._step()
+        if self.listeners:
+            snap = self.dashboard()
+            for fn in list(self.listeners):
+                try:
+                    fn(snap)
+                except Exception:
+                    pass
+
+    def _step(self) -> None:
         now_wall = self.wall()
         try:
             st = self.provider.get_market_status()
@@ -102,12 +116,6 @@ class PaperRunner:
         except Exception as e:
             self._error(f"tick: {e}")
         self._check_freshness(now_wall)
-        snap = self.dashboard()
-        for fn in list(self.listeners):
-            try:
-                fn(snap)
-            except Exception:
-                pass
 
     def _check_freshness(self, now_wall: float) -> None:
         limit = self.s.market.stale_after_seconds
@@ -163,6 +171,10 @@ class PaperRunner:
                             self.started_at, self.running)
 
     def dashboard(self, events: int = 100) -> dict:
+        with self.lock:
+            return clean(self._dashboard(events))
+
+    def _dashboard(self, events: int) -> dict:
         r = self.robot
         curve = r.equity_curve[-500:]
         return {**r.snapshot(), "health": self.health(), "events": r.log.tail(events),
