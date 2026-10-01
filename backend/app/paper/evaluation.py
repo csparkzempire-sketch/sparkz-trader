@@ -18,6 +18,10 @@ Checks, and why each is loose rather than "match the backtest exactly":
   far shorter or longer than tested suggest something differs in execution.
 
 Nothing is judged (except drawdown) until MIN_TRADES trades have closed.
+
+Targets can be replaced later only with `paper-trade --reset-targets --reason "..."`
+(reset_targets below), for when the backtest they came from was itself wrong. The old
+targets stay inside the new ones under "previous", with the reason, so the change is on record.
 """
 
 from __future__ import annotations
@@ -39,14 +43,18 @@ WIN_RATE_TOLERANCE_PTS = 10.0
 HOLD_RATIO_RANGE = (0.5, 2.0)
 
 
+def _features(candles: pd.DataFrame, strategy: str, cfg: Settings) -> pd.DataFrame:
+    f = build_feature_matrix(candles, cfg)
+    f["signal"] = rule_signal(f, strategy, cfg)
+    return f.dropna(subset=["atr"]).reset_index(drop=True)
+
+
 def _backtest(candles: pd.DataFrame, symbol: str, timeframe: str, strategy: str, cfg: Settings | None = None):
     """Backtest this exact setup on `candles` (validated OHLCV, closed candles only). The
     drawdown limit is relaxed to 50% so the backtest isn't cut short by a halt: the figures
     should describe how the strategy trades, not where a safety stop kicked in."""
     cfg = (cfg or settings).model_copy(update={"max_drawdown_pct": 0.5})
-    f = build_feature_matrix(candles, cfg)
-    f["signal"] = rule_signal(f, strategy, cfg)
-    f = f.dropna(subset=["atr"]).reset_index(drop=True)
+    f = _features(candles, strategy, cfg)
     result = BacktestEngine(BacktestConfig.from_settings(cfg, symbol, timeframe), risk_manager=RiskManager(cfg)).run(f)
     return result, f
 
@@ -59,6 +67,7 @@ def compute_targets(candles: pd.DataFrame, symbol: str, timeframe: str, strategy
     pf = m.profit_factor if isinstance(m.profit_factor, float) and m.profit_factor != float("inf") else None
     return {
         "source": f"backtest {f['timestamp'].iloc[0]:%Y-%m-%d} to {f['timestamp'].iloc[-1]:%Y-%m-%d}",
+        "last_bar": pd.Timestamp(f["timestamp"].iloc[-1]).isoformat(),  # exact end, for rebuilding the window
         "set_at": utc_now().isoformat(timespec="seconds"),
         "backtest_trades": m.total_trades,
         "backtest_return_pct": m.total_return_pct,
@@ -85,6 +94,74 @@ def targets_end(targets: dict) -> pd.Timestamp | None:
         return pd.Timestamp(targets["source"].rsplit(" to ", 1)[1], tz="UTC")
     except (KeyError, IndexError, ValueError, AttributeError):
         return None
+
+
+def targets_start(targets: dict) -> pd.Timestamp | None:
+    """First day of the backtest the targets came from."""
+    try:
+        return pd.Timestamp(targets["source"].split(" to ", 1)[0].removeprefix("backtest "), tz="UTC")
+    except (KeyError, IndexError, ValueError, AttributeError):
+        return None
+
+
+def targets_history(candles: pd.DataFrame, targets: dict, timeframe: str, strategy: str,
+                    cfg: Settings | None = None) -> pd.DataFrame | None:
+    """The slice of `candles` whose backtest covers exactly the targets' window ("backtest A to B"),
+    indicator warm-up included, or None if the data no longer reaches back that far (Yahoo keeps
+    about two years of hourly bars, so an hourly window drops out of reach a day at a time)."""
+    start, end = targets_start(targets), targets_end(targets)
+    if start is None or end is None:
+        return None
+    ts = pd.to_datetime(candles["timestamp"], utc=True)
+    keep = ts < end + pd.Timedelta(days=1)
+    # The window's dates alone don't say where its last day stopped: use the stored last bar, or for
+    # older targets the bars that had closed when they were set.
+    if targets.get("last_bar"):
+        keep &= ts <= pd.Timestamp(targets["last_bar"])
+    elif targets.get("set_at"):
+        keep &= ts + pd.Timedelta(timeframe_to_pandas_freq(timeframe)) <= pd.Timestamp(targets["set_at"])
+    candles, ts = candles[keep], ts[keep]
+    first = int((ts < start).sum())
+    for warmup in range(0, min(first, 300) + 1):
+        hist = candles.iloc[first - warmup:]
+        f = _features(hist, strategy, cfg or settings)
+        if f.empty:
+            continue
+        day0 = pd.Timestamp(f["timestamp"].iloc[0]).normalize()
+        if day0 < start:
+            return None
+        if day0 == start:
+            return hist if pd.Timestamp(f["timestamp"].iloc[-1]).normalize() == end else None
+    return None
+
+
+def reset_targets(state, candles: pd.DataFrame, reason: str, new_window: bool = False) -> dict:
+    """Replace an account's targets (and normal-losses norms) with a fresh backtest of the same
+    setup, keeping the old ones under "previous" with `reason`. By default over the SAME data window,
+    so only the backtest itself changes (e.g. after a bug fix); new_window=True uses all of `candles`.
+    Raises ValueError if there are no targets yet or the old window can't be rebuilt."""
+    if not reason or not reason.strip():
+        raise ValueError("A reason is required to reset targets.")
+    if not state.targets:
+        raise ValueError("This account has no targets yet; set them with --set-targets.")
+    c = state.config
+    hist = candles if new_window else targets_history(candles, state.targets, c.timeframe, c.strategy)
+    if hist is None:
+        raise ValueError(
+            f"The downloaded data no longer covers the current targets' window ({state.targets.get('source')}). "
+            "Add --new-window to recompute over the latest data instead."
+        )
+    new = compute_targets(hist, c.symbol, c.timeframe, c.strategy)
+    if not new_window and new["source"] != state.targets.get("source"):
+        raise ValueError(f"Rebuilt window {new['source']!r} differs from {state.targets.get('source')!r}; "
+                         "add --new-window to recompute over the latest data instead.")
+    new["reset_reason"] = reason.strip()
+    new["previous"] = state.targets
+    norms = compute_norms(hist, c.symbol, c.timeframe, c.strategy)
+    if state.norms:
+        norms["previous"] = state.norms
+    state.targets, state.norms = new, norms
+    return new
 
 
 @dataclass
@@ -164,5 +241,6 @@ def evaluate(state) -> dict:
         "closed_trades": n,
         "min_trades": MIN_TRADES,
         "targets_source": t.get("source"),
+        "targets_reset_reason": t.get("reset_reason"),
         "checks": [asdict(c) for c in checks],
     }

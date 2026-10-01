@@ -313,11 +313,14 @@ def cmd_evaluate_model(args) -> None:
 
 def cmd_paper_trade(args) -> None:
     """One paper-trading step for a saved account: run once per candle (e.g. daily via cron)."""
-    from app.paper.evaluation import compute_norms, compute_targets, evaluate, targets_end
+    from app.paper.evaluation import compute_norms, compute_targets, evaluate, reset_targets, targets_end
     from app.paper.norms import norms_status
     from app.paper.runner import PaperRunConfig, init_state, load_state, resume, run_step, save_state, state_path
     from app.utils.time import utc_now
 
+    if getattr(args, "reset_targets", False) and (getattr(args, "set_targets", False) or not getattr(args, "reason", None)):
+        print("ERROR: --reset-targets needs --reason \"...\" and can't be combined with --set-targets.", file=sys.stderr)
+        sys.exit(1)
     path = state_path(args.account)
     created = not path.exists()
     if path.exists():
@@ -354,6 +357,24 @@ def cmd_paper_trade(args) -> None:
     except (DownloadError, DataValidationError, FileNotFoundError) as exc:
         print(f"ERROR: {exc} (state unchanged)", file=sys.stderr)
         sys.exit(1)
+
+    if getattr(args, "reset_targets", False):
+        from app.data.validator import closed_candles
+
+        if created:
+            print("ERROR: a new account gets its targets automatically; there is nothing to reset.", file=sys.stderr)
+            sys.exit(1)
+        old = state.targets
+        try:
+            t = reset_targets(state, closed_candles(candles, c.timeframe), args.reason, getattr(args, "new_window", False))
+        except ValueError as exc:
+            print(f"ERROR: {exc} (state unchanged)", file=sys.stderr)
+            sys.exit(1)
+        print(f"Targets reset ({t['reset_reason']}):")
+        for key, label in [("source", "window"), ("backtest_trades", "trades"), ("backtest_return_pct", "return %"),
+                           ("profit_factor", "profit factor"), ("win_rate_pct", "win rate %"),
+                           ("max_drawdown_pct", "max drawdown %"), ("avg_hold_bars", "avg trade bars")]:
+            print(f"  {label:15} {old.get(key)} -> {t.get(key)}")
 
     want_targets = created or getattr(args, "set_targets", False)
     if want_targets and state.targets is not None:
@@ -603,6 +624,13 @@ def main() -> None:
     p.add_argument("--set-targets", action="store_true", dest="set_targets",
                    help="Fix this account's pass/fail targets from a backtest of the same setup (only if none "
                         "are set yet; new accounts get them automatically).")
+    p.add_argument("--reset-targets", action="store_true", dest="reset_targets",
+                   help="REPLACE this account's targets (and normal-losses figures) with a new backtest over the "
+                        "same data window, e.g. after a backtester bug fix. The old ones are kept under "
+                        "'previous'. Requires --reason. Deliberately separate from --set-targets.")
+    p.add_argument("--reason", help="Why the targets are being reset (stored with them). Used with --reset-targets.")
+    p.add_argument("--new-window", action="store_true", dest="new_window",
+                   help="With --reset-targets: backtest over the latest data instead of the old window.")
     p.add_argument("--resume", action="store_true",
                    help="Restart an account halted by the max-drawdown limit: its current balance becomes the "
                         "new peak the limit is measured from.")

@@ -230,6 +230,7 @@ export interface PaperEvaluation {
   closed_trades: number;
   min_trades: number;
   targets_source?: string | null;
+  targets_reset_reason?: string | null;
   checks: PaperEvaluationCheck[];
 }
 

@@ -40,7 +40,7 @@ import pandas as pd
 from app.backtest.engine import BacktestConfig, BacktestEngine
 from app.config import settings
 from app.data.validator import closed_candles
-from app.paper.evaluation import _backtest, targets_end
+from app.paper.evaluation import _backtest, targets_history
 from app.paper.runner import PAPER_DIR, load_state
 from app.risk.risk_manager import RiskManager
 
@@ -86,25 +86,10 @@ def random_direction(signal: pd.Series, rng) -> np.ndarray:
 
 
 def targets_window(candles: pd.DataFrame, targets: dict | None, symbol: str, timeframe: str, strategy: str):
-    """Cut cached candles to the history the account's targets backtest used. The targets record
-    the backtest's first and last day, after indicator warm-up; the cache can reach further back
-    (daily bars go back to 2019), so the start is found by adding back the warm-up bars that
-    make the backtest begin on the recorded day. Returns (real backtest, features)."""
-    ts = pd.to_datetime(candles["timestamp"], utc=True)
-    end = targets_end(targets) if targets else None
-    if end is not None:
-        candles, ts = candles[ts < end + pd.Timedelta(days=1)], ts[ts < end + pd.Timedelta(days=1)]
-    try:
-        start = pd.Timestamp(targets["source"].split(" to ")[0].removeprefix("backtest "), tz="UTC")
-    except (TypeError, KeyError, ValueError):
-        start = None
-    if start is not None and ts.iloc[0] < start:
-        first = int((ts < start).sum())
-        for warmup in range(0, min(first, 200) + 1):
-            real, f = _backtest(candles.iloc[first - warmup:], symbol, timeframe, strategy)
-            if pd.Timestamp(f["timestamp"].iloc[0]).normalize() == start:
-                return real, f
-    return _backtest(candles, symbol, timeframe, strategy)
+    """Backtest over the history the account's targets used (the cache can reach further back than
+    the targets' window). Returns (real backtest, features)."""
+    hist = targets_history(candles, targets, timeframe, strategy) if targets else None
+    return _backtest(candles if hist is None else hist, symbol, timeframe, strategy)
 
 
 def check_account(path: Path, runs: int, use_cached: bool = True) -> dict:
