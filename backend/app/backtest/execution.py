@@ -19,6 +19,7 @@ class ExecutionCosts:
     slippage_pips: float
     commission_per_trade: float
     pip_size: float
+    fee_bps: float = 0.0  # percentage fee per side, in basis points of the fill price
 
     @property
     def total_pips(self) -> float:
@@ -29,6 +30,10 @@ class ExecutionCosts:
         """Total adverse price adjustment in price units (not pips)."""
         return self.total_pips * self.pip_size
 
+    def adjustment(self, raw_price: float) -> float:
+        """Spread + slippage, plus the percentage fee on this price."""
+        return self.price_adjustment + raw_price * self.fee_bps / 10_000
+
 
 def apply_entry_costs(raw_price: float, direction: str, costs: ExecutionCosts) -> float:
     """
@@ -36,7 +41,7 @@ def apply_entry_costs(raw_price: float, direction: str, costs: ExecutionCosts) -
     raw quote); selling similarly gets you a worse price in the other
     direction.
     """
-    adj = costs.price_adjustment
+    adj = costs.adjustment(raw_price)
     if direction == "BUY":
         return raw_price + adj
     elif direction == "SELL":
@@ -46,7 +51,7 @@ def apply_entry_costs(raw_price: float, direction: str, costs: ExecutionCosts) -
 
 def apply_exit_costs(raw_price: float, direction: str, costs: ExecutionCosts) -> float:
     """Exiting a position means doing the opposite trade, so costs apply in reverse."""
-    adj = costs.price_adjustment
+    adj = costs.adjustment(raw_price)
     if direction == "BUY":
         # Closing a BUY = selling -> worse (lower) fill price
         return raw_price - adj

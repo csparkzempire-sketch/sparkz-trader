@@ -15,6 +15,7 @@ from app.data.downloader import DownloadError, download_ohlcv
 from app.paper.evaluation import evaluate
 from app.paper.norms import norms_status
 from app.paper.runner import PaperRunState
+from app.research.verdicts import research_verdict
 
 PriceResult = tuple[float | None, object, str | None]
 
@@ -60,6 +61,7 @@ def summarize(states: list[PaperRunState], price_fn: Callable[[str], PriceResult
         ]
         out.append(PaperRunSummary(
             account_name=c.account_name, symbol=c.symbol, timeframe=c.timeframe, strategy=c.strategy,
+            fee_bps=c.fee_bps,
             starting_balance=c.starting_balance, balance=a.balance, equity=equity,
             return_pct=(equity / c.starting_balance - 1) * 100 if c.starting_balance else 0.0,
             last_processed=s.last_processed, latest_price=price, latest_price_at=price_at,
@@ -68,6 +70,7 @@ def summarize(states: list[PaperRunState], price_fn: Callable[[str], PriceResult
             halted=s.halted,
             evaluation=evaluate(s),
             norms=norms_status(s),
+            research=research_verdict(c.account_name),
             log=list(reversed(s.log[-log_lines:])),
         ))
     return out

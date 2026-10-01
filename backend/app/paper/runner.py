@@ -57,6 +57,15 @@ class PaperRunConfig:
     timeframe: str
     strategy: str
     starting_balance: float
+    # Exchange/broker fee per side in basis points of price, charged on top of the instrument's
+    # spread and slippage in both paper fills and the targets backtest. 0 = spread and slippage only.
+    fee_bps: float = 0.0
+
+
+def account_settings(config: PaperRunConfig, cfg: Settings | None = None) -> Settings:
+    """Settings for this account: the shared ones plus its own fee."""
+    cfg = cfg or settings
+    return cfg.model_copy(update={"fee_bps": config.fee_bps}) if config.fee_bps else cfg
 
 
 @dataclass
@@ -195,8 +204,8 @@ def run_step(
 ) -> StepResult:
     """Process all newly closed candles. `candles` (validated OHLCV) can be
     passed in for tests or offline use; otherwise it is downloaded."""
-    cfg = cfg or settings
     c = state.config
+    cfg = account_settings(c, cfg)
     if candles is None:
         raw = download_ohlcv(c.symbol, c.timeframe)
         candles, _ = validate_and_clean(raw, timeframe=c.timeframe, symbol=c.symbol)

@@ -206,6 +206,7 @@ class PaperRunSummary(BaseModel):
     symbol: str
     timeframe: str
     strategy: str
+    fee_bps: float = 0.0  # exchange/broker fee per side, basis points (0 = spread and slippage only)
     starting_balance: float
     balance: float
     equity: float
@@ -220,4 +221,5 @@ class PaperRunSummary(BaseModel):
     halted: str | None = None
     evaluation: dict | None = None
     norms: dict | None = None  # normal-losses check (app.paper.norms)
+    research: dict | None = None  # research verdict on the strategy (app.research.verdicts)
     log: list[str]
