@@ -23,8 +23,10 @@ from fastapi.staticfiles import StaticFiles
 from app.api import account, backtest, baskets, market, strategy, system
 from app.api.state import STATE
 from app.config import load_env_file
+from app.utils.logging import setup as log_setup
 
 load_env_file()
+log_setup(os.getenv("LOG_LEVEL", "INFO"))
 
 
 @asynccontextmanager

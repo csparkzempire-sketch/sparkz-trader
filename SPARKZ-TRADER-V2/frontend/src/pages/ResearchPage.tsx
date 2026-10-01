@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { EquityChart, Lines } from "../components/charts";
+import { EquityChart, Lines } from "../charts/Charts";
 import { label, money, num, pct, signedMoney, tone } from "../components/format";
 import { Button, Empty, ErrorBox, Field, HighRisk, inputCls, KeyValues, Page, PageHeader, Panel, StatCard, StatGrid, Table } from "../components/ui";
 import { Dict, get, runJob } from "../services/api";

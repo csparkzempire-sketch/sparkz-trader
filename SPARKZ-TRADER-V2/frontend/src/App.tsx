@@ -4,7 +4,8 @@ import EventsPage from "./pages/EventsPage";
 import LivePage, { StatusWord } from "./pages/LivePage";
 import ResearchPage, { Kind } from "./pages/ResearchPage";
 import SystemPage from "./pages/SystemPage";
-import { post, useLive } from "./services/api";
+import { useLive } from "./hooks/useLive";
+import { post } from "./services/api";
 
 const NAV: [string, string][] = [["live", "Live"], ["events", "Event log"], ["run", "Backtest"], ["stress", "Stress tests"],
   ["walk-forward", "Walk-forward"], ["lab", "Parameter lab"], ["system", "System"]];

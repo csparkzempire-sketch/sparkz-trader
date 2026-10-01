@@ -195,3 +195,35 @@ def test_env_file_loader_does_not_override_real_env(tmp_path, monkeypatch):
     import os
     assert os.environ["GRID_DISTANCE"] == "7" and os.environ["MAX_POSITIONS"] == "2"
     monkeypatch.delenv("GRID_DISTANCE")
+
+
+def test_account_drawdown_protection_still_acts_during_emergency_stop():
+    d = Driver(risk={"max_account_drawdown_percent": 1.0, "max_basket_loss_percent": 5.0})
+    d.bar(2000)
+    d.tick(2000, gap=True)
+    d.robot.emergency_stop("test")
+    for k in range(1, 300):
+        d.tick(2000 - k * 0.5)
+        if d.basket is None:
+            break
+    assert d.basket is None and d.robot.completed[-1].close_reason == "ACCOUNT_DRAWDOWN"
+    assert d.robot.emergency and d.robot.halted
+
+
+def test_log_lines_never_contain_credentials(monkeypatch, caplog):
+    import logging
+
+    from app.utils.logging import RedactSecrets
+    monkeypatch.setenv("OANDA_API_TOKEN", "abcd-1234-secret")
+    rec = logging.LogRecord("x", logging.INFO, __file__, 1, "using token %s", ("abcd-1234-secret",), None)
+    RedactSecrets().filter(rec)
+    assert "abcd-1234-secret" not in rec.getMessage() and "***" in rec.getMessage()
+
+
+def test_time_helpers():
+    from datetime import datetime, timezone
+
+    from app.utils.time import bar_open, is_closed
+    t = datetime(2025, 1, 6, 10, 7, 30, tzinfo=timezone.utc)
+    assert bar_open(t, "15m") == datetime(2025, 1, 6, 10, 0, tzinfo=timezone.utc)
+    assert not is_closed(bar_open(t, "15m"), "15m", t) and is_closed(bar_open(t, "15m"), "5m", t)

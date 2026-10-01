@@ -1,6 +1,6 @@
 import { Area, AreaChart, CartesianGrid, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { Dict } from "../services/api";
-import { money, price as fmtPrice, when } from "./format";
+import { Dict } from "../types/api";
+import { money, price as fmtPrice, when } from "../components/format";
 
 const AXIS = { stroke: "rgb(170 152 152)", fontSize: 11 };
 const GRID = "rgb(74 38 40 / 0.5)";

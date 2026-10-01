@@ -1,4 +1,4 @@
-import { EquityChart, PriceChart } from "../components/charts";
+import { EquityChart, PriceChart } from "../charts/Charts";
 import { label, money, num, pct, price, signedMoney, tone, when } from "../components/format";
 import { Direction, Empty, KeyValues, Page, PageHeader, Panel, Regime, StatCard, StatGrid, Table } from "../components/ui";
 import { Dict } from "../services/api";
