@@ -175,3 +175,23 @@ def test_paper_account_is_labelled_and_simulated():
     snap = Driver().robot.snapshot()
     assert snap["account"]["label"] == "PAPER ACCOUNT" and snap["account"]["simulated"] is True
     assert snap["live_trading_enabled"] is False
+
+
+def test_environment_variables_map_to_settings():
+    s = load_settings(env={"GRID_DISTANCE": "3.5", "GRID_MODE": "FIXED", "MAX_POSITIONS": "4", "MAX_BASKET_LOSS": "150",
+                           "INTRABAR_ORDER": "RANDOM", "EXECUTION_DELAY_MS": "250", "VIDEO_STYLE_MODE": "false"})
+    assert (s.grid.distance, s.grid.mode.value, s.risk.max_positions, s.risk.max_basket_loss_usd) == (3.5, "FIXED", 4, 150)
+    assert s.execution.intrabar_order == "RANDOM" and s.execution.delay_ms == 250
+    assert load_settings(env={"VIDEO_STYLE_MODE": "true"}).name == "video_style"
+
+
+def test_env_file_loader_does_not_override_real_env(tmp_path, monkeypatch):
+    from app.config import load_env_file
+    f = tmp_path / ".env"
+    f.write_text("# comment\nGRID_DISTANCE=7  # inline\nMAX_POSITIONS=3\nOANDA_API_TOKEN=\n")
+    monkeypatch.setenv("MAX_POSITIONS", "2")
+    monkeypatch.delenv("GRID_DISTANCE", raising=False)
+    assert load_env_file(f) == 1
+    import os
+    assert os.environ["GRID_DISTANCE"] == "7" and os.environ["MAX_POSITIONS"] == "2"
+    monkeypatch.delenv("GRID_DISTANCE")

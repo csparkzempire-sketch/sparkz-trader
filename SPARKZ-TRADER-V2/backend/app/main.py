@@ -22,6 +22,9 @@ from fastapi.staticfiles import StaticFiles
 
 from app.api import account, backtest, baskets, market, strategy, system
 from app.api.state import STATE
+from app.config import load_env_file
+
+load_env_file()
 
 
 @asynccontextmanager

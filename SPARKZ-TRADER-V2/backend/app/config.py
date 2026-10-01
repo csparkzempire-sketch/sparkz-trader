@@ -290,7 +290,7 @@ ENV_KEYS: dict[str, tuple[str, ...]] = {
     "SLIPPAGE": ("execution", "slippage"),
     "SLIPPAGE_MULTIPLIER": ("execution", "slippage_multiplier"),
     "COMMISSION_PER_LOT_SIDE": ("execution", "commission_per_lot_side"),
-    "INTRABAR_ORDER": "execution.intrabar_order",
+    "INTRABAR_ORDER": ("execution", "intrabar_order"),
     "EXECUTION_DELAY_MS": ("execution", "delay_ms"),
 }
 
@@ -310,6 +310,24 @@ def deep_merge(base: Mapping, extra: Mapping) -> dict:
 
 def list_presets() -> dict[str, str]:
     return {p.stem: (yaml.safe_load(p.read_text()) or {}).get("name", p.stem) for p in sorted(PRESETS_DIR.glob("*.yaml"))}
+
+
+def load_env_file(path: Path | None = None) -> int:
+    """Read KEY=VALUE lines from SPARKZ-TRADER-V2/.env into os.environ (real environment variables win).
+    Values are never logged. Returns the number of variables set."""
+    p = path or PROJECT_DIR / ".env"
+    if not p.exists():
+        return 0
+    n = 0
+    for line in p.read_text().splitlines():
+        line = line.split("#", 1)[0].strip() if not line.lstrip().startswith("#") else ""
+        if "=" not in line:
+            continue
+        k, v = (x.strip() for x in line.split("=", 1))
+        if k and v and k not in os.environ:
+            os.environ[k] = v.strip('"').strip("'")
+            n += 1
+    return n
 
 
 def load_settings(preset: str | None = None, env: Mapping[str, str] | None = None,

@@ -23,7 +23,9 @@ import sys
 import time
 from datetime import datetime, timezone
 
-from app.config import REPORTS_DIR, list_presets, load_settings
+from app.config import REPORTS_DIR, list_presets, load_env_file, load_settings
+
+load_env_file()
 
 
 def _value(v: str):
