@@ -195,11 +195,11 @@ footer p { margin: 0; font-size: 12px; color: var(--muted); max-width: 90ch; }
       </div>
     </div>
     <div class="double-rule" aria-hidden="true"></div>
-    <p class="lede">Ten simulated accounts trading the baseline strategy on BTC, ETH, gold and USD/JPY, each judged against targets fixed from its own backtest. No real money is involved.</p>
+    <p class="lede">Simulated accounts trading the baseline strategy on BTC, ETH, gold and USD/JPY, each judged against targets fixed from its own backtest. The "fee" accounts add a 0.1% exchange fee per side. No real money is involved.</p>
   </header>
 
   <section class="ledger" aria-label="All accounts">
-    <div class="lead"><div class="label">Combined equity</div><div class="v num" id="t-equity">—</div><div class="s" id="t-start">10 accounts</div></div>
+    <div class="lead"><div class="label">Combined equity</div><div class="v num" id="t-equity">—</div><div class="s" id="t-start">&nbsp;</div></div>
     <div><div class="label">Return</div><div class="v" id="t-return">—</div><div class="s">since each account opened</div></div>
     <div><div class="label">Open positions</div><div class="v" id="t-open">—</div><div class="s" id="t-halted">&nbsp;</div></div>
     <div><div class="label">Closed trades</div><div class="v" id="t-closed">—</div><div class="s" id="t-wins">&nbsp;</div></div>
@@ -213,7 +213,7 @@ footer p { margin: 0; font-size: 12px; color: var(--muted); max-width: 90ch; }
 
   <section style="display:grid;gap:18px" aria-labelledby="acc-h">
     <div class="section-head">
-      <div><h2 id="acc-h">Accounts</h2><p>Ten accounts, $10,000 each. Verdicts are given after 30 closed trades.</p></div>
+      <div><h2 id="acc-h">Accounts</h2><p>$10,000 each. Verdicts are given after 30 closed trades; the tag under each name is the research verdict on its strategy.</p></div>
       <div class="filters" role="group" aria-label="Filter accounts">
         <button class="filter" data-f="all" aria-pressed="true">All</button>
         <button class="filter" data-f="open" aria-pressed="false">In a trade</button>
