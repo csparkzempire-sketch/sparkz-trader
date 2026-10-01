@@ -7,7 +7,7 @@
     "starting_balance": 10000.0,
     "fee_bps": 0.0
   },
-  "last_processed": "2026-10-01T11:00:00+00:00",
+  "last_processed": "2026-10-01T12:00:00+00:00",
   "account": {
     "balance": 9796.279118053255,
     "is_active": true,
