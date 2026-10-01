@@ -4,7 +4,8 @@
     "symbol": "ETH-USD",
     "timeframe": "1d",
     "strategy": "baseline_long_only",
-    "starting_balance": 10000.0
+    "starting_balance": 10000.0,
+    "fee_bps": 0.0
   },
   "last_processed": "2026-09-30T00:00:00+00:00",
   "account": {
