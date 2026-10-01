@@ -14,6 +14,7 @@ from app.api.schemas import PaperRunPosition, PaperRunSummary, PaperRunTrade
 from app.data.downloader import DownloadError, download_ohlcv
 from app.paper.evaluation import evaluate
 from app.paper.norms import norms_status
+from app.paper.readiness import readiness
 from app.paper.runner import PaperRunState
 from app.research.verdicts import research_verdict
 
@@ -33,6 +34,7 @@ def latest_price(symbol: str) -> PriceResult:
 def summarize(states: list[PaperRunState], price_fn: Callable[[str], PriceResult] = latest_price,
               log_lines: int = 50) -> list[PaperRunSummary]:
     prices = {s.config.symbol: price_fn(s.config.symbol) for s in states}
+    evals = {s.config.account_name: (s, evaluate(s)) for s in states}
     out = []
     for s in states:
         c, a = s.config, s.account
@@ -52,6 +54,8 @@ def summarize(states: list[PaperRunState], price_fn: Callable[[str], PriceResult
                 unrealized_pnl=unrealized, stop_distance_pct=stop_d, target_distance_pct=target_d,
             ))
         equity = a.balance + unrealized_total
+        evaluation, norms = evals[c.account_name][1], norms_status(s)
+        research = research_verdict(c.account_name)
         trades = [
             PaperRunTrade(
                 symbol=t.symbol, direction=t.direction, entry_price=t.entry_price, exit_price=t.exit_price,
@@ -68,9 +72,10 @@ def summarize(states: list[PaperRunState], price_fn: Callable[[str], PriceResult
             price_error=price_error, open_positions=positions, closed_trades=trades,
             winning_trades=sum(1 for t in a.trade_history if t.pnl > 0),
             halted=s.halted,
-            evaluation=evaluate(s),
-            norms=norms_status(s),
-            research=research_verdict(c.account_name),
+            evaluation=evaluation,
+            norms=norms,
+            research=research,
+            readiness=readiness(c.account_name, s, evaluation, norms, research, evals),
             log=list(reversed(s.log[-log_lines:])),
         ))
     return out

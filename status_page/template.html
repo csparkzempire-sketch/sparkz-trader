@@ -139,6 +139,8 @@ summary::after { content: "  ›"; } details[open] summary::after { content: "  
 .research { display: grid; gap: 2px; font-size: 12px; color: var(--muted); }
 .research .tag { font: 600 11px var(--font-body); letter-spacing: 0.09em; text-transform: uppercase; }
 .research .tag.tested { color: var(--up); } .research .tag.thin { color: var(--warn); } .research .tag.control { color: var(--muted); }
+.ready { font-size: 12px; color: var(--muted); }
+.ready b { font-weight: 600; } .ready .r-ready { color: var(--up); } .ready .r-not_ready { color: var(--down); } .ready .r-pending, .ready .r-na { color: var(--ink); }
 .norms { font-size: 12px; color: var(--muted); }
 .norms .ok { color: var(--up); font-weight: 600; } .norms .warn { color: var(--warn); font-weight: 600; }
 .norms-notes { margin: 0; font-size: 12px; color: var(--muted); max-width: 70ch; }
@@ -313,6 +315,10 @@ function card(a) {
   const prog = Math.min(100, (e.closed_trades / (e.min_trades || 30)) * 100);
   const failing = (e.verdict || "").startsWith("Failing");
   const cls = a.halted ? "halted" : failing ? "fail" : (nearStop(a) || outsideNorms(a) || oddStart(a)) ? "attn" : "";
+  const rd = a.readiness;
+  const readyLine = rd ? `<div class="ready">Live readiness: <b class="r-${esc(rd.status)}">${esc(rd.label)}</b>${rd.total ? ` · ${rd.met} of ${rd.total} conditions met` : ""}${rd.note ? ` · ${esc(rd.note)}` : ""}</div>` : "";
+  const readyTable = rd && rd.items.length ? `<div class="scroll"><table><thead><tr><th>Readiness condition</th><th>Status</th><th>Detail</th></tr></thead><tbody>${
+    rd.items.map((i) => `<tr><td>${esc(i.name)}</td><td class="st-${i.status === "pass" ? "pass" : i.status === "fail" ? "fail" : "pending"}">${i.status === "na" ? "n/a" : i.status}</td><td class="muted" style="white-space:normal">${esc(i.detail)}</td></tr>`).join("")}</tbody></table></div>` : "";
   const ec = e.early_check;
   const earlyLine = ec ? `<div class="norms"><span class="${ec.status === "normal" ? "ok" : "warn"}">Early check</span> · ${esc(ec.text)}</div>` : "";
   // Normal-losses check: the live bad patch vs the worst stretches of the same backtest.
@@ -344,7 +350,8 @@ function card(a) {
     <div class="progress"><div class="row"><span>${esc(e.verdict)}</span><span class="num">${a.winning_trades} won</span></div><div class="bar"><i style="width:${prog}%"></i></div></div>
     ${normsLine}
     ${earlyLine}
-    <details><summary>Checks, trades and activity</summary><div class="detail-body">${checks}${normsTable}${trades}${log}</div></details>
+    ${readyLine}
+    <details><summary>Checks, trades and activity</summary><div class="detail-body">${checks}${readyTable}${normsTable}${trades}${log}</div></details>
   </article>`;
 }
 
