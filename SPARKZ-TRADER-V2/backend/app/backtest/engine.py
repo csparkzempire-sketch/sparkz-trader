@@ -99,7 +99,14 @@ def bar_ticks(symbol: str, t0: datetime, step: int, o: float, h: float, l: float
 
 
 def run_backtest(settings: Settings, candles: pd.DataFrame, label: str = "", log_analysis: bool = False,
-                 log: EventLog | None = None, progress=None) -> BacktestResult:
+                 log: EventLog | None = None, progress=None, start: int = 0, end: int | None = None,
+                 on_bar=None, path_candles: pd.DataFrame | None = None) -> BacktestResult:
+    """Trade candles[start:end]. Candles before `start` only feed the indicators (walk-forward windows
+    start with their indicators already warm, and never trade outside the window).
+    `on_bar(i, robot)` is called after every processed candle.
+    `path_candles`: finer candles (e.g. 1m or 5m) used as the price path INSIDE each candle where they
+    exist, instead of the synthetic open-extreme-extreme-close path. Decisions still use closed candles of
+    the strategy timeframe only."""
     candles, _ = validate(candles)
     sym, tf = settings.market.symbol, settings.market.timeframe
     inst = get_instrument(sym)
@@ -109,11 +116,22 @@ def run_backtest(settings: Settings, candles: pd.DataFrame, label: str = "", log
     robot = Robot(settings, mode="BACKTEST", precomputed=feats, log=log or EventLog(keep=20_000),
                   log_analysis=log_analysis)
     spread = settings.execution.spread_override if settings.execution.spread_override is not None else inst.spread
+    fine: dict = {}
+    fine_step = 0
+    if path_candles is not None and len(path_candles) > 1:
+        pc, _ = validate(path_candles)
+        fine_step = int((pc["timestamp"].diff().dropna().dt.total_seconds()).min())
+        if fine_step >= step or step % fine_step:
+            raise ValueError("path_candles must be a finer timeframe that divides the strategy timeframe")
+        key = pc["timestamp"].dt.floor(f"{step}s")
+        fine = {k: g for k, g in pc.groupby(key)}
     order = settings.execution.intrabar_order
     rng = np.random.default_rng(settings.execution.intrabar_seed)
-    n = len(candles)
+    n = len(candles) if end is None else min(end, len(candles))
+    if start > 0:
+        robot.market.on_candle_close(candles.iloc[start - 1], start - 1)   # indicators as of the window start
     t_first = t_last = None
-    for i in range(n):
+    for i in range(start, n):
         provider.cursor = i
         row = provider.bar(i)
         t0 = pd.Timestamp(row["timestamp"]).to_pydatetime()
@@ -126,11 +144,23 @@ def run_backtest(settings: Settings, candles: pd.DataFrame, label: str = "", log
         if direction is not None:
             adverse_first = order == "ADVERSE_FIRST" or (order == "RANDOM" and rng.random() < 0.5)
             low_first = (direction == "BUY") == adverse_first
-        for tk in bar_ticks(sym, t0, step, float(row["open"]), float(row["high"]), float(row["low"]),
-                            float(row["close"]), spread, low_first):
+        sub = fine.get(pd.Timestamp(row["timestamp"])) if fine else None
+        if sub is not None and len(sub):
+            ticks = []
+            for j, fr in enumerate(sub.itertuples()):
+                tks = bar_ticks(sym, fr.timestamp.to_pydatetime(), fine_step, fr.open, fr.high, fr.low, fr.close,
+                                spread, low_first)
+                ticks += tks if j == 0 else [Tick(t.symbol, t.time, t.bid, t.ask, gap=False) for t in tks]
+            robot.path_bars = getattr(robot, "path_bars", 0) + 1
+        else:
+            ticks = bar_ticks(sym, t0, step, float(row["open"]), float(row["high"]), float(row["low"]),
+                              float(row["close"]), spread, low_first)
+        for tk in ticks:
             robot.process_tick(tk)
         robot.process_bar_close(row, index=i)
         t_last = t0 + timedelta(seconds=step)
+        if on_bar is not None:
+            on_bar(i, robot)
         if progress and i % 500 == 0:
             progress(i, n)
     # close what is still open at the last price, so its P&L is counted (and visible as END_OF_DATA)
@@ -143,4 +173,5 @@ def run_backtest(settings: Settings, candles: pd.DataFrame, label: str = "", log
             robot.executor.cancel_all()
             robot.executor.submit(it, t_last - timedelta(days=1))   # due immediately, whatever the delay
             robot._apply(robot.executor.process(end_tick))
-    return BacktestResult(settings, label, robot, candles, feats, t_first, t_last)
+    return BacktestResult(settings, label, robot, candles.iloc[start:n].reset_index(drop=True),
+                          feats.iloc[start:n].reset_index(drop=True), t_first, t_last)

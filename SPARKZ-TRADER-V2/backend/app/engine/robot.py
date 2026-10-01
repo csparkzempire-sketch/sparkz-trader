@@ -94,8 +94,9 @@ class Robot:
 
     def _set_status(self, status: str, when: datetime, why: str = "") -> None:
         if status != self.status:
-            self.status = status
-            if self.mode == "PAPER" or status in ("STOPPED",):
+            prev, self.status = self.status, status
+            routine = status == "ANALYZING" or (prev == "ANALYZING" and status == "WAITING")
+            if (self.mode == "PAPER" and not routine) or status == "STOPPED":
                 self.log.add(when, "STATUS", f"Robot status: {status}" + (f" ({why})" if why else ""))
 
     def _derive_status(self, when: datetime) -> None:
