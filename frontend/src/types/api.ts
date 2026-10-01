@@ -225,12 +225,23 @@ export interface PaperEvaluationCheck {
   status: "pass" | "fail" | "pending";
 }
 
+/** How unusual the paper win count is for the backtest's win rate. Information only. */
+export interface PaperEarlyCheck {
+  status: "normal" | "unusual" | "very_unusual";
+  wins: number;
+  trades: number;
+  expected_wins: number;
+  probability: number;
+  text: string;
+}
+
 export interface PaperEvaluation {
   verdict: string;
   closed_trades: number;
   min_trades: number;
   targets_source?: string | null;
   targets_reset_reason?: string | null;
+  early_check?: PaperEarlyCheck | null;
   checks: PaperEvaluationCheck[];
 }
 

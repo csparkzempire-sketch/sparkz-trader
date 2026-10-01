@@ -108,6 +108,12 @@ export default function PaperTradingPage() {
   );
 }
 
+const EARLY_STYLE: Record<string, string> = {
+  normal: "text-accent-up",
+  unusual: "text-accent-hold",
+  very_unusual: "text-accent-down",
+};
+
 const RESEARCH_BADGE: Record<string, string> = { tested: "badge-buy", thin: "badge-hold", control: "badge-sell" };
 
 function AccountPanel({ run: r }: { run: PaperRunSummary }) {
@@ -259,6 +265,12 @@ function EvaluationSection({ evaluation: e, accountName }: { evaluation: PaperEv
       <div className="h-1.5 bg-base-bg rounded overflow-hidden border border-base-border mb-3" title="Closed trades toward the evaluation point">
         <div className="h-full bg-accent-brand" style={{ width: `${progress}%` }} />
       </div>
+      {e.early_check && (
+        <p className="text-xs mb-3">
+          <span className={`font-semibold ${EARLY_STYLE[e.early_check.status]}`}>Early check:</span>{" "}
+          <span className="text-base-muted">{e.early_check.text} Information only; it doesn't change the verdict.</span>
+        </p>
+      )}
       <Table
         head={["Check", "Target", "Paper so far", "Status"]}
         rows={e.checks.map((c) => [
