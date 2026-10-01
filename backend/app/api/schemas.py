@@ -222,4 +222,5 @@ class PaperRunSummary(BaseModel):
     evaluation: dict | None = None
     norms: dict | None = None  # normal-losses check (app.paper.norms)
     research: dict | None = None  # research verdict on the strategy (app.research.verdicts)
+    readiness: dict | None = None  # live-trading readiness checklist (app.paper.readiness)
     log: list[str]
