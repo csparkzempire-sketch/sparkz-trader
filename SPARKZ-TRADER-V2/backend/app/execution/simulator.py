@@ -52,16 +52,30 @@ class SimulationExecutor(ExecutionAdapter):
         self.fills = FillEngine(inst, cfg)
         self.delay = timedelta(milliseconds=cfg.delay_ms)
         self._queue: list[tuple[datetime, OrderIntent]] = []
+        self.ref_mid: dict[int, float] = {}       # intent id -> mid when the order was created
 
-    def submit(self, intent: OrderIntent, now: datetime) -> None:
+    def submit(self, intent: OrderIntent, now: datetime, ref_mid: float | None = None) -> None:
         self._queue.append((now + self.delay, intent))
+        if ref_mid is not None:
+            self.ref_mid[intent.id] = ref_mid
 
     def pending(self) -> list[OrderIntent]:
         return [i for _, i in self._queue]
 
+    def next_due(self) -> datetime | None:
+        return min((t for t, _ in self._queue), default=None)
+
+    def due_ref(self) -> float | None:
+        """Creation-time mid of the next order to fall due (backtest latency model)."""
+        if not self._queue:
+            return None
+        t, it = min(self._queue, key=lambda x: x[0])
+        return self.ref_mid.get(it.id, it.trigger_price)
+
     def cancel_all(self) -> list[OrderIntent]:
         out = self.pending()
         self._queue.clear()
+        self.ref_mid.clear()
         return out
 
     def process(self, tick: Tick) -> list[Fill]:
@@ -69,6 +83,7 @@ class SimulationExecutor(ExecutionAdapter):
         self._queue = [(t, i) for t, i in self._queue if t > tick.time]
         out = []
         for _, it in due:
+            self.ref_mid.pop(it.id, None)
             use_trigger = it.trigger_price is not None and not tick.gap and self.delay.total_seconds() == 0
             mid = it.trigger_price if use_trigger else tick.mid
             if it.type == IntentType.CLOSE_BASKET:

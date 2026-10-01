@@ -200,6 +200,22 @@ class AdaptiveGridBasketStrategy:
         return [self._intent(IntentType.ADD_POSITION, b.direction, lots, why, now, trig,
                              level=lvl.price, distance=lvl.distance, entry_number=b.n + 1)], ev
 
+    def active_levels(self, spread: float) -> list[float]:
+        """Mid prices at which on_tick would act right now (target, loss limit, next grid add). Used by the
+        backtester to place a tick exactly where price crosses a level when execution is delayed."""
+        b = self.basket
+        if b is None or self.pending_close or self.pending_add:
+            return []
+        mid = self.last_state.close if self.last_state else b.last_ref_price
+        out = [self.fe.mid_for_close_price(b.direction, b.target_exit_price(self.inst, mid, self.comm), spread),
+               self.fe.mid_for_close_price(b.direction, b.stop_exit_price(self.inst, mid, self.comm), spread)]
+        if b.adds_blocked is None and self.bar != self.add_retry_bar:
+            lvl = next_add_level(b.direction, b.last_ref_price, self.s.grid, self.s.sizing.mode,
+                                 self.last_state.atr if self.last_state else None)
+            if lvl is not None:
+                out.append(lvl.price)
+        return out
+
     # ---------------------------------------------------------------- outcomes
     def on_reject(self, intent: OrderIntent, decision: RiskDecision) -> list[Event]:
         ev = [Event("RISK_REJECTED", f"{intent.type.value} refused by risk manager: {decision.code} ({decision.detail})",

@@ -153,7 +153,7 @@ class Robot:
                              f"({it.reason})", {"intent": it.to_dict()})
             self.log.add(when, "ORDER_INTENT", f"{it.type.value} {it.direction} {it.lots:g} lots sent to the "
                          "simulated executor", {"intent": it.to_dict()})
-            self.executor.submit(it, when)
+            self.executor.submit(it, when, it.trigger_price if it.trigger_price is not None else price)
             n += 1
         return n
 

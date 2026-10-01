@@ -44,3 +44,25 @@ def test_delay_fills_at_the_later_price_not_the_trigger():
     d.tick(2003.0, seconds=6)
     p = d.basket.positions[0]
     assert p.ref_price == pytest.approx(2003.0)   # latency costs what the market moved
+
+
+def test_backtest_latency_gives_no_systematic_gain():
+    """A delayed order starts at the level cross and fills at that price plus zero-mean noise. Interpolating
+    along the synthetic path instead had turned 60 s of latency into a large gain for grids; across
+    scenarios and seeds the corrected model must not show a systematic improvement."""
+    import numpy as np
+
+    from app.backtest.engine import run_backtest
+    from app.config import load_settings
+    from app.market.providers.mock_provider import generate_candles
+
+    diffs = []
+    for sc, seed in (("reversals", 21), ("normal", 3), ("sideways", 4)):
+        c = generate_candles("XAUUSD", "15m", 1500, sc, seed=seed)
+
+        def pnl(delay, s):
+            st = load_settings("atr_grid", env={}, overrides={"execution": {"delay_ms": delay, "intrabar_seed": s}})
+            return sum(b.pnl for b in run_backtest(st, c).robot.completed)
+        base = pnl(0, 7)
+        diffs.append(np.mean([pnl(60_000, s) for s in (7, 8, 9, 10)]) - base)
+    assert np.mean(diffs) < 50

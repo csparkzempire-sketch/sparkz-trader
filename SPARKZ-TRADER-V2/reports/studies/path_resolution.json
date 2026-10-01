@@ -1,0 +1,2512 @@
+{
+ "data": "15m decisions from 2026-08-27 04:15:00+00:00; 5m candles as path",
+ "results": {
+  "atr_grid": {
+   "FAVOURABLE_FIRST": {
+    "ohlc_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 1252.85659,
+     "return_pct": 12.528566,
+     "baskets": 157,
+     "win_rate_pct": 98.726115,
+     "profit_factor": 3.974691,
+     "avg_basket_profit": 10.800184,
+     "avg_basket_loss": -210.586,
+     "largest_basket_loss": -211.4,
+     "max_drawdown_pct": -3.53807,
+     "worst_floating_pnl": -204.715938,
+     "max_consecutive_losses": 1,
+     "max_positions_in_basket": 5,
+     "max_notional_usd": 23349.499512,
+     "max_margin_usage_pct": 2.362173,
+     "close_reasons": {
+      "TARGET": 155,
+      "LOSS_LIMIT": 2
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 100,
+       "win_rate_pct": 98.0,
+       "net_pnl": 682.85659,
+       "avg_pnl": 6.828566,
+       "profit_factor": 2.621325,
+       "worst_basket": -211.4,
+       "avg_mae": -25.996395,
+       "avg_positions": 2.34
+      },
+      "TRENDING_UP": {
+       "baskets": 57,
+       "win_rate_pct": 100.0,
+       "net_pnl": 570.0,
+       "avg_pnl": 10.0,
+       "profit_factor": "inf",
+       "worst_basket": 10.0,
+       "avg_mae": -32.69074,
+       "avg_positions": 2.754386
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -28.426826,
+      "worst_mae": -232.716426,
+      "avg_mfe": 19.626111,
+      "avg_winner_mae": -25.868956,
+      "median_winner_profit_to_mae": 1.049282,
+      "winners_with_mae_over_1x_profit_pct": 46.451613,
+      "winners_with_mae_over_3x_profit_pct": 23.225806,
+      "worst_mae_in_avg_wins": 21.547449,
+      "largest_loss_in_avg_wins": 19.57374
+     },
+     "costs": {
+      "spread_usd": 117.3,
+      "slippage_usd": 39.1,
+      "commission_usd": 0.0,
+      "total_usd": 156.4,
+      "fills": 548
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    },
+    "5m_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 1311.46859,
+     "return_pct": 13.114686,
+     "baskets": 163,
+     "win_rate_pct": 98.773006,
+     "profit_factor": 4.103627,
+     "avg_basket_profit": 10.770364,
+     "avg_basket_loss": -211.28,
+     "largest_basket_loss": -212.0,
+     "max_drawdown_pct": -3.446811,
+     "worst_floating_pnl": -204.715938,
+     "max_consecutive_losses": 1,
+     "max_positions_in_basket": 5,
+     "max_notional_usd": 23281.499023,
+     "max_margin_usage_pct": 2.330915,
+     "close_reasons": {
+      "TARGET": 161,
+      "LOSS_LIMIT": 2
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 103,
+       "win_rate_pct": 98.058252,
+       "net_pnl": 711.46859,
+       "avg_pnl": 6.907462,
+       "profit_factor": 2.68371,
+       "worst_basket": -212.0,
+       "avg_mae": -23.478873,
+       "avg_positions": 2.281553
+      },
+      "TRENDING_UP": {
+       "baskets": 60,
+       "win_rate_pct": 100.0,
+       "net_pnl": 600.0,
+       "avg_pnl": 10.0,
+       "profit_factor": "inf",
+       "worst_basket": 10.0,
+       "avg_mae": -31.792644,
+       "avg_positions": 2.716667
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -26.539157,
+      "worst_mae": -219.098732,
+      "avg_mfe": 15.846175,
+      "avg_winner_mae": -24.183645,
+      "median_winner_profit_to_mae": 1.086792,
+      "winners_with_mae_over_1x_profit_pct": 45.962733,
+      "winners_with_mae_over_3x_profit_pct": 21.118012,
+      "worst_mae_in_avg_wins": 20.342742,
+      "largest_loss_in_avg_wins": 19.683643
+     },
+     "costs": {
+      "spread_usd": 119.4,
+      "slippage_usd": 39.8,
+      "commission_usd": 0.0,
+      "total_usd": 159.2,
+      "fills": 561
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    }
+   },
+   "RANDOM": {
+    "ohlc_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 1266.648,
+     "return_pct": 12.66648,
+     "baskets": 171,
+     "win_rate_pct": 98.830409,
+     "profit_factor": 3.99195,
+     "avg_basket_profit": 10.0,
+     "avg_basket_loss": -211.676,
+     "largest_basket_loss": -212.4,
+     "max_drawdown_pct": -3.447778,
+     "worst_floating_pnl": -204.715938,
+     "max_consecutive_losses": 1,
+     "max_positions_in_basket": 5,
+     "max_notional_usd": 23281.499023,
+     "max_margin_usage_pct": 2.330915,
+     "close_reasons": {
+      "TARGET": 169,
+      "LOSS_LIMIT": 2
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 108,
+       "win_rate_pct": 98.148148,
+       "net_pnl": 636.648,
+       "avg_pnl": 5.894889,
+       "profit_factor": 2.503827,
+       "worst_basket": -212.4,
+       "avg_mae": -23.853354,
+       "avg_positions": 2.333333
+      },
+      "TRENDING_UP": {
+       "baskets": 63,
+       "win_rate_pct": 100.0,
+       "net_pnl": 630.0,
+       "avg_pnl": 10.0,
+       "profit_factor": "inf",
+       "worst_basket": 10.0,
+       "avg_mae": -29.707624,
+       "avg_positions": 2.714286
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -26.01019,
+      "worst_mae": -244.098732,
+      "avg_mfe": 19.144465,
+      "avg_winner_mae": -23.496612,
+      "median_winner_profit_to_mae": 1.048602,
+      "winners_with_mae_over_1x_profit_pct": 47.928994,
+      "winners_with_mae_over_3x_profit_pct": 21.893491,
+      "worst_mae_in_avg_wins": 24.409873,
+      "largest_loss_in_avg_wins": 21.24
+     },
+     "costs": {
+      "spread_usd": 126.9,
+      "slippage_usd": 42.3,
+      "commission_usd": 0.0,
+      "total_usd": 169.2,
+      "fills": 594
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    },
+    "5m_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 1197.44,
+     "return_pct": 11.9744,
+     "baskets": 164,
+     "win_rate_pct": 98.780488,
+     "profit_factor": 3.833775,
+     "avg_basket_profit": 10.0,
+     "avg_basket_loss": -211.28,
+     "largest_basket_loss": -212.0,
+     "max_drawdown_pct": -3.446811,
+     "worst_floating_pnl": -204.715938,
+     "max_consecutive_losses": 1,
+     "max_positions_in_basket": 5,
+     "max_notional_usd": 23281.499023,
+     "max_margin_usage_pct": 2.330915,
+     "close_reasons": {
+      "TARGET": 162,
+      "LOSS_LIMIT": 2
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 104,
+       "win_rate_pct": 98.076923,
+       "net_pnl": 597.44,
+       "avg_pnl": 5.744615,
+       "profit_factor": 2.413858,
+       "worst_basket": -212.0,
+       "avg_mae": -23.102906,
+       "avg_positions": 2.259615
+      },
+      "TRENDING_UP": {
+       "baskets": 60,
+       "win_rate_pct": 100.0,
+       "net_pnl": 600.0,
+       "avg_pnl": 10.0,
+       "profit_factor": "inf",
+       "worst_basket": 10.0,
+       "avg_mae": -31.842652,
+       "avg_positions": 2.716667
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -26.300374,
+      "worst_mae": -219.098732,
+      "avg_mfe": 15.287736,
+      "avg_winner_mae": -23.956455,
+      "median_winner_profit_to_mae": 1.048942,
+      "winners_with_mae_over_1x_profit_pct": 46.296296,
+      "winners_with_mae_over_3x_profit_pct": 20.987654,
+      "worst_mae_in_avg_wins": 21.909873,
+      "largest_loss_in_avg_wins": 21.2
+     },
+     "costs": {
+      "spread_usd": 119.4,
+      "slippage_usd": 39.8,
+      "commission_usd": 0.0,
+      "total_usd": 159.2,
+      "fills": 562
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    }
+   },
+   "ADVERSE_FIRST": {
+    "ohlc_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 1890.0,
+     "return_pct": 18.9,
+     "baskets": 189,
+     "win_rate_pct": 100.0,
+     "profit_factor": "inf",
+     "avg_basket_profit": 10.0,
+     "avg_basket_loss": null,
+     "largest_basket_loss": 10.0,
+     "max_drawdown_pct": -1.3632,
+     "worst_floating_pnl": -160.880609,
+     "max_consecutive_losses": 0,
+     "max_positions_in_basket": 5,
+     "max_notional_usd": 23281.499023,
+     "max_margin_usage_pct": 2.314306,
+     "close_reasons": {
+      "TARGET": 189
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 118,
+       "win_rate_pct": 100.0,
+       "net_pnl": 1180.0,
+       "avg_pnl": 10.0,
+       "profit_factor": "inf",
+       "worst_basket": 10.0,
+       "avg_mae": -19.145273,
+       "avg_positions": 2.338983
+      },
+      "TRENDING_UP": {
+       "baskets": 71,
+       "win_rate_pct": 100.0,
+       "net_pnl": 710.0,
+       "avg_pnl": 10.0,
+       "profit_factor": "inf",
+       "worst_basket": 10.0,
+       "avg_mae": -23.302607,
+       "avg_positions": 2.507042
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -20.707023,
+      "worst_mae": -194.779187,
+      "avg_mfe": 19.050806,
+      "avg_winner_mae": -20.707023,
+      "median_winner_profit_to_mae": 1.029974,
+      "winners_with_mae_over_1x_profit_pct": 47.619048,
+      "winners_with_mae_over_3x_profit_pct": 17.460317,
+      "worst_mae_in_avg_wins": 19.477919,
+      "largest_loss_in_avg_wins": null
+     },
+     "costs": {
+      "spread_usd": 136.2,
+      "slippage_usd": 45.4,
+      "commission_usd": 0.0,
+      "total_usd": 181.6,
+      "fills": 643
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    },
+    "5m_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 981.0912,
+     "return_pct": 9.810912,
+     "baskets": 164,
+     "win_rate_pct": 98.170732,
+     "profit_factor": 2.55999,
+     "avg_basket_profit": 10.0,
+     "avg_basket_loss": -209.636267,
+     "largest_basket_loss": -212.0,
+     "max_drawdown_pct": -4.612347,
+     "worst_floating_pnl": -204.715938,
+     "max_consecutive_losses": 2,
+     "max_positions_in_basket": 5,
+     "max_notional_usd": 23349.499512,
+     "max_margin_usage_pct": 2.3486,
+     "close_reasons": {
+      "TARGET": 161,
+      "LOSS_LIMIT": 3
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 106,
+       "win_rate_pct": 98.113208,
+       "net_pnl": 617.44,
+       "avg_pnl": 5.824906,
+       "profit_factor": 2.461189,
+       "worst_basket": -212.0,
+       "avg_mae": -23.511648,
+       "avg_positions": 2.264151
+      },
+      "TRENDING_UP": {
+       "baskets": 58,
+       "win_rate_pct": 98.275862,
+       "net_pnl": 363.6512,
+       "avg_pnl": 6.269848,
+       "profit_factor": 2.762313,
+       "worst_basket": -206.3488,
+       "avg_mae": -36.643272,
+       "avg_positions": 2.775862
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -28.155759,
+      "worst_mae": -266.302948,
+      "avg_mfe": 15.812587,
+      "avg_winner_mae": -24.341154,
+      "median_winner_profit_to_mae": 1.049282,
+      "winners_with_mae_over_1x_profit_pct": 45.962733,
+      "winners_with_mae_over_3x_profit_pct": 21.118012,
+      "worst_mae_in_avg_wins": 26.630295,
+      "largest_loss_in_avg_wins": 21.2
+     },
+     "costs": {
+      "spread_usd": 120.3,
+      "slippage_usd": 40.1,
+      "commission_usd": 0.0,
+      "total_usd": 160.4,
+      "fills": 565
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    }
+   }
+  },
+  "baseline": {
+   "FAVOURABLE_FIRST": {
+    "ohlc_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 74.400293,
+     "return_pct": 0.744003,
+     "baskets": 131,
+     "win_rate_pct": 52.671756,
+     "profit_factor": 1.120858,
+     "avg_basket_profit": 10.0,
+     "avg_basket_loss": -9.929028,
+     "largest_basket_loss": -10.0,
+     "max_drawdown_pct": -1.191312,
+     "worst_floating_pnl": -9.600195,
+     "max_consecutive_losses": 7,
+     "max_positions_in_basket": 1,
+     "max_notional_usd": 4665.399902,
+     "max_margin_usage_pct": 0.466986,
+     "close_reasons": {
+      "TARGET": 69,
+      "LOSS_LIMIT": 61,
+      "END_OF_DATA": 1
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 81,
+       "win_rate_pct": 58.024691,
+       "net_pnl": 130.0,
+       "avg_pnl": 1.604938,
+       "profit_factor": 1.382353,
+       "worst_basket": -10.0,
+       "avg_mae": -7.860522,
+       "avg_positions": 1.0
+      },
+      "TRENDING_UP": {
+       "baskets": 50,
+       "win_rate_pct": 44.0,
+       "net_pnl": -55.599707,
+       "avg_pnl": -1.111994,
+       "profit_factor": 0.798259,
+       "worst_basket": -10.0,
+       "avg_mae": -8.731992,
+       "avg_positions": 1.0
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -8.193144,
+      "worst_mae": -34.599707,
+      "avg_mfe": 9.822122,
+      "avg_winner_mae": -3.482633,
+      "median_winner_profit_to_mae": 4.166667,
+      "winners_with_mae_over_1x_profit_pct": 0.0,
+      "winners_with_mae_over_3x_profit_pct": 0.0,
+      "worst_mae_in_avg_wins": 3.459971,
+      "largest_loss_in_avg_wins": 1.0
+     },
+     "costs": {
+      "spread_usd": 39.3,
+      "slippage_usd": 13.1,
+      "commission_usd": 0.0,
+      "total_usd": 52.4,
+      "fills": 262
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    },
+    "5m_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 73.900293,
+     "return_pct": 0.739003,
+     "baskets": 131,
+     "win_rate_pct": 52.671756,
+     "profit_factor": 1.119949,
+     "avg_basket_profit": 10.0,
+     "avg_basket_loss": -9.937092,
+     "largest_basket_loss": -10.0,
+     "max_drawdown_pct": -1.191312,
+     "worst_floating_pnl": -9.600195,
+     "max_consecutive_losses": 7,
+     "max_positions_in_basket": 1,
+     "max_notional_usd": 4665.399902,
+     "max_margin_usage_pct": 0.466986,
+     "close_reasons": {
+      "TARGET": 69,
+      "LOSS_LIMIT": 61,
+      "END_OF_DATA": 1
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 81,
+       "win_rate_pct": 58.024691,
+       "net_pnl": 130.0,
+       "avg_pnl": 1.604938,
+       "profit_factor": 1.382353,
+       "worst_basket": -10.0,
+       "avg_mae": -7.554357,
+       "avg_positions": 1.0
+      },
+      "TRENDING_UP": {
+       "baskets": 50,
+       "win_rate_pct": 44.0,
+       "net_pnl": -56.099707,
+       "avg_pnl": -1.121994,
+       "profit_factor": 0.796814,
+       "worst_basket": -10.0,
+       "avg_mae": -8.086006,
+       "avg_positions": 1.0
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -7.757277,
+      "worst_mae": -34.599707,
+      "avg_mfe": 8.892356,
+      "avg_winner_mae": -3.694228,
+      "median_winner_profit_to_mae": 3.703302,
+      "winners_with_mae_over_1x_profit_pct": 0.0,
+      "winners_with_mae_over_3x_profit_pct": 0.0,
+      "worst_mae_in_avg_wins": 3.459971,
+      "largest_loss_in_avg_wins": 1.0
+     },
+     "costs": {
+      "spread_usd": 39.3,
+      "slippage_usd": 13.1,
+      "commission_usd": 0.0,
+      "total_usd": 52.4,
+      "fills": 262
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    }
+   },
+   "RANDOM": {
+    "ohlc_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 54.400293,
+     "return_pct": 0.544003,
+     "baskets": 131,
+     "win_rate_pct": 51.908397,
+     "profit_factor": 1.086957,
+     "avg_basket_profit": 10.0,
+     "avg_basket_loss": -9.930154,
+     "largest_basket_loss": -10.0,
+     "max_drawdown_pct": -1.193672,
+     "worst_floating_pnl": -9.600195,
+     "max_consecutive_losses": 7,
+     "max_positions_in_basket": 1,
+     "max_notional_usd": 4665.399902,
+     "max_margin_usage_pct": 0.466986,
+     "close_reasons": {
+      "TARGET": 68,
+      "LOSS_LIMIT": 62,
+      "END_OF_DATA": 1
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 81,
+       "win_rate_pct": 58.024691,
+       "net_pnl": 130.0,
+       "avg_pnl": 1.604938,
+       "profit_factor": 1.382353,
+       "worst_basket": -10.0,
+       "avg_mae": -8.028424,
+       "avg_positions": 1.0
+      },
+      "TRENDING_UP": {
+       "baskets": 50,
+       "win_rate_pct": 42.0,
+       "net_pnl": -75.599707,
+       "avg_pnl": -1.511994,
+       "profit_factor": 0.735295,
+       "worst_basket": -10.0,
+       "avg_mae": -9.471992,
+       "avg_positions": 1.0
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -8.579404,
+      "worst_mae": -39.199805,
+      "avg_mfe": 9.656471,
+      "avg_winner_mae": -3.701499,
+      "median_winner_profit_to_mae": 3.703637,
+      "winners_with_mae_over_1x_profit_pct": 0.0,
+      "winners_with_mae_over_3x_profit_pct": 0.0,
+      "worst_mae_in_avg_wins": 3.91998,
+      "largest_loss_in_avg_wins": 1.0
+     },
+     "costs": {
+      "spread_usd": 39.3,
+      "slippage_usd": 13.1,
+      "commission_usd": 0.0,
+      "total_usd": 52.4,
+      "fills": 262
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    },
+    "5m_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 53.900293,
+     "return_pct": 0.539003,
+     "baskets": 131,
+     "win_rate_pct": 51.908397,
+     "profit_factor": 1.086089,
+     "avg_basket_profit": 10.0,
+     "avg_basket_loss": -9.938091,
+     "largest_basket_loss": -10.0,
+     "max_drawdown_pct": -1.193672,
+     "worst_floating_pnl": -9.600195,
+     "max_consecutive_losses": 7,
+     "max_positions_in_basket": 1,
+     "max_notional_usd": 4665.399902,
+     "max_margin_usage_pct": 0.466986,
+     "close_reasons": {
+      "TARGET": 68,
+      "LOSS_LIMIT": 62,
+      "END_OF_DATA": 1
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 81,
+       "win_rate_pct": 58.024691,
+       "net_pnl": 130.0,
+       "avg_pnl": 1.604938,
+       "profit_factor": 1.382353,
+       "worst_basket": -10.0,
+       "avg_mae": -7.659295,
+       "avg_positions": 1.0
+      },
+      "TRENDING_UP": {
+       "baskets": 50,
+       "win_rate_pct": 42.0,
+       "net_pnl": -76.099707,
+       "avg_pnl": -1.521994,
+       "profit_factor": 0.73401,
+       "worst_basket": -10.0,
+       "avg_mae": -8.534004,
+       "avg_positions": 1.0
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -7.993154,
+      "worst_mae": -34.599707,
+      "avg_mfe": 8.815257,
+      "avg_winner_mae": -3.841205,
+      "median_winner_profit_to_mae": 3.398578,
+      "winners_with_mae_over_1x_profit_pct": 0.0,
+      "winners_with_mae_over_3x_profit_pct": 0.0,
+      "worst_mae_in_avg_wins": 3.459971,
+      "largest_loss_in_avg_wins": 1.0
+     },
+     "costs": {
+      "spread_usd": 39.3,
+      "slippage_usd": 13.1,
+      "commission_usd": 0.0,
+      "total_usd": 52.4,
+      "fills": 262
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    }
+   },
+   "ADVERSE_FIRST": {
+    "ohlc_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 54.400293,
+     "return_pct": 0.544003,
+     "baskets": 131,
+     "win_rate_pct": 51.908397,
+     "profit_factor": 1.086957,
+     "avg_basket_profit": 10.0,
+     "avg_basket_loss": -9.930154,
+     "largest_basket_loss": -10.0,
+     "max_drawdown_pct": -1.193672,
+     "worst_floating_pnl": -9.600195,
+     "max_consecutive_losses": 7,
+     "max_positions_in_basket": 1,
+     "max_notional_usd": 4665.399902,
+     "max_margin_usage_pct": 0.466986,
+     "close_reasons": {
+      "TARGET": 68,
+      "LOSS_LIMIT": 62,
+      "END_OF_DATA": 1
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 81,
+       "win_rate_pct": 58.024691,
+       "net_pnl": 130.0,
+       "avg_pnl": 1.604938,
+       "profit_factor": 1.382353,
+       "worst_basket": -10.0,
+       "avg_mae": -8.162991,
+       "avg_positions": 1.0
+      },
+      "TRENDING_UP": {
+       "baskets": 50,
+       "win_rate_pct": 42.0,
+       "net_pnl": -75.599707,
+       "avg_pnl": -1.511994,
+       "profit_factor": 0.735295,
+       "worst_basket": -10.0,
+       "avg_mae": -9.521992,
+       "avg_positions": 1.0
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -8.681694,
+      "worst_mae": -39.199805,
+      "avg_mfe": 9.504562,
+      "avg_winner_mae": -3.898557,
+      "median_winner_profit_to_mae": 3.127774,
+      "winners_with_mae_over_1x_profit_pct": 0.0,
+      "winners_with_mae_over_3x_profit_pct": 0.0,
+      "worst_mae_in_avg_wins": 3.91998,
+      "largest_loss_in_avg_wins": 1.0
+     },
+     "costs": {
+      "spread_usd": 39.3,
+      "slippage_usd": 13.1,
+      "commission_usd": 0.0,
+      "total_usd": 52.4,
+      "fills": 262
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    },
+    "5m_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 53.900293,
+     "return_pct": 0.539003,
+     "baskets": 131,
+     "win_rate_pct": 51.908397,
+     "profit_factor": 1.086089,
+     "avg_basket_profit": 10.0,
+     "avg_basket_loss": -9.938091,
+     "largest_basket_loss": -10.0,
+     "max_drawdown_pct": -1.193672,
+     "worst_floating_pnl": -9.600195,
+     "max_consecutive_losses": 7,
+     "max_positions_in_basket": 1,
+     "max_notional_usd": 4665.399902,
+     "max_margin_usage_pct": 0.466986,
+     "close_reasons": {
+      "TARGET": 68,
+      "LOSS_LIMIT": 62,
+      "END_OF_DATA": 1
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 81,
+       "win_rate_pct": 58.024691,
+       "net_pnl": 130.0,
+       "avg_pnl": 1.604938,
+       "profit_factor": 1.382353,
+       "worst_basket": -10.0,
+       "avg_mae": -7.707442,
+       "avg_positions": 1.0
+      },
+      "TRENDING_UP": {
+       "baskets": 50,
+       "win_rate_pct": 42.0,
+       "net_pnl": -76.099707,
+       "avg_pnl": -1.521994,
+       "profit_factor": 0.73401,
+       "worst_basket": -10.0,
+       "avg_mae": -8.534004,
+       "avg_positions": 1.0
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -8.022924,
+      "worst_mae": -34.599707,
+      "avg_mfe": 8.807624,
+      "avg_winner_mae": -3.898557,
+      "median_winner_profit_to_mae": 3.127774,
+      "winners_with_mae_over_1x_profit_pct": 0.0,
+      "winners_with_mae_over_3x_profit_pct": 0.0,
+      "worst_mae_in_avg_wins": 3.459971,
+      "largest_loss_in_avg_wins": 1.0
+     },
+     "costs": {
+      "spread_usd": 39.3,
+      "slippage_usd": 13.1,
+      "commission_usd": 0.0,
+      "total_usd": 52.4,
+      "fills": 262
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    }
+   }
+  },
+  "fixed_grid": {
+   "FAVOURABLE_FIRST": {
+    "ohlc_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 1186.828195,
+     "return_pct": 11.868282,
+     "baskets": 155,
+     "win_rate_pct": 98.064516,
+     "profit_factor": 3.778342,
+     "avg_basket_profit": 10.618418,
+     "avg_basket_loss": -142.390471,
+     "largest_basket_loss": -211.4,
+     "max_drawdown_pct": -3.556954,
+     "worst_floating_pnl": -195.500977,
+     "max_consecutive_losses": 1,
+     "max_positions_in_basket": 5,
+     "max_notional_usd": 23349.499512,
+     "max_margin_usage_pct": 2.362473,
+     "close_reasons": {
+      "TARGET": 152,
+      "LOSS_LIMIT": 2,
+      "END_OF_DATA": 1
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 99,
+       "win_rate_pct": 97.979798,
+       "net_pnl": 643.027609,
+       "avg_pnl": 6.495228,
+       "profit_factor": 2.527483,
+       "worst_basket": -211.4,
+       "avg_mae": -25.273809,
+       "avg_positions": 2.242424
+      },
+      "TRENDING_UP": {
+       "baskets": 56,
+       "win_rate_pct": 98.214286,
+       "net_pnl": 543.800586,
+       "avg_pnl": 9.710725,
+       "profit_factor": 88.718062,
+       "worst_basket": -6.199414,
+       "avg_mae": -31.075051,
+       "avg_positions": 2.625
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -27.369742,
+      "worst_mae": -223.501465,
+      "avg_mfe": 18.885077,
+      "avg_winner_mae": -24.956631,
+      "median_winner_profit_to_mae": 1.111695,
+      "winners_with_mae_over_1x_profit_pct": 46.052632,
+      "winners_with_mae_over_3x_profit_pct": 25.0,
+      "worst_mae_in_avg_wins": 21.04847,
+      "largest_loss_in_avg_wins": 19.908803
+     },
+     "costs": {
+      "spread_usd": 110.7,
+      "slippage_usd": 36.9,
+      "commission_usd": 0.0,
+      "total_usd": 147.6,
+      "fills": 524
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    },
+    "5m_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 1224.640195,
+     "return_pct": 12.246402,
+     "baskets": 159,
+     "win_rate_pct": 98.113208,
+     "profit_factor": 3.85225,
+     "avg_basket_profit": 10.602562,
+     "avg_basket_loss": -143.119805,
+     "largest_basket_loss": -212.0,
+     "max_drawdown_pct": -3.558095,
+     "worst_floating_pnl": -195.500977,
+     "max_consecutive_losses": 1,
+     "max_positions_in_basket": 5,
+     "max_notional_usd": 23272.5,
+     "max_margin_usage_pct": 2.330092,
+     "close_reasons": {
+      "TARGET": 156,
+      "LOSS_LIMIT": 2,
+      "END_OF_DATA": 1
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 100,
+       "win_rate_pct": 98.0,
+       "net_pnl": 651.839609,
+       "avg_pnl": 6.518396,
+       "profit_factor": 2.544058,
+       "worst_basket": -212.0,
+       "avg_mae": -24.005058,
+       "avg_positions": 2.24
+      },
+      "TRENDING_UP": {
+       "baskets": 59,
+       "win_rate_pct": 98.305085,
+       "net_pnl": 572.800586,
+       "avg_pnl": 9.708485,
+       "profit_factor": 80.562112,
+       "worst_basket": -7.199414,
+       "avg_mae": -32.339024,
+       "avg_positions": 2.627119
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -27.097536,
+      "worst_mae": -220.500977,
+      "avg_mfe": 15.87918,
+      "avg_winner_mae": -24.760299,
+      "median_winner_profit_to_mae": 1.075337,
+      "winners_with_mae_over_1x_profit_pct": 47.435897,
+      "winners_with_mae_over_3x_profit_pct": 24.358974,
+      "worst_mae_in_avg_wins": 20.796953,
+      "largest_loss_in_avg_wins": 19.995168
+     },
+     "costs": {
+      "spread_usd": 113.7,
+      "slippage_usd": 37.9,
+      "commission_usd": 0.0,
+      "total_usd": 151.6,
+      "fills": 538
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    }
+   },
+   "RANDOM": {
+    "ohlc_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 884.860466,
+     "return_pct": 8.848605,
+     "baskets": 169,
+     "win_rate_pct": 97.04142,
+     "profit_factor": 2.042068,
+     "avg_basket_profit": 10.573168,
+     "avg_basket_loss": -169.827829,
+     "largest_basket_loss": -212.8,
+     "max_drawdown_pct": -5.21118,
+     "worst_floating_pnl": -195.500977,
+     "max_consecutive_losses": 2,
+     "max_positions_in_basket": 5,
+     "max_notional_usd": 23272.5,
+     "max_margin_usage_pct": 2.330092,
+     "close_reasons": {
+      "TARGET": 164,
+      "LOSS_LIMIT": 4,
+      "END_OF_DATA": 1
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 109,
+       "win_rate_pct": 97.247706,
+       "net_pnl": 517.785,
+       "avg_pnl": 4.750321,
+       "profit_factor": 1.813853,
+       "worst_basket": -212.8,
+       "avg_mae": -26.214808,
+       "avg_positions": 2.33945
+      },
+      "TRENDING_UP": {
+       "baskets": 60,
+       "win_rate_pct": 96.666667,
+       "net_pnl": 367.075466,
+       "avg_pnl": 6.117924,
+       "profit_factor": 2.72397,
+       "worst_basket": -206.72512,
+       "avg_mae": -27.708436,
+       "avg_positions": 2.466667
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -26.74509,
+      "worst_mae": -258.499023,
+      "avg_mfe": 18.899946,
+      "avg_winner_mae": -21.893409,
+      "median_winner_profit_to_mae": 1.086968,
+      "winners_with_mae_over_1x_profit_pct": 47.560976,
+      "winners_with_mae_over_3x_profit_pct": 21.341463,
+      "worst_mae_in_avg_wins": 24.448587,
+      "largest_loss_in_avg_wins": 20.126417
+     },
+     "costs": {
+      "spread_usd": 120.9,
+      "slippage_usd": 40.3,
+      "commission_usd": 0.0,
+      "total_usd": 161.2,
+      "fills": 572
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    },
+    "5m_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 934.683786,
+     "return_pct": 9.346838,
+     "baskets": 161,
+     "win_rate_pct": 97.515528,
+     "profit_factor": 2.47121,
+     "avg_basket_profit": 10.0,
+     "avg_basket_loss": -158.829054,
+     "largest_basket_loss": -212.0,
+     "max_drawdown_pct": -4.793555,
+     "worst_floating_pnl": -195.500977,
+     "max_consecutive_losses": 2,
+     "max_positions_in_basket": 5,
+     "max_notional_usd": 23272.5,
+     "max_margin_usage_pct": 2.330092,
+     "close_reasons": {
+      "TARGET": 157,
+      "LOSS_LIMIT": 3,
+      "END_OF_DATA": 1
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 101,
+       "win_rate_pct": 98.019802,
+       "net_pnl": 567.84,
+       "avg_pnl": 5.622178,
+       "profit_factor": 2.345082,
+       "worst_basket": -212.0,
+       "avg_mae": -23.232756,
+       "avg_positions": 2.188119
+      },
+      "TRENDING_UP": {
+       "baskets": 60,
+       "win_rate_pct": 96.666667,
+       "net_pnl": 366.843786,
+       "avg_pnl": 6.114063,
+       "profit_factor": 2.721009,
+       "worst_basket": -205.9568,
+       "avg_mae": -34.948372,
+       "avg_positions": 2.666667
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -27.598824,
+      "worst_mae": -258.499023,
+      "avg_mfe": 15.695573,
+      "avg_winner_mae": -23.815351,
+      "median_winner_profit_to_mae": 1.041688,
+      "winners_with_mae_over_1x_profit_pct": 47.770701,
+      "winners_with_mae_over_3x_profit_pct": 22.929936,
+      "worst_mae_in_avg_wins": 25.849902,
+      "largest_loss_in_avg_wins": 21.2
+     },
+     "costs": {
+      "spread_usd": 114.3,
+      "slippage_usd": 38.1,
+      "commission_usd": 0.0,
+      "total_usd": 152.4,
+      "fills": 542
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    }
+   },
+   "ADVERSE_FIRST": {
+    "ohlc_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 1763.800586,
+     "return_pct": 17.638006,
+     "baskets": 178,
+     "win_rate_pct": 99.438202,
+     "profit_factor": 285.510853,
+     "avg_basket_profit": 10.0,
+     "avg_basket_loss": -6.199414,
+     "largest_basket_loss": -6.199414,
+     "max_drawdown_pct": -1.492323,
+     "worst_floating_pnl": -145.500977,
+     "max_consecutive_losses": 1,
+     "max_positions_in_basket": 5,
+     "max_notional_usd": 23272.5,
+     "max_margin_usage_pct": 2.327747,
+     "close_reasons": {
+      "TARGET": 177,
+      "END_OF_DATA": 1
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 112,
+       "win_rate_pct": 100.0,
+       "net_pnl": 1120.0,
+       "avg_pnl": 10.0,
+       "profit_factor": "inf",
+       "worst_basket": 10.0,
+       "avg_mae": -19.045626,
+       "avg_positions": 2.294643
+      },
+      "TRENDING_UP": {
+       "baskets": 66,
+       "win_rate_pct": 98.484848,
+       "net_pnl": 643.800586,
+       "avg_pnl": 9.754554,
+       "profit_factor": 104.848619,
+       "worst_basket": -6.199414,
+       "avg_mae": -25.922758,
+       "avg_positions": 2.530303
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -21.595574,
+      "worst_mae": -180.000488,
+      "avg_mfe": 19.979194,
+      "avg_winner_mae": -21.675777,
+      "median_winner_profit_to_mae": 0.980448,
+      "winners_with_mae_over_1x_profit_pct": 50.847458,
+      "winners_with_mae_over_3x_profit_pct": 22.033898,
+      "worst_mae_in_avg_wins": 18.000049,
+      "largest_loss_in_avg_wins": 0.619941
+     },
+     "costs": {
+      "spread_usd": 127.2,
+      "slippage_usd": 42.4,
+      "commission_usd": 0.0,
+      "total_usd": 169.6,
+      "fills": 602
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    },
+    "5m_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 1400.600586,
+     "return_pct": 14.006006,
+     "baskets": 164,
+     "win_rate_pct": 98.780488,
+     "profit_factor": 7.383794,
+     "avg_basket_profit": 10.0,
+     "avg_basket_loss": -109.699707,
+     "largest_basket_loss": -212.2,
+     "max_drawdown_pct": -2.124411,
+     "worst_floating_pnl": -195.500977,
+     "max_consecutive_losses": 1,
+     "max_positions_in_basket": 5,
+     "max_notional_usd": 23272.5,
+     "max_margin_usage_pct": 2.327747,
+     "close_reasons": {
+      "TARGET": 162,
+      "LOSS_LIMIT": 1,
+      "END_OF_DATA": 1
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 102,
+       "win_rate_pct": 99.019608,
+       "net_pnl": 797.8,
+       "avg_pnl": 7.821569,
+       "profit_factor": 4.759661,
+       "worst_basket": -212.2,
+       "avg_mae": -20.733416,
+       "avg_positions": 2.137255
+      },
+      "TRENDING_UP": {
+       "baskets": 62,
+       "win_rate_pct": 98.387097,
+       "net_pnl": 602.800586,
+       "avg_pnl": 9.72259,
+       "profit_factor": 84.729117,
+       "worst_basket": -7.199414,
+       "avg_mae": -31.188721,
+       "avg_positions": 2.66129
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -24.686031,
+      "worst_mae": -220.500977,
+      "avg_mfe": 16.348101,
+      "avg_winner_mae": -23.584003,
+      "median_winner_profit_to_mae": 1.041688,
+      "winners_with_mae_over_1x_profit_pct": 48.148148,
+      "winners_with_mae_over_3x_profit_pct": 22.222222,
+      "worst_mae_in_avg_wins": 22.050098,
+      "largest_loss_in_avg_wins": 21.22
+     },
+     "costs": {
+      "spread_usd": 114.9,
+      "slippage_usd": 38.3,
+      "commission_usd": 0.0,
+      "total_usd": 153.2,
+      "fills": 547
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    }
+   }
+  },
+  "multiplier_high_risk": {
+   "FAVOURABLE_FIRST": {
+    "ohlc_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": -596.321592,
+     "return_pct": -5.963216,
+     "baskets": 191,
+     "win_rate_pct": 92.670157,
+     "profit_factor": 0.785124,
+     "avg_basket_profit": 12.309999,
+     "avg_basket_loss": -198.227961,
+     "largest_basket_loss": -204.745471,
+     "max_drawdown_pct": -8.142745,
+     "worst_floating_pnl": -173.318146,
+     "max_consecutive_losses": 2,
+     "max_positions_in_basket": 4,
+     "max_notional_usd": 69784.49707,
+     "max_margin_usage_pct": 7.12489,
+     "close_reasons": {
+      "TARGET": 177,
+      "LOSS_LIMIT": 14
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 118,
+       "win_rate_pct": 91.525424,
+       "net_pnl": -494.012754,
+       "avg_pnl": -4.186549,
+       "profit_factor": 0.750861,
+       "worst_basket": -204.745471,
+       "avg_mae": -38.410418,
+       "avg_positions": 2.161017
+      },
+      "TRENDING_UP": {
+       "baskets": 73,
+       "win_rate_pct": 94.520548,
+       "net_pnl": -102.308838,
+       "avg_pnl": -1.401491,
+       "profit_factor": 0.870873,
+       "worst_basket": -204.638235,
+       "avg_mae": -45.944778,
+       "avg_positions": 2.520548
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -41.290042,
+      "worst_mae": -396.626337,
+      "avg_mfe": 23.202925,
+      "avg_winner_mae": -24.980033,
+      "median_winner_profit_to_mae": 0.860605,
+      "winners_with_mae_over_1x_profit_pct": 54.237288,
+      "winners_with_mae_over_3x_profit_pct": 23.163842,
+      "worst_mae_in_avg_wins": 32.219851,
+      "largest_loss_in_avg_wins": 16.632452
+     },
+     "costs": {
+      "spread_usd": 321.9,
+      "slippage_usd": 107.3,
+      "commission_usd": 0.0,
+      "total_usd": 429.2,
+      "fills": 630
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    },
+    "5m_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": -10.215181,
+     "return_pct": -0.102152,
+     "baskets": 192,
+     "win_rate_pct": 94.270833,
+     "profit_factor": 0.995417,
+     "avg_basket_profit": 12.25895,
+     "avg_basket_loss": -202.644095,
+     "largest_basket_loss": -208.483726,
+     "max_drawdown_pct": -5.090283,
+     "worst_floating_pnl": -173.318146,
+     "max_consecutive_losses": 2,
+     "max_positions_in_basket": 4,
+     "max_notional_usd": 69784.49707,
+     "max_margin_usage_pct": 7.051305,
+     "close_reasons": {
+      "TARGET": 181,
+      "LOSS_LIMIT": 11
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 119,
+       "win_rate_pct": 93.277311,
+       "net_pnl": -102.233923,
+       "avg_pnl": -0.859109,
+       "profit_factor": 0.936936,
+       "worst_basket": -208.483726,
+       "avg_mae": -36.379801,
+       "avg_positions": 2.142857
+      },
+      "TRENDING_UP": {
+       "baskets": 73,
+       "win_rate_pct": 95.890411,
+       "net_pnl": 92.018742,
+       "avg_pnl": 1.260531,
+       "profit_factor": 1.151351,
+       "worst_basket": -208.452781,
+       "avg_mae": -42.82598,
+       "avg_positions": 2.575342
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -38.830692,
+      "worst_mae": -375.579076,
+      "avg_mfe": 20.071332,
+      "avg_winner_mae": -26.960588,
+      "median_winner_profit_to_mae": 0.857204,
+      "winners_with_mae_over_1x_profit_pct": 54.143646,
+      "winners_with_mae_over_3x_profit_pct": 22.099448,
+      "worst_mae_in_avg_wins": 30.637134,
+      "largest_loss_in_avg_wins": 17.006655
+     },
+     "costs": {
+      "spread_usd": 322.2,
+      "slippage_usd": 107.4,
+      "commission_usd": 0.0,
+      "total_usd": 429.6,
+      "fills": 635
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    }
+   },
+   "RANDOM": {
+    "ohlc_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 1322.418963,
+     "return_pct": 13.22419,
+     "baskets": 205,
+     "win_rate_pct": 97.560976,
+     "profit_factor": 2.217192,
+     "avg_basket_profit": 12.044349,
+     "avg_basket_loss": -217.290179,
+     "largest_basket_loss": -230.45753,
+     "max_drawdown_pct": -3.64642,
+     "worst_floating_pnl": -158.784542,
+     "max_consecutive_losses": 1,
+     "max_positions_in_basket": 4,
+     "max_notional_usd": 69731.99707,
+     "max_margin_usage_pct": 7.057751,
+     "close_reasons": {
+      "TARGET": 200,
+      "LOSS_LIMIT": 5
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 123,
+       "win_rate_pct": 96.747967,
+       "net_pnl": 741.861902,
+       "avg_pnl": 6.031398,
+       "profit_factor": 1.865642,
+       "worst_basket": -230.45753,
+       "avg_mae": -28.069028,
+       "avg_positions": 2.073171
+      },
+      "TRENDING_UP": {
+       "baskets": 82,
+       "win_rate_pct": 98.780488,
+       "net_pnl": 580.557061,
+       "avg_pnl": 7.079964,
+       "profit_factor": 3.530289,
+       "worst_basket": -229.442939,
+       "avg_mae": -22.40731,
+       "avg_positions": 2.219512
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -25.804341,
+      "worst_mae": -291.992102,
+      "avg_mfe": 25.628424,
+      "avg_winner_mae": -20.312812,
+      "median_winner_profit_to_mae": 0.95594,
+      "winners_with_mae_over_1x_profit_pct": 50.5,
+      "winners_with_mae_over_3x_profit_pct": 17.0,
+      "worst_mae_in_avg_wins": 24.243078,
+      "largest_loss_in_avg_wins": 19.134079
+     },
+     "costs": {
+      "spread_usd": 275.7,
+      "slippage_usd": 91.9,
+      "commission_usd": 0.0,
+      "total_usd": 367.6,
+      "fills": 642
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    },
+    "5m_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 785.878692,
+     "return_pct": 7.858787,
+     "baskets": 196,
+     "win_rate_pct": 96.428571,
+     "profit_factor": 1.519421,
+     "avg_basket_profit": 12.163333,
+     "avg_basket_loss": -216.141595,
+     "largest_basket_loss": -222.666988,
+     "max_drawdown_pct": -4.539084,
+     "worst_floating_pnl": -165.877632,
+     "max_consecutive_losses": 1,
+     "max_positions_in_basket": 4,
+     "max_notional_usd": 69784.49707,
+     "max_margin_usage_pct": 7.051305,
+     "close_reasons": {
+      "TARGET": 189,
+      "LOSS_LIMIT": 7
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 121,
+       "win_rate_pct": 95.041322,
+       "net_pnl": 268.545681,
+       "avg_pnl": 2.219386,
+       "profit_factor": 1.208123,
+       "worst_basket": -220.813648,
+       "avg_mae": -29.803711,
+       "avg_positions": 2.057851
+      },
+      "TRENDING_UP": {
+       "baskets": 75,
+       "win_rate_pct": 98.666667,
+       "net_pnl": 517.333012,
+       "avg_pnl": 6.897773,
+       "profit_factor": 3.323348,
+       "worst_basket": -222.666988,
+       "avg_mae": -35.205426,
+       "avg_positions": 2.56
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -31.870693,
+      "worst_mae": -286.774562,
+      "avg_mfe": 20.868678,
+      "avg_winner_mae": -24.212379,
+      "median_winner_profit_to_mae": 0.91601,
+      "winners_with_mae_over_1x_profit_pct": 52.380952,
+      "winners_with_mae_over_3x_profit_pct": 20.634921,
+      "worst_mae_in_avg_wins": 23.576973,
+      "largest_loss_in_avg_wins": 18.306413
+     },
+     "costs": {
+      "spread_usd": 307.8,
+      "slippage_usd": 102.6,
+      "commission_usd": 0.0,
+      "total_usd": 410.4,
+      "fills": 637
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    }
+   },
+   "ADVERSE_FIRST": {
+    "ohlc_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 2210.172457,
+     "return_pct": 22.101725,
+     "baskets": 221,
+     "win_rate_pct": 100.0,
+     "profit_factor": "inf",
+     "avg_basket_profit": 10.00078,
+     "avg_basket_loss": null,
+     "largest_basket_loss": 10.0,
+     "max_drawdown_pct": -0.443445,
+     "worst_floating_pnl": -42.525195,
+     "max_consecutive_losses": 0,
+     "max_positions_in_basket": 4,
+     "max_notional_usd": 67852.5,
+     "max_margin_usage_pct": 6.423202,
+     "close_reasons": {
+      "TARGET": 221
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 134,
+       "win_rate_pct": 100.0,
+       "net_pnl": 1340.172457,
+       "avg_pnl": 10.001287,
+       "profit_factor": "inf",
+       "worst_basket": 10.0,
+       "avg_mae": -19.13871,
+       "avg_positions": 2.007463
+      },
+      "TRENDING_UP": {
+       "baskets": 87,
+       "win_rate_pct": 100.0,
+       "net_pnl": 870.0,
+       "avg_pnl": 10.0,
+       "profit_factor": "inf",
+       "worst_basket": 10.0,
+       "avg_mae": -16.331481,
+       "avg_positions": 2.16092
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -18.033602,
+      "worst_mae": -172.051587,
+      "avg_mfe": 28.847437,
+      "avg_winner_mae": -18.033602,
+      "median_winner_profit_to_mae": 1.055166,
+      "winners_with_mae_over_1x_profit_pct": 47.511312,
+      "winners_with_mae_over_3x_profit_pct": 12.669683,
+      "worst_mae_in_avg_wins": 17.203816,
+      "largest_loss_in_avg_wins": null
+     },
+     "costs": {
+      "spread_usd": 271.5,
+      "slippage_usd": 90.5,
+      "commission_usd": 0.0,
+      "total_usd": 362.0,
+      "fills": 678
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    },
+    "5m_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 867.814925,
+     "return_pct": 8.678149,
+     "baskets": 204,
+     "win_rate_pct": 97.54902,
+     "profit_factor": 1.773207,
+     "avg_basket_profit": 10.000867,
+     "avg_basket_loss": -224.471507,
+     "largest_basket_loss": -227.2,
+     "max_drawdown_pct": -4.332615,
+     "worst_floating_pnl": -162.604072,
+     "max_consecutive_losses": 2,
+     "max_positions_in_basket": 4,
+     "max_notional_usd": 67258.498535,
+     "max_margin_usage_pct": 6.408684,
+     "close_reasons": {
+      "TARGET": 199,
+      "LOSS_LIMIT": 5
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 125,
+       "win_rate_pct": 96.8,
+       "net_pnl": 314.133436,
+       "avg_pnl": 2.513067,
+       "profit_factor": 1.35058,
+       "worst_basket": -227.2,
+       "avg_mae": -21.558838,
+       "avg_positions": 1.968
+      },
+      "TRENDING_UP": {
+       "baskets": 79,
+       "win_rate_pct": 98.734177,
+       "net_pnl": 553.681488,
+       "avg_pnl": 7.008626,
+       "profit_factor": 3.44647,
+       "worst_basket": -226.318512,
+       "avg_mae": -28.391312,
+       "avg_positions": 2.379747
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -24.204747,
+      "worst_mae": -315.627802,
+      "avg_mfe": 18.97684,
+      "avg_winner_mae": -18.420418,
+      "median_winner_profit_to_mae": 1.002701,
+      "winners_with_mae_over_1x_profit_pct": 49.246231,
+      "winners_with_mae_over_3x_profit_pct": 15.577889,
+      "worst_mae_in_avg_wins": 31.560045,
+      "largest_loss_in_avg_wins": 22.718031
+     },
+     "costs": {
+      "spread_usd": 274.8,
+      "slippage_usd": 91.6,
+      "commission_usd": 0.0,
+      "total_usd": 366.4,
+      "fills": 638
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    }
+   }
+  },
+  "signal_grid": {
+   "FAVOURABLE_FIRST": {
+    "ohlc_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 790.331993,
+     "return_pct": 7.90332,
+     "baskets": 140,
+     "win_rate_pct": 97.857143,
+     "profit_factor": 2.293885,
+     "avg_basket_profit": 10.227392,
+     "avg_basket_loss": -203.606907,
+     "largest_basket_loss": -205.364,
+     "max_drawdown_pct": -3.503287,
+     "worst_floating_pnl": -185.434164,
+     "max_consecutive_losses": 1,
+     "max_positions_in_basket": 5,
+     "max_notional_usd": 23281.499023,
+     "max_margin_usage_pct": 2.333253,
+     "close_reasons": {
+      "TARGET": 137,
+      "LOSS_LIMIT": 3
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 89,
+       "win_rate_pct": 97.752809,
+       "net_pnl": 492.131993,
+       "avg_pnl": 5.529573,
+       "profit_factor": 2.203196,
+       "worst_basket": -205.364,
+       "avg_mae": -25.884289,
+       "avg_positions": 2.179775
+      },
+      "TRENDING_UP": {
+       "baskets": 51,
+       "win_rate_pct": 98.039216,
+       "net_pnl": 298.2,
+       "avg_pnl": 5.847059,
+       "profit_factor": 2.477701,
+       "worst_basket": -201.8,
+       "avg_mae": -30.769124,
+       "avg_positions": 2.490196
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -27.663765,
+      "worst_mae": -253.961493,
+      "avg_mfe": 18.105114,
+      "avg_winner_mae": -23.334815,
+      "median_winner_profit_to_mae": 1.086792,
+      "winners_with_mae_over_1x_profit_pct": 45.985401,
+      "winners_with_mae_over_3x_profit_pct": 24.087591,
+      "worst_mae_in_avg_wins": 24.831501,
+      "largest_loss_in_avg_wins": 20.079801
+     },
+     "costs": {
+      "spread_usd": 96.3,
+      "slippage_usd": 32.1,
+      "commission_usd": 0.0,
+      "total_usd": 128.4,
+      "fills": 461
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    },
+    "5m_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 1013.788713,
+     "return_pct": 10.137887,
+     "baskets": 141,
+     "win_rate_pct": 98.58156,
+     "profit_factor": 3.488656,
+     "avg_basket_profit": 10.22412,
+     "avg_basket_loss": -203.682,
+     "largest_basket_loss": -205.564,
+     "max_drawdown_pct": -2.208702,
+     "worst_floating_pnl": -185.434164,
+     "max_consecutive_losses": 1,
+     "max_positions_in_basket": 5,
+     "max_notional_usd": 23281.499023,
+     "max_margin_usage_pct": 2.333253,
+     "close_reasons": {
+      "TARGET": 139,
+      "LOSS_LIMIT": 2
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 91,
+       "win_rate_pct": 98.901099,
+       "net_pnl": 725.588713,
+       "avg_pnl": 7.973502,
+       "profit_factor": 4.529746,
+       "worst_basket": -205.564,
+       "avg_mae": -23.772169,
+       "avg_positions": 2.10989
+      },
+      "TRENDING_UP": {
+       "baskets": 50,
+       "win_rate_pct": 98.0,
+       "net_pnl": 288.2,
+       "avg_pnl": 5.764,
+       "profit_factor": 2.428147,
+       "worst_basket": -201.8,
+       "avg_mae": -30.113462,
+       "avg_positions": 2.48
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -26.020854,
+      "worst_mae": -238.361884,
+      "avg_mfe": 14.97192,
+      "avg_winner_mae": -23.148521,
+      "median_winner_profit_to_mae": 1.15494,
+      "winners_with_mae_over_1x_profit_pct": 45.323741,
+      "winners_with_mae_over_3x_profit_pct": 23.021583,
+      "worst_mae_in_avg_wins": 23.313682,
+      "largest_loss_in_avg_wins": 20.105789
+     },
+     "costs": {
+      "spread_usd": 94.8,
+      "slippage_usd": 31.6,
+      "commission_usd": 0.0,
+      "total_usd": 126.4,
+      "fills": 457
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    }
+   },
+   "RANDOM": {
+    "ohlc_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 1043.592713,
+     "return_pct": 10.435927,
+     "baskets": 144,
+     "win_rate_pct": 98.611111,
+     "profit_factor": 3.560587,
+     "avg_basket_profit": 10.219385,
+     "avg_basket_loss": -203.78,
+     "largest_basket_loss": -205.56,
+     "max_drawdown_pct": -2.261541,
+     "worst_floating_pnl": -185.434164,
+     "max_consecutive_losses": 1,
+     "max_positions_in_basket": 5,
+     "max_notional_usd": 23281.499023,
+     "max_margin_usage_pct": 2.323569,
+     "close_reasons": {
+      "TARGET": 142,
+      "LOSS_LIMIT": 2
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 95,
+       "win_rate_pct": 98.947368,
+       "net_pnl": 765.592713,
+       "avg_pnl": 8.058871,
+       "profit_factor": 4.724425,
+       "worst_basket": -205.56,
+       "avg_mae": -25.315883,
+       "avg_positions": 2.147368
+      },
+      "TRENDING_UP": {
+       "baskets": 49,
+       "win_rate_pct": 97.959184,
+       "net_pnl": 278.0,
+       "avg_pnl": 5.673469,
+       "profit_factor": 2.376238,
+       "worst_basket": -202.0,
+       "avg_mae": -29.632567,
+       "avg_positions": 2.489796
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -26.784755,
+      "worst_mae": -253.961493,
+      "avg_mfe": 17.95333,
+      "avg_winner_mae": -23.838796,
+      "median_winner_profit_to_mae": 1.053966,
+      "winners_with_mae_over_1x_profit_pct": 47.183099,
+      "winners_with_mae_over_3x_profit_pct": 23.943662,
+      "worst_mae_in_avg_wins": 24.850956,
+      "largest_loss_in_avg_wins": 20.114713
+     },
+     "costs": {
+      "spread_usd": 97.8,
+      "slippage_usd": 32.6,
+      "commission_usd": 0.0,
+      "total_usd": 130.4,
+      "fills": 470
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    },
+    "5m_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 1023.392713,
+     "return_pct": 10.233927,
+     "baskets": 142,
+     "win_rate_pct": 98.591549,
+     "profit_factor": 3.509792,
+     "avg_basket_profit": 10.222519,
+     "avg_basket_loss": -203.88,
+     "largest_basket_loss": -205.76,
+     "max_drawdown_pct": -2.208503,
+     "worst_floating_pnl": -185.434164,
+     "max_consecutive_losses": 1,
+     "max_positions_in_basket": 5,
+     "max_notional_usd": 23281.499023,
+     "max_margin_usage_pct": 2.323569,
+     "close_reasons": {
+      "TARGET": 140,
+      "LOSS_LIMIT": 2
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 92,
+       "win_rate_pct": 98.913043,
+       "net_pnl": 735.392713,
+       "avg_pnl": 7.993399,
+       "profit_factor": 4.574031,
+       "worst_basket": -205.76,
+       "avg_mae": -23.320893,
+       "avg_positions": 2.097826
+      },
+      "TRENDING_UP": {
+       "baskets": 50,
+       "win_rate_pct": 98.0,
+       "net_pnl": 288.0,
+       "avg_pnl": 5.76,
+       "profit_factor": 2.425743,
+       "worst_basket": -202.0,
+       "avg_mae": -30.219469,
+       "avg_positions": 2.48
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -25.749969,
+      "worst_mae": -238.361884,
+      "avg_mfe": 14.956239,
+      "avg_winner_mae": -22.894282,
+      "median_winner_profit_to_mae": 1.114186,
+      "winners_with_mae_over_1x_profit_pct": 45.714286,
+      "winners_with_mae_over_3x_profit_pct": 22.142857,
+      "worst_mae_in_avg_wins": 23.317333,
+      "largest_loss_in_avg_wins": 20.128111
+     },
+     "costs": {
+      "spread_usd": 95.1,
+      "slippage_usd": 31.7,
+      "commission_usd": 0.0,
+      "total_usd": 126.8,
+      "fills": 459
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    }
+   },
+   "ADVERSE_FIRST": {
+    "ohlc_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 1032.04,
+     "return_pct": 10.3204,
+     "baskets": 146,
+     "win_rate_pct": 98.630137,
+     "profit_factor": 3.529758,
+     "avg_basket_profit": 10.0,
+     "avg_basket_loss": -203.98,
+     "largest_basket_loss": -205.96,
+     "max_drawdown_pct": -2.208301,
+     "worst_floating_pnl": -185.434164,
+     "max_consecutive_losses": 1,
+     "max_positions_in_basket": 5,
+     "max_notional_usd": 23281.499023,
+     "max_margin_usage_pct": 2.323569,
+     "close_reasons": {
+      "TARGET": 144,
+      "LOSS_LIMIT": 2
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 97,
+       "win_rate_pct": 98.969072,
+       "net_pnl": 754.04,
+       "avg_pnl": 7.773608,
+       "profit_factor": 4.661099,
+       "worst_basket": -205.96,
+       "avg_mae": -24.143217,
+       "avg_positions": 2.103093
+      },
+      "TRENDING_UP": {
+       "baskets": 49,
+       "win_rate_pct": 97.959184,
+       "net_pnl": 278.0,
+       "avg_pnl": 5.673469,
+       "profit_factor": 2.376238,
+       "worst_basket": -202.0,
+       "avg_mae": -29.985075,
+       "avg_positions": 2.489796
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -26.10384,
+      "worst_mae": -253.961493,
+      "avg_mfe": 17.420706,
+      "avg_winner_mae": -23.189341,
+      "median_winner_profit_to_mae": 1.064839,
+      "winners_with_mae_over_1x_profit_pct": 47.222222,
+      "winners_with_mae_over_3x_profit_pct": 22.916667,
+      "worst_mae_in_avg_wins": 25.396149,
+      "largest_loss_in_avg_wins": 20.596
+     },
+     "costs": {
+      "spread_usd": 97.8,
+      "slippage_usd": 32.6,
+      "commission_usd": 0.0,
+      "total_usd": 130.4,
+      "fills": 472
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    },
+    "5m_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 1033.392713,
+     "return_pct": 10.333927,
+     "baskets": 143,
+     "win_rate_pct": 98.601399,
+     "profit_factor": 3.534316,
+     "avg_basket_profit": 10.220941,
+     "avg_basket_loss": -203.88,
+     "largest_basket_loss": -205.76,
+     "max_drawdown_pct": -2.208503,
+     "worst_floating_pnl": -185.434164,
+     "max_consecutive_losses": 1,
+     "max_positions_in_basket": 5,
+     "max_notional_usd": 23281.499023,
+     "max_margin_usage_pct": 2.323569,
+     "close_reasons": {
+      "TARGET": 141,
+      "LOSS_LIMIT": 2
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 93,
+       "win_rate_pct": 98.924731,
+       "net_pnl": 745.392713,
+       "avg_pnl": 8.014975,
+       "profit_factor": 4.622632,
+       "worst_basket": -205.76,
+       "avg_mae": -22.885383,
+       "avg_positions": 2.075269
+      },
+      "TRENDING_UP": {
+       "baskets": 50,
+       "win_rate_pct": 98.0,
+       "net_pnl": 288.0,
+       "avg_pnl": 5.76,
+       "profit_factor": 2.425743,
+       "worst_basket": -202.0,
+       "avg_mae": -31.03836,
+       "avg_positions": 2.5
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -25.736074,
+      "worst_mae": -238.361884,
+      "avg_mfe": 15.023236,
+      "avg_winner_mae": -22.900444,
+      "median_winner_profit_to_mae": 1.086792,
+      "winners_with_mae_over_1x_profit_pct": 46.099291,
+      "winners_with_mae_over_3x_profit_pct": 21.985816,
+      "worst_mae_in_avg_wins": 23.320933,
+      "largest_loss_in_avg_wins": 20.131218
+     },
+     "costs": {
+      "spread_usd": 95.4,
+      "slippage_usd": 31.8,
+      "commission_usd": 0.0,
+      "total_usd": 127.2,
+      "fills": 461
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    }
+   }
+  },
+  "video_style": {
+   "FAVOURABLE_FIRST": {
+    "ohlc_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": -1235.132791,
+     "return_pct": -12.351328,
+     "baskets": 215,
+     "win_rate_pct": 91.627907,
+     "profit_factor": 0.614639,
+     "avg_basket_profit": 10.0,
+     "avg_basket_loss": -178.062933,
+     "largest_basket_loss": -201.4,
+     "max_drawdown_pct": -14.589046,
+     "worst_floating_pnl": -167.501465,
+     "max_consecutive_losses": 1,
+     "max_positions_in_basket": 5,
+     "max_notional_usd": 69865.50293,
+     "max_margin_usage_pct": 7.601957,
+     "close_reasons": {
+      "TARGET": 197,
+      "LOSS_LIMIT": 17,
+      "END_OF_DATA": 1
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 127,
+       "win_rate_pct": 90.551181,
+       "net_pnl": -1084.044173,
+       "avg_pnl": -8.535781,
+       "profit_factor": 0.514762,
+       "worst_basket": -201.4,
+       "avg_mae": -44.571708,
+       "avg_positions": 2.866142
+      },
+      "TRENDING_UP": {
+       "baskets": 88,
+       "win_rate_pct": 93.181818,
+       "net_pnl": -151.088618,
+       "avg_pnl": -1.716916,
+       "profit_factor": 0.844413,
+       "worst_basket": -199.572,
+       "avg_mae": -44.679616,
+       "avg_positions": 3.329545
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -44.615875,
+      "worst_mae": -310.001465,
+      "avg_mfe": 26.309718,
+      "avg_winner_mae": -28.252365,
+      "median_winner_profit_to_mae": 0.746269,
+      "winners_with_mae_over_1x_profit_pct": 56.345178,
+      "winners_with_mae_over_3x_profit_pct": 27.918782,
+      "worst_mae_in_avg_wins": 31.000146,
+      "largest_loss_in_avg_wins": 20.14
+     },
+     "costs": {
+      "spread_usd": 469.8,
+      "slippage_usd": 156.6,
+      "commission_usd": 0.0,
+      "total_usd": 626.4,
+      "fills": 872
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    },
+    "5m_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 9.985775,
+     "return_pct": 0.099858,
+     "baskets": 223,
+     "win_rate_pct": 94.170404,
+     "profit_factor": 1.004097,
+     "avg_basket_profit": 11.654755,
+     "avg_basket_loss": -187.500982,
+     "largest_basket_loss": -209.983294,
+     "max_drawdown_pct": -7.333799,
+     "worst_floating_pnl": -203.5,
+     "max_consecutive_losses": 1,
+     "max_positions_in_basket": 5,
+     "max_notional_usd": 69865.50293,
+     "max_margin_usage_pct": 7.146892,
+     "close_reasons": {
+      "TARGET": 210,
+      "LOSS_LIMIT": 12,
+      "END_OF_DATA": 1
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 130,
+       "win_rate_pct": 94.615385,
+       "net_pnl": 173.903129,
+       "avg_pnl": 1.337716,
+       "profit_factor": 1.123898,
+       "worst_basket": -203.88947,
+       "avg_mae": -36.435437,
+       "avg_positions": 2.792308
+      },
+      "TRENDING_UP": {
+       "baskets": 93,
+       "win_rate_pct": 93.548387,
+       "net_pnl": -163.917354,
+       "avg_pnl": -1.762552,
+       "profit_factor": 0.84146,
+       "worst_basket": -209.983294,
+       "avg_mae": -39.866757,
+       "avg_positions": 3.129032
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -37.866436,
+      "worst_mae": -236.495605,
+      "avg_mfe": 22.839284,
+      "avg_winner_mae": -27.631037,
+      "median_winner_profit_to_mae": 0.961538,
+      "winners_with_mae_over_1x_profit_pct": 51.428571,
+      "winners_with_mae_over_3x_profit_pct": 23.333333,
+      "worst_mae_in_avg_wins": 20.29177,
+      "largest_loss_in_avg_wins": 18.016963
+     },
+     "costs": {
+      "spread_usd": 452.7,
+      "slippage_usd": 150.9,
+      "commission_usd": 0.0,
+      "total_usd": 603.6,
+      "fills": 877
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    }
+   },
+   "RANDOM": {
+    "ohlc_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 883.491904,
+     "return_pct": 8.834919,
+     "baskets": 236,
+     "win_rate_pct": 96.186441,
+     "profit_factor": 1.509509,
+     "avg_basket_profit": 11.530831,
+     "avg_basket_loss": -192.667403,
+     "largest_basket_loss": -223.677225,
+     "max_drawdown_pct": -4.61189,
+     "worst_floating_pnl": -203.5,
+     "max_consecutive_losses": 1,
+     "max_positions_in_basket": 5,
+     "max_notional_usd": 69888.00293,
+     "max_margin_usage_pct": 6.929206,
+     "close_reasons": {
+      "TARGET": 227,
+      "LOSS_LIMIT": 8,
+      "END_OF_DATA": 1
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 139,
+       "win_rate_pct": 94.964029,
+       "net_pnl": 174.767372,
+       "avg_pnl": 1.257319,
+       "profit_factor": 1.117079,
+       "worst_basket": -221.654901,
+       "avg_mae": -38.03077,
+       "avg_positions": 2.877698
+      },
+      "TRENDING_UP": {
+       "baskets": 97,
+       "win_rate_pct": 97.938144,
+       "net_pnl": 708.724533,
+       "avg_pnl": 7.306438,
+       "profit_factor": 3.937408,
+       "worst_basket": -223.677225,
+       "avg_mae": -34.968014,
+       "avg_positions": 3.216495
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -36.771925,
+      "worst_mae": -290.49707,
+      "avg_mfe": 37.163215,
+      "avg_winner_mae": -29.689333,
+      "median_winner_profit_to_mae": 0.746269,
+      "winners_with_mae_over_1x_profit_pct": 57.709251,
+      "winners_with_mae_over_3x_profit_pct": 28.634361,
+      "worst_mae_in_avg_wins": 25.193074,
+      "largest_loss_in_avg_wins": 19.398189
+     },
+     "costs": {
+      "spread_usd": 499.8,
+      "slippage_usd": 166.6,
+      "commission_usd": 0.0,
+      "total_usd": 666.4,
+      "fills": 948
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    },
+    "5m_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 1406.78703,
+     "return_pct": 14.06787,
+     "baskets": 239,
+     "win_rate_pct": 97.07113,
+     "profit_factor": 2.115868,
+     "avg_basket_profit": 11.497839,
+     "avg_basket_loss": -180.101644,
+     "largest_basket_loss": -224.640516,
+     "max_drawdown_pct": -5.803738,
+     "worst_floating_pnl": -197.501465,
+     "max_consecutive_losses": 1,
+     "max_positions_in_basket": 5,
+     "max_notional_usd": 69865.50293,
+     "max_margin_usage_pct": 6.956228,
+     "close_reasons": {
+      "TARGET": 232,
+      "LOSS_LIMIT": 6,
+      "END_OF_DATA": 1
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 142,
+       "win_rate_pct": 97.887324,
+       "net_pnl": 1112.324739,
+       "avg_pnl": 7.833273,
+       "profit_factor": 2.779225,
+       "worst_basket": -224.640516,
+       "avg_mae": -25.336668,
+       "avg_positions": 2.669014
+      },
+      "TRENDING_UP": {
+       "baskets": 97,
+       "win_rate_pct": 95.876289,
+       "net_pnl": 294.462291,
+       "avg_pnl": 3.035694,
+       "profit_factor": 1.463328,
+       "worst_basket": -218.816853,
+       "avg_mae": -34.882561,
+       "avg_positions": 3.072165
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -29.210942,
+      "worst_mae": -273.995605,
+      "avg_mfe": 23.630949,
+      "avg_winner_mae": -24.136721,
+      "median_winner_profit_to_mae": 0.93529,
+      "winners_with_mae_over_1x_profit_pct": 53.017241,
+      "winners_with_mae_over_3x_profit_pct": 21.12069,
+      "worst_mae_in_avg_wins": 23.830184,
+      "largest_loss_in_avg_wins": 19.53763
+     },
+     "costs": {
+      "spread_usd": 452.1,
+      "slippage_usd": 150.7,
+      "commission_usd": 0.0,
+      "total_usd": 602.8,
+      "fills": 916
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    }
+   },
+   "ADVERSE_FIRST": {
+    "ohlc_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 2630.0,
+     "return_pct": 26.3,
+     "baskets": 263,
+     "win_rate_pct": 100.0,
+     "profit_factor": "inf",
+     "avg_basket_profit": 10.0,
+     "avg_basket_loss": null,
+     "largest_basket_loss": 10.0,
+     "max_drawdown_pct": -0.244633,
+     "worst_floating_pnl": -25.001465,
+     "max_consecutive_losses": 0,
+     "max_positions_in_basket": 5,
+     "max_notional_usd": 67378.498535,
+     "max_margin_usage_pct": 6.608976,
+     "close_reasons": {
+      "TARGET": 263
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 154,
+       "win_rate_pct": 100.0,
+       "net_pnl": 1540.0,
+       "avg_pnl": 10.0,
+       "profit_factor": "inf",
+       "worst_basket": 10.0,
+       "avg_mae": -26.297343,
+       "avg_positions": 2.779221
+      },
+      "TRENDING_UP": {
+       "baskets": 109,
+       "win_rate_pct": 100.0,
+       "net_pnl": 1090.0,
+       "avg_pnl": 10.0,
+       "profit_factor": "inf",
+       "worst_basket": 10.0,
+       "avg_mae": -22.654215,
+       "avg_positions": 2.889908
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -24.787454,
+      "worst_mae": -197.501465,
+      "avg_mfe": 38.640784,
+      "avg_winner_mae": -24.787454,
+      "median_winner_profit_to_mae": 0.909042,
+      "winners_with_mae_over_1x_profit_pct": 54.372624,
+      "winners_with_mae_over_3x_profit_pct": 22.813688,
+      "worst_mae_in_avg_wins": 19.750146,
+      "largest_loss_in_avg_wins": null
+     },
+     "costs": {
+      "spread_usd": 492.6,
+      "slippage_usd": 164.2,
+      "commission_usd": 0.0,
+      "total_usd": 656.8,
+      "fills": 1006
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    },
+    "5m_path": {
+     "start": "2026-08-27T04:30:00+00:00",
+     "end": "2026-10-01T13:15:00+00:00",
+     "net_pnl": 2580.0,
+     "return_pct": 25.8,
+     "baskets": 258,
+     "win_rate_pct": 100.0,
+     "profit_factor": "inf",
+     "avg_basket_profit": 10.0,
+     "avg_basket_loss": null,
+     "largest_basket_loss": 10.0,
+     "max_drawdown_pct": -0.588606,
+     "worst_floating_pnl": -63.995605,
+     "max_consecutive_losses": 0,
+     "max_positions_in_basket": 5,
+     "max_notional_usd": 67378.498535,
+     "max_margin_usage_pct": 6.608976,
+     "close_reasons": {
+      "TARGET": 258
+     },
+     "by_regime": {
+      "TRENDING_DOWN": {
+       "baskets": 150,
+       "win_rate_pct": 100.0,
+       "net_pnl": 1500.0,
+       "avg_pnl": 10.0,
+       "profit_factor": "inf",
+       "worst_basket": 10.0,
+       "avg_mae": -14.854747,
+       "avg_positions": 2.52
+      },
+      "TRENDING_UP": {
+       "baskets": 108,
+       "win_rate_pct": 100.0,
+       "net_pnl": 1080.0,
+       "avg_pnl": 10.0,
+       "profit_factor": "inf",
+       "worst_basket": 10.0,
+       "avg_mae": -19.312212,
+       "avg_positions": 2.842593
+      }
+     },
+     "mae_mfe": {
+      "avg_mae": -16.720662,
+      "worst_mae": -197.501465,
+      "avg_mfe": 22.977909,
+      "avg_winner_mae": -16.720662,
+      "median_winner_profit_to_mae": 0.961538,
+      "winners_with_mae_over_1x_profit_pct": 53.875969,
+      "winners_with_mae_over_3x_profit_pct": 14.341085,
+      "worst_mae_in_avg_wins": 19.750146,
+      "largest_loss_in_avg_wins": null
+     },
+     "costs": {
+      "spread_usd": 426.6,
+      "slippage_usd": 142.2,
+      "commission_usd": 0.0,
+      "total_usd": 568.8,
+      "fills": 943
+     },
+     "buy_and_hold": {
+      "price_change_pct": -10.16967,
+      "first_open": 4679.600098,
+      "last_close": 4203.700195
+     },
+     "halted": null
+    }
+   }
+  }
+ }
+}

@@ -98,6 +98,53 @@ def bar_ticks(symbol: str, t0: datetime, step: int, o: float, h: float, l: float
             for k, (p, dt) in enumerate(zip(path, offs))]
 
 
+_LATENCY_RNG = np.random.default_rng(0)
+
+
+def _feed(robot: Robot, tk: Tick) -> None:
+    """Process a path tick. With execution delay, an order that falls due between the previous price and
+    this one fills at a price interpolated at its due time, not at the next path point (which can be
+    minutes later, at the candle's extreme)."""
+    prev = robot.last_tick
+    if robot.executor.delay.total_seconds() > 0 and prev is not None and not tk.gap:
+        # place a tick where the path first crosses a level, so a delayed order starts its delay there
+        for _ in range(4 * robot.s.risk.max_positions + 4):
+            _flush_due(robot, prev, tk)
+            prev = robot.last_tick
+            lo, hi = sorted((prev.mid, tk.mid))
+            cross = [lv for lv in robot.strategy.active_levels(tk.spread) if lo < lv < hi]
+            if not cross:
+                break
+            lv = min(cross, key=lambda x: abs(x - prev.mid))
+            t = prev.time + (tk.time - prev.time) * ((lv - prev.mid) / (tk.mid - prev.mid))
+            if not prev.time < t < tk.time:
+                break
+            half = tk.spread / 2
+            robot.process_tick(Tick(tk.symbol, t, lv - half, lv + half))
+    _flush_due(robot, robot.last_tick, tk)
+    robot.process_tick(tk)
+
+
+def _flush_due(robot: Robot, prev: Tick | None, tk: Tick) -> None:
+    """Latency model: the price when a delayed order falls due is the price when it was created plus
+    zero-mean noise (ATR x sqrt(delay / candle length)). Interpolating along the synthetic path instead
+    would assume the move continues after every level cross, which turns latency into a gain for grids."""
+    for _ in range(50):
+        due = robot.executor.next_due()
+        if prev is None or tk.gap or due is None or not (prev.time < due < tk.time):
+            break
+        ref = robot.executor.due_ref()
+        if ref is None:
+            ref = prev.mid
+        lt = robot.market.last_bar
+        atr = lt.atr if lt is not None and lt.atr == lt.atr else 0.0
+        sd = atr * (robot.executor.delay.total_seconds() / robot.bar_seconds) ** 0.5
+        mid = ref + float(_LATENCY_RNG.normal(0.0, sd)) if sd > 0 else ref
+        half = tk.spread / 2
+        prev = Tick(tk.symbol, due, mid - half, mid + half)
+        robot.process_tick(prev)
+
+
 def run_backtest(settings: Settings, candles: pd.DataFrame, label: str = "", log_analysis: bool = False,
                  log: EventLog | None = None, progress=None, start: int = 0, end: int | None = None,
                  on_bar=None, path_candles: pd.DataFrame | None = None) -> BacktestResult:
@@ -127,6 +174,8 @@ def run_backtest(settings: Settings, candles: pd.DataFrame, label: str = "", log
         fine = {k: g for k, g in pc.groupby(key)}
     order = settings.execution.intrabar_order
     rng = np.random.default_rng(settings.execution.intrabar_seed)
+    global _LATENCY_RNG
+    _LATENCY_RNG = np.random.default_rng(settings.execution.intrabar_seed + 1)
     n = len(candles) if end is None else min(end, len(candles))
     if start > 0:
         robot.market.on_candle_close(candles.iloc[start - 1], start - 1)   # indicators as of the window start
@@ -156,7 +205,7 @@ def run_backtest(settings: Settings, candles: pd.DataFrame, label: str = "", log
             ticks = bar_ticks(sym, t0, step, float(row["open"]), float(row["high"]), float(row["low"]),
                               float(row["close"]), spread, low_first)
         for tk in ticks:
-            robot.process_tick(tk)
+            _feed(robot, tk)
         robot.process_bar_close(row, index=i)
         t_last = t0 + timedelta(seconds=step)
         if on_bar is not None:
