@@ -7,23 +7,35 @@
     "starting_balance": 10000.0,
     "fee_bps": 10.0
   },
-  "last_processed": "2026-10-01T09:00:00+00:00",
+  "last_processed": "2026-10-01T10:00:00+00:00",
   "account": {
     "balance": 10000.0,
     "is_active": true,
-    "open_positions": [],
+    "open_positions": [
+      {
+        "symbol": "ETH-USD",
+        "direction": "BUY",
+        "entry_price": 2704.7205395507813,
+        "stop_price": 2669.1075058947745,
+        "target_price": 2775.9466068627953,
+        "size": 2.807960730498823,
+        "opened_at": "2026-10-01T10:00:00+00:00"
+      }
+    ],
     "trade_history": [],
     "risk_state": {
       "equity": 10000.0,
       "peak_equity": 10000.0,
-      "open_positions": 0,
-      "current_exposure": 0.0,
+      "open_positions": 1,
+      "current_exposure": 100.0,
       "daily_loss": 0.0,
-      "current_day": null,
+      "current_day": "2026-10-01",
       "bars_since_last_trade": 10000
     }
   },
-  "log": [],
+  "log": [
+    "2026-10-01 10:00 OPEN BUY ETH-USD @ 2704.72, size 2.807961, stop 2669.11, target 2775.95"
+  ],
   "halted": null,
   "targets": {
     "source": "backtest 2024-10-02 to 2026-10-01",

@@ -7,11 +7,21 @@
     "starting_balance": 10000.0,
     "fee_bps": 0.0
   },
-  "last_processed": "2026-10-01T09:00:00+00:00",
+  "last_processed": "2026-10-01T10:00:00+00:00",
   "account": {
     "balance": 9488.493984238463,
     "is_active": true,
-    "open_positions": [],
+    "open_positions": [
+      {
+        "symbol": "ETH-USD",
+        "direction": "BUY",
+        "entry_price": 2702.02001953125,
+        "stop_price": 2666.406985875243,
+        "target_price": 2773.246086843264,
+        "size": 2.664331849931592,
+        "opened_at": "2026-10-01T10:00:00+00:00"
+      }
+    ],
     "trade_history": [
       {
         "symbol": "ETH-USD",
@@ -72,8 +82,8 @@
     "risk_state": {
       "equity": 9488.493984238463,
       "peak_equity": 10000.0,
-      "open_positions": 0,
-      "current_exposure": 0.0,
+      "open_positions": 1,
+      "current_exposure": 94.88493984238463,
       "daily_loss": -201.73659524169793,
       "current_day": "2026-10-01",
       "bars_since_last_trade": 10000
@@ -93,7 +103,8 @@
     "2026-10-01 00:00 OPEN SELL ETH-USD @ 2681.54, size 2.904790, stop 2714.90, target 2614.82",
     "2026-10-01 05:00 CLOSE SELL ETH-USD STOP @ 2716.40, pnl -101.26, balance 9588.97",
     "2026-10-01 05:00 OPEN BUY ETH-USD @ 2718.00, size 3.058262, stop 2686.65, target 2780.71",
-    "2026-10-01 07:00 CLOSE BUY ETH-USD STOP @ 2685.15, pnl -100.48, balance 9488.49"
+    "2026-10-01 07:00 CLOSE BUY ETH-USD STOP @ 2685.15, pnl -100.48, balance 9488.49",
+    "2026-10-01 10:00 OPEN BUY ETH-USD @ 2702.02, size 2.664332, stop 2666.41, target 2773.25"
   ],
   "halted": null,
   "targets": {
