@@ -15,6 +15,7 @@ from app.data.downloader import DownloadError, download_ohlcv
 from app.paper.evaluation import evaluate
 from app.paper.norms import norms_status
 from app.paper.runner import PaperRunState
+from app.research.verdicts import research_verdict
 
 PriceResult = tuple[float | None, object, str | None]
 
@@ -68,6 +69,7 @@ def summarize(states: list[PaperRunState], price_fn: Callable[[str], PriceResult
             halted=s.halted,
             evaluation=evaluate(s),
             norms=norms_status(s),
+            research=research_verdict(c.account_name),
             log=list(reversed(s.log[-log_lines:])),
         ))
     return out

@@ -136,6 +136,9 @@ h3 { font-size: 1.25rem; }
 details summary { cursor: pointer; font: 600 13px var(--font-body); color: var(--oxford); list-style: none; }
 summary::-webkit-details-marker { display: none; }
 summary::after { content: "  ›"; } details[open] summary::after { content: "  ⌄"; }
+.research { display: grid; gap: 2px; font-size: 12px; color: var(--muted); }
+.research .tag { font: 600 11px var(--font-body); letter-spacing: 0.09em; text-transform: uppercase; }
+.research .tag.tested { color: var(--up); } .research .tag.thin { color: var(--warn); } .research .tag.control { color: var(--muted); }
 .norms { font-size: 12px; color: var(--muted); }
 .norms .ok { color: var(--up); font-weight: 600; } .norms .warn { color: var(--warn); font-weight: 600; }
 .norms-notes { margin: 0; font-size: 12px; color: var(--muted); max-width: 70ch; }
@@ -327,6 +330,7 @@ function card(a) {
   return `<article class="card ${cls}" data-acc="${esc(a.account_name)}">
     <div class="card-head"><div><h3>${MARKET[a.symbol] || esc(a.symbol)} · ${TF[a.timeframe] || a.timeframe}</h3>
       <div class="meta">${STRAT[a.strategy] || esc(a.strategy)} · ${esc(a.account_name)}</div></div>${statusLabel(a)}</div>
+    ${a.research ? `<div class="research"><span class="tag ${esc(a.research.group)}">${esc(a.research.label)}</span><span>${esc(a.research.summary)}</span></div>` : ""}
     ${a.halted ? `<div class="flat"><span class="halt-note">Halted by the drawdown limit since ${esc(a.halted)}. No new trades until resumed.</span></div>` : ""}
     <div class="figs">
       <div><div class="label">Equity</div><div class="v num">${money(a.equity)}</div></div>

@@ -269,7 +269,22 @@ export interface PaperRunSummary {
   halted: string | null;
   evaluation: PaperEvaluation | null;
   norms?: PaperNorms | null;
+  research?: PaperResearch | null;
   log: string[];
+}
+
+/** Research verdict on the account's strategy (random-entry check and cost stress test). Information only. */
+export interface PaperResearch {
+  group: "tested" | "thin" | "control";
+  label: string;
+  summary: string;
+  beat_random_entries: boolean;
+  random_entry_percentile: number;
+  survives_2x_costs: boolean | null;
+  break_even_multiplier: number | null;
+  break_even_round_trip_bp: number | null;
+  round_trip_cost_bp: number | null;
+  reports: string[];
 }
 
 export interface ResearchBacktest {
