@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { api } from "../services/api";
-import type { PaperEvaluation, PaperNorms, PaperRunSummary } from "../types/api";
+import type { PaperEvaluation, PaperNorms, PaperReadiness, PaperRunSummary } from "../types/api";
 import { DisclaimerNote, ErrorBanner, LoadingBlock, PageHeader, StatCard } from "../components/ui";
 
 const money = (v: number) => v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -166,6 +166,8 @@ function AccountPanel({ run: r }: { run: PaperRunSummary }) {
 
         {r.evaluation && <EvaluationSection evaluation={r.evaluation} accountName={r.account_name} />}
 
+        {r.readiness && <ReadinessSection readiness={r.readiness} />}
+
         {r.norms && <NormsSection norms={r.norms} />}
 
         <Section title="Open Position">
@@ -280,6 +282,45 @@ function EvaluationSection({ evaluation: e, accountName }: { evaluation: PaperEv
           <span className={`uppercase text-xs font-semibold ${STATUS_STYLE[c.status]}`}>{c.status}</span>,
         ])}
       />
+    </Section>
+  );
+}
+
+const READY_STYLE: Record<string, string> = {
+  ready: "text-accent-up",
+  not_ready: "text-accent-down",
+  pending: "text-base-text",
+  na: "text-base-muted",
+};
+const ITEM_STYLE: Record<string, string> = {
+  pass: "text-accent-up",
+  fail: "text-accent-down",
+  pending: "text-base-muted",
+  na: "text-base-muted",
+};
+
+// Conditions an account must meet before a small live test (app/paper/readiness.py).
+function ReadinessSection({ readiness: r }: { readiness: PaperReadiness }) {
+  return (
+    <Section title="Live-trading readiness">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+        <span className={`text-sm font-semibold ${READY_STYLE[r.status]}`}>{r.label}</span>
+        {r.total > 0 && <span className="text-[11px] text-base-muted">{r.met} of {r.total} conditions met</span>}
+      </div>
+      {r.note && <p className="text-xs text-base-muted mb-2">{r.note}</p>}
+      {r.items.length > 0 && (
+        <Table
+          head={["Condition", "Status", "Detail"]}
+          rows={r.items.map((i) => [
+            i.name,
+            <span className={`uppercase text-xs font-semibold ${ITEM_STYLE[i.status]}`}>{i.status === "na" ? "n/a" : i.status}</span>,
+            <span className="text-base-muted">{i.detail}</span>,
+          ])}
+        />
+      )}
+      <p className="text-[11px] text-base-muted mt-2">
+        A checklist only: nothing trades live from here. "Ready" means a candidate for a small, separately set-up live test.
+      </p>
     </Section>
   );
 }

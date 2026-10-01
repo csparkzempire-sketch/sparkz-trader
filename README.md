@@ -392,6 +392,17 @@ python -m app.cli paper-trade --account btc_hourly_both_fee10 --symbol BTC-USD \
 ```
 The fee is charged on entry and exit in paper fills, and the account's targets backtest includes it.
 
+**Live-trading readiness.** Each account shows a checklist (`app/paper/readiness.py`)
+on the dashboard and status page. An account counts as ready for a small live test only
+when all of these that apply are met:
+1. **Paper verdict:** the 30-trade evaluation says Passing.
+2. **Research checks:** the strategy beat random entries and survives 2× costs.
+3. **After fees:** its fee copy, if any, is profitable over 30+ trades.
+4. **Long enough:** the first trade is at least 28 days old.
+5. **Healthy now:** not halted, losses in the normal range, and the early check not very unusual.
+
+It's a checklist only: live trading stays disabled and nothing trades from it.
+
 Strategies: `baseline` (buy and sell) or `baseline_long_only` (the same
 rules with the SELL side removed). `baseline_long_only` also works with
 `backtest --strategy`.

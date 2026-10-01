@@ -282,7 +282,18 @@ export interface PaperRunSummary {
   evaluation: PaperEvaluation | null;
   norms?: PaperNorms | null;
   research?: PaperResearch | null;
+  readiness?: PaperReadiness | null;
   log: string[];
+}
+
+/** Live-trading readiness checklist (app/paper/readiness.py). Information only. */
+export interface PaperReadiness {
+  status: "ready" | "not_ready" | "pending" | "na";
+  label: string;
+  met: number;
+  total: number;
+  note: string | null;
+  items: { name: string; status: "pass" | "fail" | "pending" | "na"; detail: string }[];
 }
 
 /** Research verdict on the account's strategy (random-entry check and cost stress test). Information only. */
