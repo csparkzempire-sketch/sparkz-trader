@@ -40,35 +40,68 @@
   ],
   "halted": null,
   "targets": {
-    "source": "backtest 2024-05-08 to 2026-09-30",
-    "set_at": "2026-09-30T08:52:58+00:00",
-    "backtest_trades": 398,
-    "backtest_return_pct": 91.8452,
-    "profit_factor": 1.266,
-    "win_rate_pct": 39.95,
-    "max_drawdown_pct": -22.0861,
-    "avg_hold_bars": 29.12
+    "source": "backtest 2024-05-09 to 2026-10-01",
+    "last_bar": "2026-10-01T07:00:00+00:00",
+    "set_at": "2026-10-01T08:12:41+00:00",
+    "backtest_trades": 430,
+    "backtest_return_pct": 100.3557,
+    "profit_factor": 1.258,
+    "win_rate_pct": 40.0,
+    "max_drawdown_pct": -25.6283,
+    "avg_hold_bars": 26.74,
+    "reset_reason": "Backtester look-ahead fixes (PR #14): stop/target from the signal bar's ATR, entry-bar stop check, sizing from the previous close. Original window had rolled out of the data by one day, so recomputed over the latest window.",
+    "previous": {
+      "source": "backtest 2024-05-08 to 2026-09-30",
+      "set_at": "2026-09-30T08:52:58+00:00",
+      "backtest_trades": 398,
+      "backtest_return_pct": 91.8452,
+      "profit_factor": 1.266,
+      "win_rate_pct": 39.95,
+      "max_drawdown_pct": -22.0861,
+      "avg_hold_bars": 29.12
+    }
   },
   "norms": {
-    "set_at": "2026-09-30T20:06:56+00:00",
-    "days": 876,
-    "trades": 399,
-    "max_losing_streak": 10,
+    "set_at": "2026-10-01T08:12:43+00:00",
+    "days": 875,
+    "trades": 430,
+    "max_losing_streak": 9,
     "losing_streaks": {
-      "1": 22,
-      "2": 14,
+      "1": 19,
+      "2": 19,
       "3": 16,
-      "4": 7,
+      "4": 10,
       "5": 3,
       "6": 3,
       "7": 4,
       "8": 2,
-      "9": 3,
-      "10": 1
+      "9": 4
     },
     "daily_limit_pct": 3.0,
-    "daily_limit_days": 5,
-    "max_daily_limit_days_in_week": 2,
-    "worst_week_pct": -6.13
+    "daily_limit_days": 10,
+    "max_daily_limit_days_in_week": 1,
+    "worst_week_pct": -6.92,
+    "previous": {
+      "set_at": "2026-09-30T20:06:56+00:00",
+      "days": 876,
+      "trades": 399,
+      "max_losing_streak": 10,
+      "losing_streaks": {
+        "1": 22,
+        "2": 14,
+        "3": 16,
+        "4": 7,
+        "5": 3,
+        "6": 3,
+        "7": 4,
+        "8": 2,
+        "9": 3,
+        "10": 1
+      },
+      "daily_limit_pct": 3.0,
+      "daily_limit_days": 5,
+      "max_daily_limit_days_in_week": 2,
+      "worst_week_pct": -6.13
+    }
   }
 }

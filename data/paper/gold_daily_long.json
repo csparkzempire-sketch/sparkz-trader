@@ -25,29 +25,57 @@
   "log": [],
   "halted": null,
   "targets": {
-    "source": "backtest 2021-10-19 to 2026-09-29",
-    "set_at": "2026-09-30T08:52:50+00:00",
-    "backtest_trades": 46,
-    "backtest_return_pct": 32.474,
-    "profit_factor": 2.288,
-    "win_rate_pct": 54.35,
-    "max_drawdown_pct": -4.6602,
-    "avg_hold_bars": 26.22
+    "source": "backtest 2021-10-20 to 2026-09-30",
+    "last_bar": "2026-09-30T00:00:00+00:00",
+    "set_at": "2026-10-01T08:12:30+00:00",
+    "backtest_trades": 54,
+    "backtest_return_pct": 33.3961,
+    "profit_factor": 2.071,
+    "win_rate_pct": 51.85,
+    "max_drawdown_pct": -4.6857,
+    "avg_hold_bars": 21.94,
+    "reset_reason": "Backtester look-ahead fixes (PR #14): stop/target from the signal bar's ATR, entry-bar stop check, sizing from the previous close. Original window had rolled out of the data by one day, so recomputed over the latest window.",
+    "previous": {
+      "source": "backtest 2021-10-19 to 2026-09-29",
+      "set_at": "2026-09-30T08:52:50+00:00",
+      "backtest_trades": 46,
+      "backtest_return_pct": 32.474,
+      "profit_factor": 2.288,
+      "win_rate_pct": 54.35,
+      "max_drawdown_pct": -4.6602,
+      "avg_hold_bars": 26.22
+    }
   },
   "norms": {
-    "set_at": "2026-09-30T20:06:47+00:00",
+    "set_at": "2026-10-01T08:12:30+00:00",
     "days": 1807,
-    "trades": 46,
+    "trades": 54,
     "max_losing_streak": 4,
     "losing_streaks": {
-      "1": 5,
-      "2": 3,
-      "3": 2,
+      "1": 3,
+      "2": 5,
+      "3": 3,
       "4": 1
     },
     "daily_limit_pct": 3.0,
     "daily_limit_days": 0,
     "max_daily_limit_days_in_week": 0,
-    "worst_week_pct": -2.0
+    "worst_week_pct": -2.01,
+    "previous": {
+      "set_at": "2026-09-30T20:06:47+00:00",
+      "days": 1807,
+      "trades": 46,
+      "max_losing_streak": 4,
+      "losing_streaks": {
+        "1": 5,
+        "2": 3,
+        "3": 2,
+        "4": 1
+      },
+      "daily_limit_pct": 3.0,
+      "daily_limit_days": 0,
+      "max_daily_limit_days_in_week": 0,
+      "worst_week_pct": -2.0
+    }
   }
 }
