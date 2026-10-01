@@ -9,6 +9,8 @@ Command line.
   python -m app.cli lab          [--preset ...] --space key=v1,v2 ...
   python -m app.cli paper        [--preset ...] [--minutes 60]          (no API: prints status lines)
   python -m app.cli presets
+  python -m app.cli archive      [--symbol XAUUSD] [--timeframes 1m,5m]   (daily: saves completed days)
+  python -m app.cli archive-status
 
 Reports are written as JSON to reports/<kind>/<timestamp>_<preset>.json.
 Every run is a SIMULATION. No command can place a real order.
@@ -187,6 +189,11 @@ def main(argv: list[str] | None = None) -> None:
     common(p)
     p.add_argument("--minutes", type=float, default=60)
     sub.add_parser("presets")
+    p = sub.add_parser("archive", help="save completed days of 1m/5m candles to data/archive (run daily)")
+    p.add_argument("--symbol", default="XAUUSD")
+    p.add_argument("--timeframes", default="1m,5m")
+    p = sub.add_parser("archive-status")
+    p.add_argument("--symbol", default="XAUUSD")
     a = ap.parse_args(argv)
 
     if a.cmd == "download":
@@ -196,6 +203,25 @@ def main(argv: list[str] | None = None) -> None:
     elif a.cmd == "import-csv":
         from app.market.history import import_csv
         print(import_csv(a.file, a.symbol, a.timeframe)[1])
+    elif a.cmd == "archive":
+        from app.market.archive import collect, status
+        res = collect(a.symbol, tuple(a.timeframes.split(",")))
+        failed = False
+        for tf, r in res.items():
+            if r["error"]:
+                failed = True
+                print(f"{a.symbol} {tf}: ERROR {r['error']}")
+            else:
+                new = ", ".join(r["written"]) or "none"
+                print(f"{a.symbol} {tf}: {len(r['written'])} new day(s) ({new}); {r['skipped_existing']} already archived")
+        for tf, st in status(a.symbol).items():
+            print(f"  archive {tf}: {st['days']} day(s), {st['first']} -> {st['last']}")
+        if failed:
+            sys.exit(1)
+    elif a.cmd == "archive-status":
+        from app.market.archive import status
+        for tf, st in status(a.symbol).items():
+            print(f"{a.symbol} {tf}: {st['days']} day(s), {st['first']} -> {st['last']}")
     elif a.cmd == "presets":
         for p in list_presets():
             s = load_settings(p, env={})

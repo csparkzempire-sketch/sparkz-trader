@@ -86,6 +86,17 @@ cd ../frontend && npm install && npm run dev        # dashboard on http://localh
 Credentials are read only from environment variables. They are never placed in the frontend, the repository,
 logs or reports, and `repr()` hides the token.
 
+### Daily candle archive
+
+Yahoo keeps 1-minute gold candles for only 7 days and 5-minute candles for 60. Run
+`python -m app.cli archive` once a day and every completed UTC day is saved as its own write-once
+file, `data/archive/XAUUSD/<1m|5m>/<YYYY-MM-DD>.csv.gz`, at about 21 kB a day. The history
+then grows past Yahoo's limit. `load_history` merges the archive in automatically, so backtests can use it
+(e.g. `path_candles=load_history("XAUUSD", "1m")` as the intrabar price path).
+
+A daily routine commits the archive to the `market-data` branch, not `main`.
+`python -m app.cli archive-status` shows the coverage.
+
 ### Safety controls
 
 - **STOP ROBOT** (dashboard header, always visible) or `POST /api/system/emergency-stop`:
