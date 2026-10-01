@@ -1,0 +1,398 @@
+{
+ "label": "XAUUSD 1h",
+ "preset": "baseline",
+ "folds": [
+  {
+   "fold": 1,
+   "train_period": [
+    "2024-07-25 02:00:00+00:00",
+    "2025-03-11 13:00:00+00:00"
+   ],
+   "validation_period": [
+    "2025-03-11 14:00:00+00:00",
+    "2025-06-30 14:00:00+00:00"
+   ],
+   "test_period": [
+    "2025-06-30 15:00:00+00:00",
+    "2025-10-21 13:00:00+00:00"
+   ],
+   "candidates": [
+    {
+     "params": {},
+     "overrides": {},
+     "train": {
+      "return_pct": 3.151999,
+      "net_pnl": 315.199854,
+      "baskets": 180,
+      "win_rate_pct": 58.888889,
+      "profit_factor": 1.423201,
+      "max_drawdown_pct": -0.829127,
+      "largest_basket_loss": -14.800146,
+      "max_positions_in_basket": 1,
+      "start": "2024-07-25T03:00:00+00:00",
+      "end": "2025-03-11T14:00:00+00:00",
+      "buy_and_hold_pct": 23.100237
+     },
+     "validation": {
+      "return_pct": 0.698999,
+      "net_pnl": 69.899854,
+      "baskets": 129,
+      "win_rate_pct": 50.387597,
+      "profit_factor": 1.110148,
+      "max_drawdown_pct": -0.75273,
+      "largest_basket_loss": -10.0,
+      "max_positions_in_basket": 1,
+      "start": "2025-03-11T15:00:00+00:00",
+      "end": "2025-06-30T15:00:00+00:00",
+      "buy_and_hold_pct": 12.842437
+     },
+     "train_score": 3.801588,
+     "validation_score": 0.928618
+    }
+   ],
+   "chosen": {},
+   "chosen_by_train_would_be": {},
+   "chosen_train": {
+    "return_pct": 3.151999,
+    "net_pnl": 315.199854,
+    "baskets": 180,
+    "win_rate_pct": 58.888889,
+    "profit_factor": 1.423201,
+    "max_drawdown_pct": -0.829127,
+    "largest_basket_loss": -14.800146,
+    "max_positions_in_basket": 1,
+    "start": "2024-07-25T03:00:00+00:00",
+    "end": "2025-03-11T14:00:00+00:00",
+    "buy_and_hold_pct": 23.100237
+   },
+   "chosen_validation": {
+    "return_pct": 0.698999,
+    "net_pnl": 69.899854,
+    "baskets": 129,
+    "win_rate_pct": 50.387597,
+    "profit_factor": 1.110148,
+    "max_drawdown_pct": -0.75273,
+    "largest_basket_loss": -10.0,
+    "max_positions_in_basket": 1,
+    "start": "2025-03-11T15:00:00+00:00",
+    "end": "2025-06-30T15:00:00+00:00",
+    "buy_and_hold_pct": 12.842437
+   },
+   "test": {
+    "return_pct": 0.632999,
+    "net_pnl": 63.299854,
+    "baskets": 102,
+    "win_rate_pct": 51.960784,
+    "profit_factor": 1.124729,
+    "max_drawdown_pct": -0.871551,
+    "largest_basket_loss": -27.500098,
+    "max_positions_in_basket": 1,
+    "start": "2025-06-30T16:00:00+00:00",
+    "end": "2025-10-21T14:00:00+00:00",
+    "buy_and_hold_pct": 26.846486
+   }
+  },
+  {
+   "fold": 2,
+   "train_period": [
+    "2024-11-13 01:00:00+00:00",
+    "2025-06-30 14:00:00+00:00"
+   ],
+   "validation_period": [
+    "2025-06-30 15:00:00+00:00",
+    "2025-10-21 12:00:00+00:00"
+   ],
+   "test_period": [
+    "2025-10-21 13:00:00+00:00",
+    "2026-02-18 11:00:00+00:00"
+   ],
+   "candidates": [
+    {
+     "params": {},
+     "overrides": {},
+     "train": {
+      "return_pct": 3.450997,
+      "net_pnl": 345.099707,
+      "baskets": 229,
+      "win_rate_pct": 56.331878,
+      "profit_factor": 1.345307,
+      "max_drawdown_pct": -0.83236,
+      "largest_basket_loss": -14.800146,
+      "max_positions_in_basket": 1,
+      "start": "2024-11-13T02:00:00+00:00",
+      "end": "2025-06-30T15:00:00+00:00",
+      "buy_and_hold_pct": 26.636986
+     },
+     "validation": {
+      "return_pct": 0.632999,
+      "net_pnl": 63.299854,
+      "baskets": 102,
+      "win_rate_pct": 51.960784,
+      "profit_factor": 1.124729,
+      "max_drawdown_pct": -0.871551,
+      "largest_basket_loss": -27.500098,
+      "max_positions_in_basket": 1,
+      "start": "2025-06-30T16:00:00+00:00",
+      "end": "2025-10-21T13:00:00+00:00",
+      "buy_and_hold_pct": 28.001209
+     },
+     "train_score": 4.146039,
+     "validation_score": 0.72629
+    }
+   ],
+   "chosen": {},
+   "chosen_by_train_would_be": {},
+   "chosen_train": {
+    "return_pct": 3.450997,
+    "net_pnl": 345.099707,
+    "baskets": 229,
+    "win_rate_pct": 56.331878,
+    "profit_factor": 1.345307,
+    "max_drawdown_pct": -0.83236,
+    "largest_basket_loss": -14.800146,
+    "max_positions_in_basket": 1,
+    "start": "2024-11-13T02:00:00+00:00",
+    "end": "2025-06-30T15:00:00+00:00",
+    "buy_and_hold_pct": 26.636986
+   },
+   "chosen_validation": {
+    "return_pct": 0.632999,
+    "net_pnl": 63.299854,
+    "baskets": 102,
+    "win_rate_pct": 51.960784,
+    "profit_factor": 1.124729,
+    "max_drawdown_pct": -0.871551,
+    "largest_basket_loss": -27.500098,
+    "max_positions_in_basket": 1,
+    "start": "2025-06-30T16:00:00+00:00",
+    "end": "2025-10-21T13:00:00+00:00",
+    "buy_and_hold_pct": 28.001209
+   },
+   "test": {
+    "return_pct": 1.2,
+    "net_pnl": 120.0,
+    "baskets": 132,
+    "win_rate_pct": 54.545455,
+    "profit_factor": 1.2,
+    "max_drawdown_pct": -0.813585,
+    "largest_basket_loss": -10.0,
+    "max_positions_in_basket": 1,
+    "start": "2025-10-21T14:00:00+00:00",
+    "end": "2026-02-18T12:00:00+00:00",
+    "buy_and_hold_pct": 16.808332
+   }
+  },
+  {
+   "fold": 3,
+   "train_period": [
+    "2025-03-11 13:00:00+00:00",
+    "2025-10-21 12:00:00+00:00"
+   ],
+   "validation_period": [
+    "2025-10-21 13:00:00+00:00",
+    "2026-02-18 10:00:00+00:00"
+   ],
+   "test_period": [
+    "2026-02-18 11:00:00+00:00",
+    "2026-06-10 20:00:00+00:00"
+   ],
+   "candidates": [
+    {
+     "params": {},
+     "overrides": {},
+     "train": {
+      "return_pct": 1.277997,
+      "net_pnl": 127.799658,
+      "baskets": 231,
+      "win_rate_pct": 51.082251,
+      "profit_factor": 1.111372,
+      "max_drawdown_pct": -0.866,
+      "largest_basket_loss": -27.500098,
+      "max_positions_in_basket": 1,
+      "start": "2025-03-11T14:00:00+00:00",
+      "end": "2025-10-21T13:00:00+00:00",
+      "buy_and_hold_pct": 44.716284
+     },
+     "validation": {
+      "return_pct": 1.2,
+      "net_pnl": 120.0,
+      "baskets": 132,
+      "win_rate_pct": 54.545455,
+      "profit_factor": 1.2,
+      "max_drawdown_pct": -0.813585,
+      "largest_basket_loss": -10.0,
+      "max_positions_in_basket": 1,
+      "start": "2025-10-21T14:00:00+00:00",
+      "end": "2026-02-18T11:00:00+00:00",
+      "buy_and_hold_pct": 16.846218
+     },
+     "train_score": 1.475747,
+     "validation_score": 1.474953
+    }
+   ],
+   "chosen": {},
+   "chosen_by_train_would_be": {},
+   "chosen_train": {
+    "return_pct": 1.277997,
+    "net_pnl": 127.799658,
+    "baskets": 231,
+    "win_rate_pct": 51.082251,
+    "profit_factor": 1.111372,
+    "max_drawdown_pct": -0.866,
+    "largest_basket_loss": -27.500098,
+    "max_positions_in_basket": 1,
+    "start": "2025-03-11T14:00:00+00:00",
+    "end": "2025-10-21T13:00:00+00:00",
+    "buy_and_hold_pct": 44.716284
+   },
+   "chosen_validation": {
+    "return_pct": 1.2,
+    "net_pnl": 120.0,
+    "baskets": 132,
+    "win_rate_pct": 54.545455,
+    "profit_factor": 1.2,
+    "max_drawdown_pct": -0.813585,
+    "largest_basket_loss": -10.0,
+    "max_positions_in_basket": 1,
+    "start": "2025-10-21T14:00:00+00:00",
+    "end": "2026-02-18T11:00:00+00:00",
+    "buy_and_hold_pct": 16.846218
+   },
+   "test": {
+    "return_pct": 1.5,
+    "net_pnl": 150.0,
+    "baskets": 139,
+    "win_rate_pct": 55.395683,
+    "profit_factor": 1.241935,
+    "max_drawdown_pct": -0.718354,
+    "largest_basket_loss": -10.0,
+    "max_positions_in_basket": 1,
+    "start": "2026-02-18T12:00:00+00:00",
+    "end": "2026-06-10T21:00:00+00:00",
+    "buy_and_hold_pct": -17.031106
+   }
+  },
+  {
+   "fold": 4,
+   "train_period": [
+    "2025-06-30 14:00:00+00:00",
+    "2026-02-18 10:00:00+00:00"
+   ],
+   "validation_period": [
+    "2026-02-18 11:00:00+00:00",
+    "2026-06-10 19:00:00+00:00"
+   ],
+   "test_period": [
+    "2026-06-10 20:00:00+00:00",
+    "2026-10-01 09:00:00+00:00"
+   ],
+   "candidates": [
+    {
+     "params": {},
+     "overrides": {},
+     "train": {
+      "return_pct": 1.832999,
+      "net_pnl": 183.299854,
+      "baskets": 234,
+      "win_rate_pct": 53.418803,
+      "profit_factor": 1.165508,
+      "max_drawdown_pct": -0.871551,
+      "largest_basket_loss": -27.500098,
+      "max_positions_in_basket": 1,
+      "start": "2025-06-30T15:00:00+00:00",
+      "end": "2026-02-18T11:00:00+00:00",
+      "buy_and_hold_pct": 49.586246
+     },
+     "validation": {
+      "return_pct": 1.5,
+      "net_pnl": 150.0,
+      "baskets": 139,
+      "win_rate_pct": 55.395683,
+      "profit_factor": 1.241935,
+      "max_drawdown_pct": -0.718354,
+      "largest_basket_loss": -10.0,
+      "max_positions_in_basket": 1,
+      "start": "2026-02-18T12:00:00+00:00",
+      "end": "2026-06-10T20:00:00+00:00",
+      "buy_and_hold_pct": -16.785891
+     },
+     "train_score": 2.103146,
+     "validation_score": 2.088107
+    }
+   ],
+   "chosen": {},
+   "chosen_by_train_would_be": {},
+   "chosen_train": {
+    "return_pct": 1.832999,
+    "net_pnl": 183.299854,
+    "baskets": 234,
+    "win_rate_pct": 53.418803,
+    "profit_factor": 1.165508,
+    "max_drawdown_pct": -0.871551,
+    "largest_basket_loss": -27.500098,
+    "max_positions_in_basket": 1,
+    "start": "2025-06-30T15:00:00+00:00",
+    "end": "2026-02-18T11:00:00+00:00",
+    "buy_and_hold_pct": 49.586246
+   },
+   "chosen_validation": {
+    "return_pct": 1.5,
+    "net_pnl": 150.0,
+    "baskets": 139,
+    "win_rate_pct": 55.395683,
+    "profit_factor": 1.241935,
+    "max_drawdown_pct": -0.718354,
+    "largest_basket_loss": -10.0,
+    "max_positions_in_basket": 1,
+    "start": "2026-02-18T12:00:00+00:00",
+    "end": "2026-06-10T20:00:00+00:00",
+    "buy_and_hold_pct": -16.785891
+   },
+   "test": {
+    "return_pct": 0.3,
+    "net_pnl": 30.0,
+    "baskets": 137,
+    "win_rate_pct": 51.094891,
+    "profit_factor": 1.044776,
+    "max_drawdown_pct": -1.002919,
+    "largest_basket_loss": -10.0,
+    "max_positions_in_basket": 1,
+    "start": "2026-06-10T21:00:00+00:00",
+    "end": "2026-10-01T10:00:00+00:00",
+    "buy_and_hold_pct": 1.902097
+   }
+  }
+ ],
+ "summary": {
+  "candidates_tried": 1,
+  "folds": 4,
+  "avg_return_pct": {
+   "train": 2.428498,
+   "validation": 1.007999,
+   "test": 0.90825
+  },
+  "test_folds_profitable": 4,
+  "test_worst_drawdown_pct": -1.002919,
+  "test_total_baskets": 510,
+  "test_vs_buy_and_hold": [
+   {
+    "strategy_pct": 0.632999,
+    "buy_and_hold_pct": 26.846486
+   },
+   {
+    "strategy_pct": 1.2,
+    "buy_and_hold_pct": 16.808332
+   },
+   {
+    "strategy_pct": 1.5,
+    "buy_and_hold_pct": -17.031106
+   },
+   {
+    "strategy_pct": 0.3,
+    "buy_and_hold_pct": 1.902097
+   }
+  ],
+  "same_choice_every_fold": true,
+  "note": "Only the TEST rows are out-of-sample. Train and validation returns are inflated by the choice among 1 candidate(s)."
+ }
+}

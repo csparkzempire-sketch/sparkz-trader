@@ -1,0 +1,7 @@
+# ATR grid: spacing follows volatility (GRID_ATR_MULTIPLIER x ATR at the last closed bar).
+name: atr_grid
+market: {symbol: XAUUSD, timeframe: 15m}
+grid: {mode: ATR, atr_multiplier: 0.5}
+sizing: {mode: FIXED, base_lot: 0.01}
+target: {mode: FIXED_PROFIT, fixed_usd: 10}
+risk: {max_positions: 5, max_basket_loss_percent: 2.0}

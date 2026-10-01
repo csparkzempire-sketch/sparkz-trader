@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+backend/data/candles/
+data/candles/
+data/*.db
+data/*.sqlite
+reports/runs/
+frontend/node_modules/
+frontend/dist/
+reports/backtests/
+reports/stress/
+reports/walk_forward/
+reports/lab/

@@ -1,0 +1,8 @@
+# HIGH RISK. Martingale-style MULTIPLIER sizing: every re-entry is `multiplier` x the previous lot.
+# Exposure grows geometrically while the basket is losing. Research only; never the default.
+name: multiplier_high_risk
+market: {symbol: XAUUSD, timeframe: 15m}
+grid: {mode: ATR, atr_multiplier: 0.5}
+sizing: {mode: MULTIPLIER, base_lot: 0.01, multiplier: 2.0, allow_multiplier_sizing: true}
+target: {mode: FIXED_PROFIT, fixed_usd: 10}
+risk: {max_positions: 5, max_basket_loss_percent: 2.0}
