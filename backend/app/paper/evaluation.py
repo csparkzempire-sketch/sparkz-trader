@@ -27,6 +27,7 @@ targets stay inside the new ones under "previous", with the reason, so the chang
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+from math import comb
 
 import pandas as pd
 
@@ -144,24 +145,57 @@ def reset_targets(state, candles: pd.DataFrame, reason: str, new_window: bool = 
         raise ValueError("A reason is required to reset targets.")
     if not state.targets:
         raise ValueError("This account has no targets yet; set them with --set-targets.")
+    from app.paper.runner import account_settings
+
     c = state.config
-    hist = candles if new_window else targets_history(candles, state.targets, c.timeframe, c.strategy)
+    cfg = account_settings(c)
+    hist = candles if new_window else targets_history(candles, state.targets, c.timeframe, c.strategy, cfg)
     if hist is None:
         raise ValueError(
             f"The downloaded data no longer covers the current targets' window ({state.targets.get('source')}). "
             "Add --new-window to recompute over the latest data instead."
         )
-    new = compute_targets(hist, c.symbol, c.timeframe, c.strategy)
+    new = compute_targets(hist, c.symbol, c.timeframe, c.strategy, cfg)
     if not new_window and new["source"] != state.targets.get("source"):
         raise ValueError(f"Rebuilt window {new['source']!r} differs from {state.targets.get('source')!r}; "
                          "add --new-window to recompute over the latest data instead.")
     new["reset_reason"] = reason.strip()
     new["previous"] = state.targets
-    norms = compute_norms(hist, c.symbol, c.timeframe, c.strategy)
+    norms = compute_norms(hist, c.symbol, c.timeframe, c.strategy, cfg)
     if state.norms:
         norms["previous"] = state.norms
     state.targets, state.norms = new, norms
     return new
+
+
+def _share(p: float) -> str:
+    return "under 0.1%" if p < 0.001 else f"{p:.1%}" if p < 0.1 else f"{p:.0%}"
+
+
+def early_check(wins: int, n: int, win_rate_pct: float) -> dict | None:
+    """How unusual the paper win count is for the backtest's win rate, before MIN_TRADES is reached.
+    Binomial tail probability of a result at least this far from expected, on the side it fell.
+    Information only: it never changes the verdict."""
+    if n == 0 or not win_rate_pct:
+        return None
+    p = win_rate_pct / 100
+    pmf = [comb(n, k) * p**k * (1 - p) ** (n - k) for k in range(n + 1)]
+    expected = n * p
+    low = wins <= expected
+    tail = sum(pmf[: wins + 1]) if low else sum(pmf[wins:])
+    if tail >= 0.05:
+        status, text = "normal", "normal"
+    elif tail >= 0.01:
+        status, text = "unusual", f"unusually {'poor' if low else 'good'}"
+    else:
+        status, text = "very_unusual", f"very unusually {'poor' if low else 'good'}"
+    return {
+        "status": status, "wins": wins, "trades": n, "expected_wins": round(expected, 1),
+        "probability": round(tail, 4),
+        "text": (f"{wins} win{'s' if wins != 1 else ''} in {n} trade{'s' if n != 1 else ''}: a result this "
+                 f"{'poor' if low else 'good'} or worse happens {_share(tail)} of the time at the backtest's "
+                 f"{win_rate_pct:.1f}% win rate, so it's {text}.").replace("this good or worse", "this good or better"),
+    }
 
 
 @dataclass
@@ -242,5 +276,6 @@ def evaluate(state) -> dict:
         "min_trades": MIN_TRADES,
         "targets_source": t.get("source"),
         "targets_reset_reason": t.get("reset_reason"),
+        "early_check": early_check(wins, n, t["win_rate_pct"]),
         "checks": [asdict(c) for c in checks],
     }

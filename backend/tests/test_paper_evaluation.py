@@ -164,3 +164,20 @@ def test_older_targets_are_cut_where_they_were_set(synthetic_ohlcv):
     t["set_at"] = (last + pd.Timedelta(hours=1, minutes=5)).isoformat()
     hist = targets_history(synthetic_ohlcv, t, "1h", "baseline_long_only")
     assert pd.Timestamp(hist["timestamp"].iloc[-1]) == last
+
+
+def test_early_check_scores_the_win_count_against_the_backtest():
+    from app.paper.evaluation import early_check
+
+    assert early_check(0, 0, 40) is None
+    normal = early_check(0, 5, 38.5)  # (1 - 0.385)^5 = 8.8%
+    assert normal["status"] == "normal" and abs(normal["probability"] - 0.0880) < 1e-3
+    assert early_check(0, 10, 38.5)["status"] == "very_unusual"  # 0.8%
+    good = early_check(6, 8, 38.0)
+    assert good["status"] == "unusual" and "good or better" in good["text"]
+
+
+def test_evaluation_includes_the_early_check():
+    s = _state([10.0, -5.0, -5.0])
+    ec = evaluate(s)["early_check"]
+    assert ec["wins"] == 1 and ec["trades"] == 3

@@ -315,7 +315,8 @@ def cmd_paper_trade(args) -> None:
     """One paper-trading step for a saved account: run once per candle (e.g. daily via cron)."""
     from app.paper.evaluation import compute_norms, compute_targets, evaluate, reset_targets, targets_end
     from app.paper.norms import norms_status
-    from app.paper.runner import PaperRunConfig, init_state, load_state, resume, run_step, save_state, state_path
+    from app.paper.runner import (PaperRunConfig, account_settings, init_state, load_state, resume, run_step,
+                                  save_state, state_path)
     from app.utils.time import utc_now
 
     if getattr(args, "reset_targets", False) and (getattr(args, "set_targets", False) or not getattr(args, "reason", None)):
@@ -335,7 +336,8 @@ def cmd_paper_trade(args) -> None:
             sys.exit(1)
     else:
         try:
-            state = init_state(PaperRunConfig(args.account, args.symbol, args.timeframe, args.strategy, args.starting_balance))
+            state = init_state(PaperRunConfig(args.account, args.symbol, args.timeframe, args.strategy,
+                                              args.starting_balance, getattr(args, "fee_bps", 0.0) or 0.0))
         except ValueError as exc:
             print(f"ERROR: {exc}", file=sys.stderr)
             sys.exit(1)
@@ -383,7 +385,8 @@ def cmd_paper_trade(args) -> None:
     elif want_targets:
         from app.data.validator import closed_candles
 
-        state.targets = compute_targets(closed_candles(candles, c.timeframe), c.symbol, c.timeframe, c.strategy)
+        state.targets = compute_targets(closed_candles(candles, c.timeframe), c.symbol, c.timeframe, c.strategy,
+                                        account_settings(c))
         t = state.targets
         print(f"Targets set from {t['source']} ({t['backtest_trades']} trades): profit factor "
               f"{t['profit_factor']}, win rate {t['win_rate_pct']}%, max drawdown {t['max_drawdown_pct']}%, "
@@ -403,7 +406,7 @@ def cmd_paper_trade(args) -> None:
         end = targets_end(state.targets)
         if end is not None:
             hist = hist[pd.to_datetime(hist["timestamp"], utc=True) < end + pd.Timedelta(days=1)]
-        state.norms = compute_norms(hist, c.symbol, c.timeframe, c.strategy)
+        state.norms = compute_norms(hist, c.symbol, c.timeframe, c.strategy, account_settings(c))
         n = state.norms
         print(f"Normal-losses reference set from the same backtest: longest losing streak "
               f"{n['max_losing_streak']}, daily loss limit hit on {n['daily_limit_days']} of {n['days']} days, "
@@ -621,6 +624,10 @@ def main() -> None:
                    help="Only used when the account is first created.")
     p.add_argument("--use-cached", action="store_true", dest="use_cached",
                    help="Read the local cache instead of downloading (no network).")
+    p.add_argument("--fee-bps", type=float, default=0.0, dest="fee_bps",
+                   help="Only used when the account is first created: exchange/broker fee per side in basis "
+                        "points of price (10 = 0.1%%), charged on top of spread and slippage in paper fills "
+                        "and in the targets backtest.")
     p.add_argument("--set-targets", action="store_true", dest="set_targets",
                    help="Fix this account's pass/fail targets from a backtest of the same setup (only if none "
                         "are set yet; new accounts get them automatically).")

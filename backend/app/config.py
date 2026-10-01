@@ -77,6 +77,9 @@ class Settings(BaseModel):
     spread_pips: float = Field(default_factory=lambda: _get_float("SPREAD_PIPS", 1.2))
     slippage_pips: float = Field(default_factory=lambda: _get_float("SLIPPAGE_PIPS", 0.3))
     commission_per_trade: float = Field(default_factory=lambda: _get_float("COMMISSION_PER_TRADE", 0.0))
+    # Exchange/broker fee in basis points of price, charged on each side (entry and exit) on top of
+    # spread and slippage. 10 = 0.1% per side, a typical crypto spot taker fee.
+    fee_bps: float = Field(default_factory=lambda: _get_float("FEE_BPS", 0.0))
     pip_size: float = Field(default_factory=lambda: _get_float("PIP_SIZE", 0.0001))
 
     # --- Database ---

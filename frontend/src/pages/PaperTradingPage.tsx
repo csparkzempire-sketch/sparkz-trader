@@ -108,6 +108,14 @@ export default function PaperTradingPage() {
   );
 }
 
+const EARLY_STYLE: Record<string, string> = {
+  normal: "text-accent-up",
+  unusual: "text-accent-hold",
+  very_unusual: "text-accent-down",
+};
+
+const RESEARCH_BADGE: Record<string, string> = { tested: "badge-buy", thin: "badge-hold", control: "badge-sell" };
+
 function AccountPanel({ run: r }: { run: PaperRunSummary }) {
   const unrealized = r.open_positions.reduce((s, p) => s + (p.unrealized_pnl ?? 0), 0);
   return (
@@ -115,6 +123,12 @@ function AccountPanel({ run: r }: { run: PaperRunSummary }) {
       <div className="panel-header flex flex-wrap items-center justify-between gap-2">
         <span>
           {r.account_name} · {r.symbol} · {r.timeframe} · {STRATEGY_LABELS[r.strategy] ?? r.strategy}
+          {r.fee_bps ? ` · fee ${(r.fee_bps / 100).toFixed(2)}% per side` : ""}
+          {r.research && (
+            <span className={`ml-2 badge ${RESEARCH_BADGE[r.research.group]}`} title={r.research.summary}>
+              {r.research.label}
+            </span>
+          )}
           {r.halted && <span className="ml-2 badge badge-sell">HALTED</span>}
         </span>
         <span className="text-xs text-base-muted font-normal">Last candle processed: {when(r.last_processed)}</span>
@@ -143,6 +157,12 @@ function AccountPanel({ run: r }: { run: PaperRunSummary }) {
             hint={r.closed_trades.length ? `${r.winning_trades} winning` : "None yet"}
           />
         </div>
+
+        {r.research && (
+          <p className="text-xs text-base-muted">
+            Research: {r.research.summary} See {r.research.reports.map((f) => f.split("/").pop()).join(" and ")}.
+          </p>
+        )}
 
         {r.evaluation && <EvaluationSection evaluation={r.evaluation} accountName={r.account_name} />}
 
@@ -245,6 +265,12 @@ function EvaluationSection({ evaluation: e, accountName }: { evaluation: PaperEv
       <div className="h-1.5 bg-base-bg rounded overflow-hidden border border-base-border mb-3" title="Closed trades toward the evaluation point">
         <div className="h-full bg-accent-brand" style={{ width: `${progress}%` }} />
       </div>
+      {e.early_check && (
+        <p className="text-xs mb-3">
+          <span className={`font-semibold ${EARLY_STYLE[e.early_check.status]}`}>Early check:</span>{" "}
+          <span className="text-base-muted">{e.early_check.text} Information only; it doesn't change the verdict.</span>
+        </p>
+      )}
       <Table
         head={["Check", "Target", "Paper so far", "Status"]}
         rows={e.checks.map((c) => [

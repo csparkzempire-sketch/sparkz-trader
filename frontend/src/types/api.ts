@@ -225,12 +225,23 @@ export interface PaperEvaluationCheck {
   status: "pass" | "fail" | "pending";
 }
 
+/** How unusual the paper win count is for the backtest's win rate. Information only. */
+export interface PaperEarlyCheck {
+  status: "normal" | "unusual" | "very_unusual";
+  wins: number;
+  trades: number;
+  expected_wins: number;
+  probability: number;
+  text: string;
+}
+
 export interface PaperEvaluation {
   verdict: string;
   closed_trades: number;
   min_trades: number;
   targets_source?: string | null;
   targets_reset_reason?: string | null;
+  early_check?: PaperEarlyCheck | null;
   checks: PaperEvaluationCheck[];
 }
 
@@ -255,6 +266,7 @@ export interface PaperRunSummary {
   symbol: string;
   timeframe: string;
   strategy: string;
+  fee_bps?: number;
   starting_balance: number;
   balance: number;
   equity: number;
@@ -269,7 +281,22 @@ export interface PaperRunSummary {
   halted: string | null;
   evaluation: PaperEvaluation | null;
   norms?: PaperNorms | null;
+  research?: PaperResearch | null;
   log: string[];
+}
+
+/** Research verdict on the account's strategy (random-entry check and cost stress test). Information only. */
+export interface PaperResearch {
+  group: "tested" | "thin" | "control";
+  label: string;
+  summary: string;
+  beat_random_entries: boolean;
+  random_entry_percentile: number;
+  survives_2x_costs: boolean | null;
+  break_even_multiplier: number | null;
+  break_even_round_trip_bp: number | null;
+  round_trip_cost_bp: number | null;
+  reports: string[];
 }
 
 export interface ResearchBacktest {
