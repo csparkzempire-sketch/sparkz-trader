@@ -1,0 +1,7 @@
+# Fixed grid: re-entries every GRID_DISTANCE price units against the basket.
+name: fixed_grid
+market: {symbol: XAUUSD, timeframe: 15m}
+grid: {mode: FIXED, distance: 5.0}
+sizing: {mode: FIXED, base_lot: 0.01}
+target: {mode: FIXED_PROFIT, fixed_usd: 10}
+risk: {max_positions: 5, max_basket_loss_percent: 2.0}

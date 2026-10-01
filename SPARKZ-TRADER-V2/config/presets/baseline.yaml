@@ -1,0 +1,7 @@
+# Baseline: one position per basket (no grid). The reference every grid variant is compared with.
+name: baseline
+market: {symbol: XAUUSD, timeframe: 15m}
+grid: {mode: NONE}
+sizing: {mode: FIXED, base_lot: 0.01}
+target: {mode: ATR_TARGET, atr_multiplier: 1.0}
+risk: {max_positions: 1, max_basket_loss_percent: 2.0}
