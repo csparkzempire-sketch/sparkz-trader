@@ -6,11 +6,21 @@
     "strategy": "baseline",
     "starting_balance": 10000.0
   },
-  "last_processed": "2026-09-30T22:00:00+00:00",
+  "last_processed": "2026-10-01T00:00:00+00:00",
   "account": {
     "balance": 9690.230579480161,
     "is_active": true,
-    "open_positions": [],
+    "open_positions": [
+      {
+        "symbol": "ETH-USD",
+        "direction": "SELL",
+        "entry_price": 2681.5400390625,
+        "stop_price": 2714.899524970779,
+        "target_price": 2614.821067245942,
+        "size": 2.9047901415876596,
+        "opened_at": "2026-10-01T00:00:00+00:00"
+      }
+    ],
     "trade_history": [
       {
         "symbol": "ETH-USD",
@@ -49,10 +59,10 @@
     "risk_state": {
       "equity": 9690.230579480161,
       "peak_equity": 10000.0,
-      "open_positions": 0,
-      "current_exposure": 0.0,
-      "daily_loss": -309.7694205198397,
-      "current_day": "2026-09-30",
+      "open_positions": 1,
+      "current_exposure": 96.90230579480162,
+      "daily_loss": 0.0,
+      "current_day": "2026-10-01",
       "bars_since_last_trade": 10000
     }
   },
@@ -66,7 +76,8 @@
     "2026-09-30 16:00 BUY signal skipped: max_daily_loss_pct breached (3.20% >= 3.00%)",
     "2026-09-30 19:00 SELL signal skipped: max_daily_loss_pct breached (3.20% >= 3.00%)",
     "2026-09-30 20:00 SELL signal skipped: max_daily_loss_pct breached (3.20% >= 3.00%)",
-    "2026-09-30 21:00 SELL signal skipped: max_daily_loss_pct breached (3.20% >= 3.00%)"
+    "2026-09-30 21:00 SELL signal skipped: max_daily_loss_pct breached (3.20% >= 3.00%)",
+    "2026-10-01 00:00 OPEN SELL ETH-USD @ 2681.54, size 2.904790, stop 2714.90, target 2614.82"
   ],
   "halted": null,
   "targets": {

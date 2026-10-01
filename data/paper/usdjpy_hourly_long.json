@@ -6,23 +6,35 @@
     "strategy": "baseline_long_only",
     "starting_balance": 10000.0
   },
-  "last_processed": "2026-09-30T23:00:00+00:00",
+  "last_processed": "2026-10-01T00:00:00+00:00",
   "account": {
     "balance": 10000.0,
     "is_active": true,
-    "open_positions": [],
+    "open_positions": [
+      {
+        "symbol": "USDJPY=X",
+        "direction": "BUY",
+        "entry_price": 157.93499926757812,
+        "stop_price": 157.47690906337894,
+        "target_price": 158.85117967597648,
+        "size": 218.29761711411615,
+        "opened_at": "2026-10-01T00:00:00+00:00"
+      }
+    ],
     "trade_history": [],
     "risk_state": {
       "equity": 10000.0,
       "peak_equity": 10000.0,
-      "open_positions": 0,
-      "current_exposure": 0.0,
+      "open_positions": 1,
+      "current_exposure": 100.0,
       "daily_loss": 0.0,
-      "current_day": null,
+      "current_day": "2026-10-01",
       "bars_since_last_trade": 10000
     }
   },
-  "log": [],
+  "log": [
+    "2026-10-01 00:00 OPEN BUY USDJPY=X @ 157.93, size 218.297617, stop 157.48, target 158.85"
+  ],
   "halted": null,
   "targets": {
     "source": "backtest 2023-12-14 to 2026-09-30",
