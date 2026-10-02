@@ -2,14 +2,18 @@
 Structure-scalping study: the setup in scalp.py over a small parameter grid, chosen on an in-sample period
 and judged on the out-of-sample period that follows it.
 
-  python -m app.research.scalp_study [--source dukascopy] [--split 2025-01-01] [--spread 0.54]
+  python -m app.research.scalp_study [--source dukascopy] [--split 2025-01-01] [--spread 0.54] [--tfs 1m,5m]
+  python -m app.research.scalp_study --tfs 15m,1h --min-trades 50       # intraday swing setups
 
   in-sample       candles before --split: every combination is run, the one with the best net expectancy
                   (R per trade, with at least --min-trades trades) is selected
   out-of-sample   candles from --split: the selected combination is reported, and every other combination
                   alongside it, so the choice can be seen in context
 
-Writes reports/studies/scalp_structure_<source>.json. Simulation only.
+Each setup timeframe gets its own bias timeframe, stop window, holding limit and risk cap (TF_SETTINGS): a 1h
+setup reads a 4h bias, may hold for two days and accepts a wider stop than a 1m scalp.
+
+Writes reports/studies/scalp_structure_<source>.json (other --tfs: ..._<tfs>.json). Simulation only.
 """
 
 from __future__ import annotations
@@ -26,7 +30,14 @@ from app.config import REPORTS_DIR
 from app.market.history import load_history
 from app.research.scalp import ScalpParams, params_dict, signals, simulate, summarize
 
-GRID = {"tf": ["1m", "5m"], "swing_n": [2, 3, 5], "variant": ["choch", "sweep_choch"], "rr": [1.0, 1.5, 2.0]}
+GRID = {"swing_n": [2, 3, 5], "variant": ["choch", "sweep_choch"]}
+# per setup timeframe: bias timeframe, stop/sweep window (setup candles), max hold, max risk (price), R targets
+TF_SETTINGS = {
+    "1m": {"htf": "15m", "lookback": 30, "max_hold_min": 120, "max_risk": 15.0, "rr": [1.0, 1.5, 2.0]},
+    "5m": {"htf": "15m", "lookback": 30, "max_hold_min": 120, "max_risk": 15.0, "rr": [1.0, 1.5, 2.0]},
+    "15m": {"htf": "1h", "lookback": 20, "max_hold_min": 8 * 60, "max_risk": 40.0, "rr": [1.5, 2.0, 3.0]},
+    "1h": {"htf": "4h", "lookback": 12, "max_hold_min": 48 * 60, "max_risk": 80.0, "rr": [1.5, 2.0, 3.0]},
+}
 
 
 def main(argv=None) -> None:
@@ -35,16 +46,20 @@ def main(argv=None) -> None:
     ap.add_argument("--split", default="2025-01-01", help="first out-of-sample date")
     ap.add_argument("--spread", type=float, default=0.54)
     ap.add_argument("--min-trades", type=int, default=100)
+    ap.add_argument("--tfs", default="1m,5m", help="setup timeframes, e.g. 15m,1h")
     a = ap.parse_args(argv)
     t0 = time.time()
     m1 = load_history("XAUUSD", "1m", a.source).reset_index(drop=True)
     split = pd.Timestamp(a.split, tz="UTC")
     base = ScalpParams(spread=a.spread)
     rows = []
-    for tf, n, variant in itertools.product(GRID["tf"], GRID["swing_n"], GRID["variant"]):
-        p0 = replace(base, tf=tf, swing_n=n, variant=variant)
+    tfs = a.tfs.split(",")
+    for tf, n, variant in itertools.product(tfs, GRID["swing_n"], GRID["variant"]):
+        cfg = TF_SETTINGS[tf]
+        p0 = replace(base, tf=tf, swing_n=n, variant=variant, htf=cfg["htf"], lookback=cfg["lookback"],
+                     max_hold_min=cfg["max_hold_min"], max_risk=cfg["max_risk"])
         sig = signals(m1, p0)
-        for rr in GRID["rr"]:
+        for rr in cfg["rr"]:
             p = replace(p0, rr=rr)
             tr = simulate(m1, sig, p)
             ins = tr[tr["entry_time"] < split] if len(tr) else tr
@@ -62,10 +77,11 @@ def main(argv=None) -> None:
     meta = {"source": a.source, "symbol": "XAUUSD", "first": str(m1["timestamp"].min()),
             "last": str(m1["timestamp"].max()), "split": str(split), "min_trades": a.min_trades,
             "selection": "best in-sample net expectancy (R per trade)", "grid": GRID,
-            "fixed_params": params_dict(base)}
+            "tf_settings": {tf: TF_SETTINGS[tf] for tf in tfs}, "fixed_params": params_dict(base)}
     out = {"meta": meta, "chosen": chosen, "all": rows}
     (REPORTS_DIR / "studies").mkdir(parents=True, exist_ok=True)
-    (REPORTS_DIR / "studies" / f"scalp_structure_{a.source}.json").write_text(json.dumps(out, indent=1, default=str))
+    suffix = "" if tfs == ["1m", "5m"] else "_" + "-".join(tfs)
+    (REPORTS_DIR / "studies" / f"scalp_structure_{a.source}{suffix}.json").write_text(json.dumps(out, indent=1, default=str))
     print("chosen:", json.dumps(chosen and {"params": chosen["params"],
                                              "in_sample": chosen["in_sample"]["expectancy_r"],
                                              "out_of_sample": chosen["out_of_sample"]}, default=str))

@@ -20,7 +20,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from app.api import account, backtest, baskets, market, strategy, system
+from app.api import account, backtest, baskets, bridge, market, strategy, system
 from app.api.state import STATE
 from app.config import load_env_file
 from app.utils.logging import setup as log_setup
@@ -42,7 +42,8 @@ app = FastAPI(title="SPARKZ TRADER V2", description="Market data + adaptive grid
               "No live trading.", lifespan=lifespan)
 app.add_middleware(CORSMiddleware, allow_origins=os.getenv("CORS_ORIGINS", "http://localhost:5173").split(","),
                    allow_methods=["*"], allow_headers=["*"])
-for r in (market.router, strategy.router, baskets.router, account.router, backtest.router, system.router):
+for r in (market.router, strategy.router, baskets.router, account.router, backtest.router, system.router,
+          bridge.router):
     app.include_router(r)
 
 

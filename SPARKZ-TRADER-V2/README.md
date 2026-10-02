@@ -82,9 +82,43 @@ cd ../frontend && npm install && npm run dev        # dashboard on http://localh
 | Historical | `HISTORICAL` | Stored candles replayed (`data/candles/`). |
 | Yahoo | `YAHOO` | Delayed public data; gold is the GC=F future. No real bid/ask: the instrument's typical spread is used. |
 | Broker | `BROKER` | OANDA v20 practice or live account. Real bid/ask and candles. Read-only. Needs `OANDA_API_TOKEN` and `OANDA_ACCOUNT_ID` in the environment. |
+| MT5 bridge | `BRIDGE` | Quotes and closed 1m candles pushed from your own MetaTrader 5 terminal by `bridge/mt5_bridge.py` (a broker demo works). Real broker bid/ask. Read-only. Needs `SPARKZ_BRIDGE_TOKEN` on both sides. |
 
 Credentials are read only from environment variables. They are never placed in the frontend, the repository,
 logs or reports, and `repr()` hides the token.
+
+### Live prices from MetaTrader 5 (MT5 bridge, read-only)
+
+For a broker that offers MetaTrader 5 (OANDA is not available everywhere), a small script on the computer
+running MT5 pushes its quotes to the V2 server. It only reads prices (`symbol_info_tick`, `copy_rates_from_pos`);
+a test checks that it contains no order call. The MetaTrader5 Python package runs on Windows only.
+
+1. Pick a long random secret, e.g. `python -c "import secrets; print(secrets.token_urlsafe(32))"`.
+2. Start V2 with the bridge as its data source (same computer, or a server the bridge can reach):
+
+   ```powershell
+   $env:MARKET_DATA_PROVIDER = "BRIDGE"
+   $env:SPARKZ_BRIDGE_TOKEN = "<secret>"
+   cd SPARKZ-TRADER-V2/backend; uvicorn app.main:app --port 8000
+   ```
+
+3. With MT5 open and logged in, in another window:
+
+   ```powershell
+   pip install MetaTrader5
+   $env:SPARKZ_BRIDGE_TOKEN = "<secret>"
+   python SPARKZ-TRADER-V2/bridge/mt5_bridge.py --symbol XAUUSD --server http://127.0.0.1:8000
+   ```
+
+   `--symbol` is the broker's name for gold (XAUUSD, XAUUSDm, GOLD, ...). MT5 reports times in the broker's
+   server time: the bridge detects the offset while the market is open; otherwise pass `--utc-offset 3`
+   (server time minus UTC, in hours). At start it sends about two weeks of closed 1-minute candles so the
+   indicators are ready at once, then a quote every 2 seconds.
+
+The paper loop then trades the PAPER ACCOUNT on your broker's real bid/ask (`GET /api/bridge/status` shows
+what has arrived). If the quotes stop (terminal closed, weekend), the market shows as closed and new positions
+are blocked until they return. The server rejects pushes without the secret, malformed prices, and times in
+the future (the usual sign of a wrong `--utc-offset`).
 
 ### Long fine-grained history from OANDA (read-only)
 
@@ -134,6 +168,7 @@ at the real bid/ask spread (stop assumed when stop and target share a candle).
 
 ```bash
 python -m app.research.scalp_study --source dukascopy --split 2025-01-01 --spread 0.54
+python -m app.research.scalp_study --tfs 15m,1h --min-trades 50    # same setup on 15m/1h (1h/4h bias, wider stops)
 ```
 
 Every parameter combination is run; the best on the in-sample period (before `--split`) is reported on the
