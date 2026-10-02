@@ -1,6 +1,6 @@
 # SPARKZ TRADER V2: Technical Report
 
-*Market data + adaptive grid & basket simulator. Report date: 2026-10-01.*
+*Market data + adaptive grid & basket simulator. Report date: 2026-10-01; §9.6 (long 1m study) added 2026-10-02.*
 
 Everything below is **simulation**: historical replays and synthetic scenarios, with simulated execution against a
 PAPER ACCOUNT. No real order was ever placed, and nothing here can place one.
@@ -8,7 +8,8 @@ PAPER ACCOUNT. No real order was ever placed, and nothing here can place one.
 Results are stated as "configuration X produced Y over period Z under assumptions A". They are not forecasts.
 Historical results, paper results, live market conditions and real execution are four different things.
 
-Study outputs: `reports/studies/*.json`, produced by `python -m app.research.studies`.
+Study outputs: `reports/studies/*.json`, produced by `python -m app.research.studies`, plus the long 1m study
+(`fine_path_dukascopy_1m*.json`, `python -m app.research.fine_path_study`, §9.6).
 
 ---
 
@@ -38,7 +39,15 @@ Study outputs: `reports/studies/*.json`, produced by `python -m app.research.stu
    - The basket loss limit caps the damage at about −$200 (2% of equity).
    - Without the limit, the same move costs −$828 (ATR grid) or −$2,068 (`video_style`, which then trips the
      20% account-drawdown halt).
-7. Building V2 exposed **four ways a backtest can flatter a grid**. Each is fixed and covered by tests:
+7. **Long real-1m check (§9.6):** 2.7 years of Dukascopy XAUUSD 1m data (Jan 2024 → Oct 2026, gold +106%).
+   - On the plain 15m OHLC path, adverse-first still shows up to **+$36,372** (`multiplier_high_risk`). With the
+     real 1m candles as the intrabar path, the same run **loses $1,984**.
+   - At the backtest's 0.30 spread, three presets stay positive on the 1m path, all thin: `atr_grid` up to
+     +$3,805 (profit factor 1.16), `video_style` +$2,927 (1.07, adverse-first only), `fixed_grid` up to +$1,429.
+   - Dukascopy's **measured spread is 0.54 median** (p90 0.79, p99 1.36), not 0.30. At 0.54, **every preset
+     loses on the 1m path in every ordering** (−$906 to −$1,984), and 16 of 18 runs hit the 20% account
+     drawdown halt.
+8. Building V2 exposed **four ways a backtest can flatter a grid**. Each is fixed and covered by tests:
    - intrabar order (§9.2);
    - latency modelled by path interpolation (§9.4);
    - a risk refusal that skipped the loss-limit check (§7);
@@ -47,6 +56,7 @@ Study outputs: `reports/studies/*.json`, produced by `python -m app.research.stu
 **Conclusion:** on the data available, no grid configuration here shows evidence of a robust edge.
 - The positive in-sample numbers depend on the intrabar-order assumption, low costs, or both.
 - The longest out-of-sample test (1h, 2.3 years) is negative in every fold.
+- The longest real-path test (1m, 2.7 years) is negative for every preset at the measured spread.
 - The system is built to make these failures visible, and it does.
 
 ---
@@ -292,7 +302,7 @@ From 2026-08-27 (start of the 5m data) to 2026-10-01, a −10.2% fall in gold, t
 - The 5m path stabilizes the ATR-spaced grids (about +$1.0k–1.3k in every ordering).
 - `video_style` (2.0 spacing on a $4,200–4,700 instrument) still swings from +$10 to +$2,580: its grid is finer
   than even 5m candles resolve. Judging it would need tick or 1m data over a long period. Only 4 days of 1m data
-  were available.
+  were available at the time; §9.6 repeats the check on 2.7 years of real 1m data.
 
 ### 9.4 Latency
 
@@ -332,6 +342,63 @@ Every backtest report contains:
 
 By regime at entry (atr_grid): TRENDING_UP baskets +$860 (128); TRENDING_DOWN +$125 (150).
 `video_style` lost in both regimes: −$325 (up) and −$1,426 (down).
+
+### 9.6 Long real-1m check (Dukascopy, 2.7 years) and the measured spread
+
+**Data.** Dukascopy's free bid/ask feed (`download --source dukascopy --start 2024-01-01`), stored apart from
+Yahoo's GC=F future. 977,051 one-minute mid candles, 2024-01-01 → 2026-10-01, no invalid rows; the 15m
+decision candles (65,155) are resampled from them. The only missing weekdays are the three Good Fridays.
+Gold rose **+106%** over the period ($2,035 → $4,182). OANDA was the planned source but could not be used (its
+service is not offered in the requester's country). Summary: `reports/studies/dukascopy_download_summary.json`.
+
+**Measured spread** (ask − bid at each 1m close, all 977k minutes):
+
+| | Median | p90 | p99 | Backtest default |
+|---|---|---|---|---|
+| Dukascopy XAUUSD | **0.54** | 0.79 | 1.36 | 0.30 |
+
+A bank feed's spread is usually tighter than a retail broker's, so 0.54 is itself likely optimistic.
+
+**Method.** `python -m app.research.fine_path_study --source dukascopy --path 1m [--spread 0.54]`: every preset ×
+every intrabar order on 15m decisions, with the plain 15m OHLC path and with the real 1m candles as the
+intrabar path. Trading 2024-01-10 → 2026-10-01 (after 600 bars of warm-up), $10k start.
+
+**Net P&L** (⛔ = stopped by the 20% account-drawdown halt; Fav. / Rand. / Adv. = intrabar order):
+
+| Preset | 15m path @0.30 (Fav. / Rand. / Adv.) | 1m path @0.30 | 1m path @0.54 |
+|---|---|---|---|
+| baseline | −141 / −341 / −731 | −291 / −291 / −311 | −1,010 / −1,030 / −1,030 |
+| fixed_grid | −579⛔ / +8,103 / +15,308 | −582⛔ / +201 / +1,429 | −928⛔ / −928⛔ / −906⛔ |
+| atr_grid | −417⛔ / +10,653 / +18,107 | −432⛔ / +1,146 / +3,805 | −1,081⛔ / −1,078⛔ / −1,083⛔ |
+| signal_grid | −1,472⛔ / +1,325 / +1,676 | −1,318⛔ / −1,321⛔ / −1,321⛔ | −1,250⛔ / −1,250⛔ / −1,249⛔ |
+| video_style | −1,776⛔ / +2,118⛔ / +35,887 | −1,969⛔ / −1,152⛔ / +2,927 | −1,942⛔ / −1,934⛔ / −1,686⛔ |
+| multiplier_high_risk | −1,869⛔ / −1,987⛔ / +36,372 | −1,976⛔ / −1,977⛔ / −1,984⛔ | −1,968⛔ / −1,972⛔ / −1,964⛔ |
+
+**1m path @0.54, adverse-first** (the ordering that flatters grids most on the 15m path):
+
+| Preset | Baskets | Win rate | Avg win | Avg loss | Largest basket loss | Max DD | Profit factor |
+|---|---|---|---|---|---|---|---|
+| baseline | 2,351 | 47.6% | $10.1 | −$10.0 | −$16 | −12.3% | 0.92 |
+| fixed_grid | 1,109 | 95.0% | $10.0 | −$205 | −$227 | −20.0% ⛔ | 0.92 |
+| atr_grid | 1,389 | 94.9% | $10.1 | −$202 | −$300 | −20.1% ⛔ | 0.92 |
+| signal_grid | 1,261 | 94.7% | $10.1 | −$198 | −$325 | −20.1% ⛔ | 0.91 |
+| video_style | 311 | 92.3% | $10.0 | −$190 | −$206 | −19.2% ⛔ | 0.63 |
+| multiplier_high_risk | 205 | 89.8% | $10.0 | −$181 | −$201 | −20.0% ⛔ | 0.48 |
+
+What it shows:
+- **The 15m-path profits are an artefact of the intrabar assumption.** Random and adverse-first gains of
+  +$8k to +$36k on the 15m path shrink to +$0.2k to +$3.8k, or become losses, once the real minutes are used.
+- **Costs decide the rest.** At 0.30 the three surviving grids earn profit factors of 1.01–1.16. The extra
+  0.24 per fill at 0.54 (baseline: $712 → $1,270 of spread over about 4,700 fills) turns all of them negative.
+  With an average win near $10 and an average loss near $200, a grid needs about 95% wins just to break even;
+  the cost increase pushes the win rate below that.
+- **Open question: ordering still matters on the 1m path at 0.30.** With real 1m candles the assumption only
+  applies inside each minute, so the three orderings should nearly agree. For the ATR and fixed grids they do
+  not (`atr_grid` −$432 / +$1,146 / +$3,805). At 0.54 they agree, but mostly because runs halt early. Either
+  these grids are sensitive to the order inside single minutes, or the ordering setting influences more than
+  the path; this should be resolved before any single 1m figure at 0.30 is relied on.
+- **The baseline** (single position, $10 target and stop) never halts; it loses about $1,000 at 0.54 against
+  about $300 at 0.30, i.e. roughly the extra spread it pays.
 
 ## 10. Stress-test results
 
@@ -429,12 +496,16 @@ Chronological rolling folds of train → validation → test.
 
 - **Data.**
   - Gold is the Yahoo GC=F future, a proxy for spot XAUUSD (contract rolls, different hours).
-  - 15m covers about 2 months; 5m about 5 weeks; 1m only 4 days.
-  - There is no real bid/ask history: spread is a constant 0.30 (× stress multipliers).
+  - Yahoo: 15m covers about 2 months; 5m about 5 weeks; 1m only a few days (plus the daily archive).
+  - Dukascopy (§9.6): 2.7 years of real 1m bid/ask, spot XAUUSD. It is one bank feed: its spread (0.54 median)
+    is likely tighter than a retail broker's; an MT5 export (`import-csv --source mt5`) shows a given broker's.
+  - Backtests still use **one constant spread** per run (0.30 default, `--spread` / `execution.spread_override`
+    to change it). Real spreads widen at session opens, rollover and news (p99 1.36).
   - The OANDA provider is implemented and tested against a fake client, but **was not run against a real
-    account** in this environment (no credentials).
+    account** (the token available was invalid, and OANDA is not offered in the requester's country).
 - **Intrabar path.** The order of highs and lows is unknown, and grid results depend on it heavily (§9.2–9.3).
-  Tick data would be needed to resolve tight grids.
+  Real 1m candles narrow this a lot (§9.6), but the ordering still moves the ATR and fixed grids on the 1m
+  path at 0.30 spread; tick data, or a check of what else the ordering setting affects, would settle it.
 - **Execution.** No partial fills, requotes, stop-outs, weekend swap or financing. A gap is filled at the next
   price with normal spread; real spreads widen at gaps and news.
 - **Latency model** (backtest) is a statistical approximation (§9.4).
@@ -452,10 +523,12 @@ See `README.md` for full details. In short:
 cd SPARKZ-TRADER-V2
 cp .env.example .env                       # never commit .env; real env variables take precedence
 cd backend && pip install -r requirements.txt
-python -m pytest                           # 79 tests
+python -m pytest                           # 100 tests
 python -m app.cli download --timeframe 15m # also 5m, 1m, 1h
 python -m app.cli backtest --preset atr_grid
 python -m app.research.studies             # regenerates reports/studies/*.json (~6 min)
+python -m app.cli download --source dukascopy --start 2024-01-01   # 2.7 years of 1m + 15m (rate-limited: hours)
+python -m app.research.fine_path_study --source dukascopy --path 1m [--spread 0.54]   # §9.6 (~75 min)
 uvicorn app.main:app --port 8000           # API + paper loop (MOCK data by default)
 cd ../frontend && npm install && npm run build   # served by the API at http://localhost:8000
 #   or: npm run dev  → http://localhost:5173
@@ -466,7 +539,7 @@ cd ../frontend && npm install && npm run build   # served by the API at http://l
 
 ## 15. Test results
 
-`python -m pytest` in `backend/`: **79 passed** (about 40 s).
+`python -m pytest` in `backend/`: **100 passed** (about 55 s).
 
 | File | Tests | Covers |
 |---|---|---|
@@ -477,6 +550,10 @@ cd ../frontend && npm install && npm run build   # served by the API at http://l
 | test_market_data.py | 10 | mock candles on timeframe boundaries, Yahoo drops the forming candle, OANDA quotes and complete-only candles, token never in errors or repr, credentials from env, OHLC validation, regimes, entry rules, paper state = backtest state, warm-up never trades |
 | test_paper.py | 3 | paper loop trades and persists to SQLite, stale data blocks and recovers, provider errors are throttled and never fatal |
 | test_stress_walkforward.py | 7 | critical failure shows the loss, execution stress costs more, parameter-lab cap, chronological folds, lab split, windows never trade outside their dates, finer-candle intrabar path |
+| test_oanda_history.py | 4 | OANDA history paging without gaps or duplicates, end date, separate store per source, start required |
+| test_archive.py | 4 | daily write-once archive of 1m/5m candles |
+| test_mt5_import.py | 3 | MT5 export into its own store, server time → UTC, spread in price units, point size, missing-store hint |
+| test_dukascopy.py | 10 | bi5 decoding, mid + spread, flats dropped, 0-based month in URL, HTTP errors reported, 429 retried and day files cached, mis-scaled prices rejected, 1m + 15m stores, website CSV exports (GMT and local time), 1-minute check |
 | test_api.py | 7 | dashboard panels, read endpoints, emergency stop / resume, restart validation, backtest job, lab guard, WebSocket push |
 
 The frontend type-checks and builds (`tsc -b && vite build`). It was checked in headless Chromium:
