@@ -7,19 +7,19 @@
     "starting_balance": 10000.0,
     "fee_bps": 0.0
   },
-  "last_processed": "2026-10-02T03:00:00+00:00",
+  "last_processed": "2026-10-02T04:00:00+00:00",
   "account": {
-    "balance": 9796.279118053255,
+    "balance": 9990.221416855169,
     "is_active": true,
     "open_positions": [
       {
         "symbol": "BTC-USD",
         "direction": "BUY",
-        "entry_price": 83779.46875,
-        "stop_price": 82544.61266085779,
-        "target_price": 86249.18092828442,
-        "size": 0.07933134236604221,
-        "opened_at": "2026-09-30T14:00:00+00:00"
+        "entry_price": 86666.6875,
+        "stop_price": 85686.38731928582,
+        "target_price": 88627.28786142837,
+        "size": 0.10190981919004573,
+        "opened_at": "2026-10-02T04:00:00+00:00"
       }
     ],
     "trade_history": [
@@ -44,15 +44,26 @@
         "opened_at": "2026-09-30T13:00:00+00:00",
         "closed_at": "2026-09-30T14:00:00+00:00",
         "reason": "STOP"
+      },
+      {
+        "symbol": "BTC-USD",
+        "direction": "BUY",
+        "entry_price": 83779.46875,
+        "exit_price": 86224.18092828442,
+        "size": 0.07933134236604221,
+        "pnl": 193.94229880191403,
+        "opened_at": "2026-09-30T14:00:00+00:00",
+        "closed_at": "2026-10-02T04:00:00+00:00",
+        "reason": "TARGET"
       }
     ],
     "risk_state": {
-      "equity": 9796.279118053255,
+      "equity": 9990.221416855169,
       "peak_equity": 10000.0,
       "open_positions": 1,
-      "current_exposure": 97.96279118053255,
-      "daily_loss": -203.72088194674626,
-      "current_day": "2026-09-30",
+      "current_exposure": 99.9022141685517,
+      "daily_loss": 0.0,
+      "current_day": "2026-10-02",
       "bars_since_last_trade": 10000
     }
   },
@@ -61,7 +72,9 @@
     "2026-09-30 13:00 CLOSE BUY BTC-USD STOP @ 84281.91, pnl -102.56, balance 9897.44",
     "2026-09-30 13:00 OPEN BUY BTC-USD @ 84604.82, size 0.087418, stop 83472.62, target 86869.22",
     "2026-09-30 14:00 CLOSE BUY BTC-USD STOP @ 83447.62, pnl -101.16, balance 9796.28",
-    "2026-09-30 14:00 OPEN BUY BTC-USD @ 83779.47, size 0.079331, stop 82544.61, target 86249.18"
+    "2026-09-30 14:00 OPEN BUY BTC-USD @ 83779.47, size 0.079331, stop 82544.61, target 86249.18",
+    "2026-10-02 04:00 CLOSE BUY BTC-USD TARGET @ 86224.18, pnl +193.94, balance 9990.22",
+    "2026-10-02 04:00 OPEN BUY BTC-USD @ 86666.69, size 0.101910, stop 85686.39, target 88627.29"
   ],
   "halted": null,
   "targets": {

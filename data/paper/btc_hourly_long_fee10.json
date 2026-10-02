@@ -7,34 +7,48 @@
     "starting_balance": 10000.0,
     "fee_bps": 10.0
   },
-  "last_processed": "2026-10-02T03:00:00+00:00",
+  "last_processed": "2026-10-02T04:00:00+00:00",
   "account": {
-    "balance": 10000.0,
+    "balance": 10187.442215835616,
     "is_active": true,
     "open_positions": [
       {
         "symbol": "BTC-USD",
         "direction": "BUY",
-        "entry_price": 83853.2210390625,
-        "stop_price": 82972.37363477804,
-        "target_price": 85614.91584763143,
-        "size": 0.11352704170279418,
-        "opened_at": "2026-10-01T09:00:00+00:00"
+        "entry_price": 86753.3291875,
+        "stop_price": 85773.02900678581,
+        "target_price": 88713.92954892837,
+        "size": 0.10392166008185055,
+        "opened_at": "2026-10-02T04:00:00+00:00"
       }
     ],
-    "trade_history": [],
+    "trade_history": [
+      {
+        "symbol": "BTC-USD",
+        "direction": "BUY",
+        "entry_price": 83853.2210390625,
+        "exit_price": 85504.3009317838,
+        "size": 0.11352704170279418,
+        "pnl": 187.44221583561637,
+        "opened_at": "2026-10-01T09:00:00+00:00",
+        "closed_at": "2026-10-02T04:00:00+00:00",
+        "reason": "TARGET"
+      }
+    ],
     "risk_state": {
-      "equity": 10000.0,
-      "peak_equity": 10000.0,
+      "equity": 10187.442215835616,
+      "peak_equity": 10187.442215835616,
       "open_positions": 1,
-      "current_exposure": 100.0,
+      "current_exposure": 101.87442215835615,
       "daily_loss": 0.0,
-      "current_day": "2026-10-01",
+      "current_day": "2026-10-02",
       "bars_since_last_trade": 10000
     }
   },
   "log": [
-    "2026-10-01 09:00 OPEN BUY BTC-USD @ 83853.22, size 0.113527, stop 82972.37, target 85614.92"
+    "2026-10-01 09:00 OPEN BUY BTC-USD @ 83853.22, size 0.113527, stop 82972.37, target 85614.92",
+    "2026-10-02 04:00 CLOSE BUY BTC-USD TARGET @ 85504.30, pnl +187.44, balance 10187.44",
+    "2026-10-02 04:00 OPEN BUY BTC-USD @ 86753.33, size 0.103922, stop 85773.03, target 88713.93"
   ],
   "halted": null,
   "targets": {
