@@ -3,10 +3,12 @@ Fine-path study: every preset on XAUUSD 15m decisions, with stored 1m (or 5m) ca
 price path, under each intrabar-order assumption, next to the plain 15m OHLC path.
 
   python -m app.research.fine_path_study [--source oanda|mt5|dukascopy] [--path 1m] [--start 2024-01-01]
+                                         [--spread 0.54]
 
 With real 1m data the ordering assumption only matters inside each minute, so the three orderings
 should nearly agree; whatever result remains is far closer to what the strategy would really have done.
-Writes reports/studies/fine_path_<source>_<tf>.json.
+Writes reports/studies/fine_path_<source>_<tf>.json (with --spread: ..._spread<value>.json, so runs at the
+instrument's default spread and at a measured one sit side by side).
 """
 
 from __future__ import annotations
@@ -27,6 +29,8 @@ def main(argv=None) -> None:
     ap.add_argument("--source", default="oanda", choices=["yahoo", "oanda", "mt5", "dukascopy"])
     ap.add_argument("--start", default=None, help="only trade from this date (YYYY-MM-DD)")
     ap.add_argument("--presets", default=",".join(list_presets()))
+    ap.add_argument("--spread", type=float, default=None,
+                    help="spread in price units for every fill (execution.spread_override), e.g. a measured median")
     a = ap.parse_args(argv)
     t0 = time.time()
     c15, fine = load_history("XAUUSD", "15m", a.source), load_history("XAUUSD", a.path, a.source)
@@ -37,16 +41,19 @@ def main(argv=None) -> None:
     for p in a.presets.split(","):
         out[p] = {}
         for o in ORDERS:
-            s = load_settings(p, env={}, overrides={"execution": {"intrabar_order": o}})
+            execution = {"intrabar_order": o, **({"spread_override": a.spread} if a.spread is not None else {})}
+            s = load_settings(p, env={}, overrides={"execution": execution})
             out[p][o] = {"ohlc_path": _m(run_backtest(s, c15, start=start)),
                          f"{a.path}_path": _m(run_backtest(s, c15, start=start, path_candles=fine))}
             r = out[p][o]
             print(f"{p:22s} {o:17s} 15m-OHLC {r['ohlc_path']['net_pnl']:>9.0f}   "
                   f"{a.path}-path {r[f'{a.path}_path']['net_pnl']:>9.0f}   ({time.time() - t0:.0f}s)", flush=True)
     meta = {"source": a.source, "decisions": "XAUUSD 15m", "path": a.path, "from": str(c15["timestamp"].iloc[start]),
-            "to": str(c15["timestamp"].iloc[-1]), "path_candles": len(fine)}
+            "to": str(c15["timestamp"].iloc[-1]), "path_candles": len(fine),
+            "spread": a.spread if a.spread is not None else "instrument default"}
+    suffix = f"_spread{a.spread:g}" if a.spread is not None else ""
     (REPORTS_DIR / "studies").mkdir(parents=True, exist_ok=True)
-    (REPORTS_DIR / "studies" / f"fine_path_{a.source}_{a.path}.json").write_text(
+    (REPORTS_DIR / "studies" / f"fine_path_{a.source}_{a.path}{suffix}.json").write_text(
         json.dumps({"meta": meta, "results": out}, indent=1, default=str))
     print(meta)
 
