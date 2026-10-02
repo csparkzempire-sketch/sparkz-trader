@@ -4,6 +4,7 @@ Command line.
   python -m app.cli download     --symbol XAUUSD --timeframe 15m
   python -m app.cli download     --source oanda --timeframe 1m --start 2024-01-01   (read-only broker history)
   python -m app.cli import-csv   FILE --symbol XAUUSD --timeframe 15m
+  python -m app.cli import-csv   XAUUSD_M1.csv --source mt5 --timeframe 1m --tz Etc/GMT-2   (MT5 export)
   python -m app.cli backtest     [--preset video_style] [--data stored|synthetic:<scenario>] [--set key=value ...]
   python -m app.cli stress       [--preset ...]
   python -m app.cli walk-forward [--preset ...] [--space grid.atr_multiplier=0.5,1.0 ...] [--folds 3]
@@ -175,7 +176,7 @@ def main(argv: list[str] | None = None) -> None:
         p.add_argument("--set", action="append", default=[], help="override, e.g. grid.distance=3")
         p.add_argument("--data", default=data, help="stored | synthetic[:scenario]")
         p.add_argument("--bars", type=int, default=3000, help="synthetic series length")
-        p.add_argument("--source", default="yahoo", choices=["yahoo", "oanda"], help="stored data source")
+        p.add_argument("--source", default="yahoo", choices=["yahoo", "oanda", "mt5"], help="stored data source")
 
     p = sub.add_parser("download")
     p.add_argument("--symbol", default="XAUUSD")
@@ -187,6 +188,10 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("file")
     p.add_argument("--symbol", default="XAUUSD")
     p.add_argument("--timeframe", default="15m")
+    p.add_argument("--source", default="yahoo", choices=["yahoo", "mt5"],
+                   help="store to merge into: mt5 for MetaTrader 5 exports (kept apart from Yahoo's futures)")
+    p.add_argument("--tz", default="UTC", help="zone of the file's times, e.g. Etc/GMT-2 for an MT5 server")
+    p.add_argument("--point", type=float, default=0.01, help="price of one MT5 spread point (0.01 or 0.001)")
     p = sub.add_parser("backtest")
     common(p)
     p.add_argument("--path", default=None, help="finer stored timeframe for the intrabar price path, e.g. 1m")
@@ -217,7 +222,8 @@ def main(argv: list[str] | None = None) -> None:
         print(rep, df["timestamp"].min(), "->", df["timestamp"].max())
     elif a.cmd == "import-csv":
         from app.market.history import import_csv
-        print(import_csv(a.file, a.symbol, a.timeframe)[1])
+        df, rep = import_csv(a.file, a.symbol, a.timeframe, a.tz, a.source, a.point)
+        print(rep, df["timestamp"].min(), "->", df["timestamp"].max())
     elif a.cmd == "archive":
         from app.market.archive import collect, status
         res = collect(a.symbol, tuple(a.timeframes.split(",")))

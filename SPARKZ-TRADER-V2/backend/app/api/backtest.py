@@ -19,7 +19,7 @@ class RunBody(BaseModel):
     data: str = "stored"                 # stored | synthetic:<scenario>
     bars: int = 3000
     path: str | None = None              # finer stored timeframe for the intrabar path, e.g. "5m"
-    source: str = "yahoo"                # stored data source: yahoo (GC=F future) or oanda (spot)
+    source: str = "yahoo"                # stored data source: yahoo (GC=F future), oanda or mt5 (spot)
     space: dict[str, list] = Field(default_factory=dict)
     folds: int = 3
 
