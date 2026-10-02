@@ -1,6 +1,7 @@
 # SPARKZ TRADER V2: Technical Report
 
-*Market data + adaptive grid & basket simulator. Report date: 2026-10-01; §9.6 (long 1m study) added 2026-10-02.*
+*Market data + adaptive grid & basket simulator. Report date: 2026-10-01; §9.6 (long 1m study) and §16
+(structure scalping and a setup-filter model) added 2026-10-02.*
 
 Everything below is **simulation**: historical replays and synthetic scenarios, with simulated execution against a
 PAPER ACCOUNT. No real order was ever placed, and nothing here can place one.
@@ -9,7 +10,8 @@ Results are stated as "configuration X produced Y over period Z under assumption
 Historical results, paper results, live market conditions and real execution are four different things.
 
 Study outputs: `reports/studies/*.json`, produced by `python -m app.research.studies`, plus the long 1m study
-(`fine_path_dukascopy_1m*.json`, `python -m app.research.fine_path_study`, §9.6).
+(`fine_path_dukascopy_1m*.json`, `python -m app.research.fine_path_study`, §9.6) and the structure-scalping
+studies (`scalp_structure_dukascopy.json`, `setup_model_dukascopy_*.json`, §16).
 
 ---
 
@@ -47,7 +49,15 @@ Study outputs: `reports/studies/*.json`, produced by `python -m app.research.stu
    - Dukascopy's **measured spread is 0.54 median** (p90 0.79, p99 1.36), not 0.30. At 0.54, **every preset
      loses on the 1m path in every ordering** (−$906 to −$1,984), and 16 of 18 runs hit the 20% account
      drawdown halt.
-8. Building V2 exposed **four ways a backtest can flatter a grid**. Each is fixed and covered by tests:
+8. **Structure scalping (§16):** a market-structure module (swings, BOS / CHoCH, Asia range, liquidity sweeps,
+   no look-ahead) drives a 1m/5m scalping setup with a 15m bias, tested on the same 2.7 years at 0.54 spread.
+   - All **36 parameter combinations lose**, in-sample (2024) and out-of-sample (2025-01 → 2026-10).
+   - Before costs the setups break even (−0.09R to +0.05R per trade); spread and slippage cost 0.07–0.24R.
+   - A walk-forward **setup-filter model** (gradient boosting, retrained monthly on earlier trades only) cuts the
+     1m setup's loss from −0.109R to −0.049R per trade, still negative. It mainly learned to avoid setups whose
+     stop is small against the spread; a plain "bigger stops" rule did as well, and the model's rankings do not
+     order real results.
+9. Building V2 exposed **four ways a backtest can flatter a grid**. Each is fixed and covered by tests:
    - intrabar order (§9.2);
    - latency modelled by path interpolation (§9.4);
    - a risk refusal that skipped the loss-limit check (§7);
@@ -57,6 +67,7 @@ Study outputs: `reports/studies/*.json`, produced by `python -m app.research.stu
 - The positive in-sample numbers depend on the intrabar-order assumption, low costs, or both.
 - The longest out-of-sample test (1h, 2.3 years) is negative in every fold.
 - The longest real-path test (1m, 2.7 years) is negative for every preset at the measured spread.
+- Structure scalping is negative in every tested form, with or without a learned filter (§16).
 - The system is built to make these failures visible, and it does.
 
 ---
@@ -392,11 +403,20 @@ What it shows:
   0.24 per fill at 0.54 (baseline: $712 → $1,270 of spread over about 4,700 fills) turns all of them negative.
   With an average win near $10 and an average loss near $200, a grid needs about 95% wins just to break even;
   the cost increase pushes the win rate below that.
-- **Open question: ordering still matters on the 1m path at 0.30.** With real 1m candles the assumption only
-  applies inside each minute, so the three orderings should nearly agree. For the ATR and fixed grids they do
-  not (`atr_grid` −$432 / +$1,146 / +$3,805). At 0.54 they agree, but mostly because runs halt early. Either
-  these grids are sensitive to the order inside single minutes, or the ordering setting influences more than
-  the path; this should be resolved before any single 1m figure at 0.30 is relied on.
+- **Why ordering still matters on the 1m path at 0.30** (`atr_grid` −$432 / +$1,146 / +$3,805). Basket by
+  basket, the three runs are identical for most of the period (the first 54 baskets match exactly; about 1,800
+  baskets open at the same times until February 2026). The gap has two sources:
+  - **Same-minute round trips.** The ordering still applies inside each 1m candle. In fast minutes (several
+    moved $14–15; the median 1m range is $1.0, p99 $8.3) adverse-first lets the grid add at the minute's low
+    and reach the target at its high. Baskets whose target filled in the same minute as their last add:
+    2 (favourable-first), 30 (random), 52 (adverse-first). Eight of them turned a loss-limit close (about
+    −$210) into a +$10 target (about +$1,400 in total).
+  - **The 20% account-drawdown halt.** Favourable-first crossed it on 2026-02-24 and stopped trading; random
+    came within 1.4 points (worst −18.6%) and adverse-first reached −13.2%. After that date the two survivors
+    made +$1,295 and +$2,809 that the halted run could not.
+  Neither is a code defect: the 1m path still does not resolve these grids in fast minutes, so adverse-first
+  and random are optimistic there, and **favourable-first is the figure to use on the 1m path**. A run that
+  ends within a couple of points of the halt is close to a coin toss.
 - **The baseline** (single position, $10 target and stop) never halts; it loses about $1,000 at 0.54 against
   about $300 at 0.30, i.e. roughly the extra spread it pays.
 
@@ -512,7 +532,11 @@ Chronological rolling folds of train → validation → test.
 - **Sample size.** The 15m windows give 7–11-day walk-forward folds. The 1h run is longer, but the presets were
   designed for 15m.
 - **Paper persistence.** A restart begins a new paper account. Earlier sessions stay in SQLite but are not resumed.
-- **No ML.** scikit-learn was in the proposed stack, but V2 has no ML component, so it is not a dependency.
+- **ML.** The only model is the research setup filter (§16.3); the trading engine has no ML component.
+  scikit-learn is a dependency for that study only.
+- **Scalping study.** One instrument, one data feed, a constant spread, fills at the stop level plus fixed
+  slippage; the stop is assumed whenever stop and target share a 1m candle. Real scalping fills are worse in
+  fast markets.
 - **"VIDEO_STYLE_MODE"** is an approximation from a description, not the video's code.
 
 ## 14. Setup instructions
@@ -523,12 +547,14 @@ See `README.md` for full details. In short:
 cd SPARKZ-TRADER-V2
 cp .env.example .env                       # never commit .env; real env variables take precedence
 cd backend && pip install -r requirements.txt
-python -m pytest                           # 100 tests
+python -m pytest                           # 115 tests
 python -m app.cli download --timeframe 15m # also 5m, 1m, 1h
 python -m app.cli backtest --preset atr_grid
 python -m app.research.studies             # regenerates reports/studies/*.json (~6 min)
 python -m app.cli download --source dukascopy --start 2024-01-01   # 2.7 years of 1m + 15m (rate-limited: hours)
 python -m app.research.fine_path_study --source dukascopy --path 1m [--spread 0.54]   # §9.6 (~75 min)
+python -m app.research.scalp_study --source dukascopy --split 2025-01-01               # §16.2 (~3 min)
+python -m app.research.setup_model --tf 1m --swing-n 3 --variant choch --rr 2.0         # §16.3 (~2 min)
 uvicorn app.main:app --port 8000           # API + paper loop (MOCK data by default)
 cd ../frontend && npm install && npm run build   # served by the API at http://localhost:8000
 #   or: npm run dev  → http://localhost:5173
@@ -539,7 +565,7 @@ cd ../frontend && npm install && npm run build   # served by the API at http://l
 
 ## 15. Test results
 
-`python -m pytest` in `backend/`: **100 passed** (about 55 s).
+`python -m pytest` in `backend/`: **115 passed** (about 55 s).
 
 | File | Tests | Covers |
 |---|---|---|
@@ -554,6 +580,8 @@ cd ../frontend && npm install && npm run build   # served by the API at http://l
 | test_archive.py | 4 | daily write-once archive of 1m/5m candles |
 | test_mt5_import.py | 3 | MT5 export into its own store, server time → UTC, spread in price units, point size, missing-store hint |
 | test_dukascopy.py | 10 | bi5 decoding, mid + spread, flats dropped, 0-based month in URL, HTTP errors reported, 429 retried and day files cached, mis-scaled prices rejected, 1m + 15m stores, website CSV exports (GMT and local time), 1-minute check |
+| test_structure_scalp.py | 12 | pivots, swings known only after confirmation, BOS/CHoCH, no look-ahead under truncation, sweeps, Asia range known after 07:00, 15m bias from closed candles only, trade costs exact, stop assumed when stop and target share a candle, short with a gap through the stop, too-small risk skipped, session filter |
+| test_setup_model.py | 3 | model features unchanged when later candles are removed (1m and 5m setups), walk-forward trains only on trades exited before the test month |
 | test_api.py | 7 | dashboard panels, read endpoints, emergency stop / resume, restart validation, backtest job, lab guard, WebSocket push |
 
 The frontend type-checks and builds (`tsc -b && vite build`). It was checked in headless Chromium:
@@ -561,3 +589,75 @@ The frontend type-checks and builds (`tsc -b && vite build`). It was checked in 
 - a backtest run;
 - the phone layout;
 - STOP ROBOT → STOPPED → RESUME.
+
+## 16. Market structure, a scalping setup and a setup-filter model
+
+*Research code in `app/research/`; results in `reports/studies/scalp_structure_dukascopy.json` and
+`setup_model_dukascopy_{1m,5m}.json`. Data: Dukascopy XAUUSD 1m (§9.6). Spread 0.54, slippage 0.05 per fill,
+$100 risked per trade.*
+
+### 16.1 Market structure (`structure.py`)
+
+- **Swing high / low:** a pivot that is the extreme of `n` candles on each side. It is used only from the
+  candle that confirms it (`n` candles later), never earlier.
+- **Trend, BOS, CHoCH:** the trend changes only on a candle CLOSE beyond the last confirmed swing. A close beyond
+  it in the trend's direction is a break of structure (BOS); the first close against the trend is a change of
+  character (CHoCH) and flips the trend.
+- **Sessions and liquidity:** Asia 00–07, London 07–12, New York 12–21 UTC; the day's Asia range is known from
+  07:00. A liquidity sweep is a wick through the last swing or the Asia high/low with the close back inside.
+- Tests: truncating the series leaves every earlier row unchanged; swings appear only after confirmation;
+  BOS/CHoCH on a hand-built series.
+
+### 16.2 The scalping setup (`scalp.py`)
+
+Long (short mirrored): last closed 15m candle bullish; a CHoCH up on the 1m or 5m setup chart (a pullback
+turning back up), optionally after a liquidity sweep of a low; signal between 07:00 and 20:00 UTC. Entry at the
+next 1m open at the ask; stop below the lowest low of the last 30 setup candles (minus 0.20); target at
+1, 1.5 or 2 × risk; time stop after 120 minutes; one trade at a time. Exits are checked on every 1m candle at
+the bid; when the stop and target share a candle the stop is assumed.
+
+**Study (`scalp_study.py`):** 36 combinations (setup chart 1m/5m × swing size 2/3/5 × with/without sweep ×
+target 1/1.5/2R), chosen on 2024 and judged on 2025-01 → 2026-10.
+
+| Setup chart | Trades (in / out of sample) | Net R per trade, in-sample | Net R per trade, out-of-sample | Gross R (before costs), OOS | Cost per trade | Average stop |
+|---|---|---|---|---|---|---|
+| 1m | 1,361–2,832 / 2,208–5,002 | −0.205 to −0.241 | −0.101 to −0.150 | −0.020 to +0.016 | 0.11–0.24R | $3.4–7.2 |
+| 5m | 266–607 / 238–693 | −0.147 to −0.192 | −0.020 to −0.107 | −0.029 to +0.054 | 0.07–0.12R | $6.4–10.2 |
+
+- **All 36 combinations lose** in both periods (out-of-sample −$0.9k to −$73k at $100 per trade).
+- The in-sample choice (5m chart, swing size 2, CHoCH, 2R) made −0.064R per trade out of sample over 690 trades
+  (−$4,431, win rate 40.7%, profit factor 0.86); 2025 −0.101R, 2026 +0.045R.
+- **The signals carry about no edge before costs**, and the costs are a large share of a scalp's risk: on 1m
+  charts 11–24% of the stop on every trade. Larger setups (5m) lose less because their stops are larger.
+
+### 16.3 A setup-filter model (`setup_model.py`)
+
+- **Features** (21, known when the setup appears): direction, hour, weekday, session; stop size against ATR and
+  against the spread; size of the structure break; body of the signal candle; pullback depth; recent sweep;
+  distance to the Asia high/low; 15- and 60-minute momentum; RSI; age and slope of the 15m trend; distance to
+  the 15m swing; the day's range so far.
+- **Label:** each setup's net R, simulated on its own (overlapping trades allowed), after spread and slippage.
+- **Model:** `HistGradientBoostingRegressor` (depth 3, learning rate 0.03, 200 iterations, at least 200 trades
+  per leaf), deliberately small for a noisy target.
+- **Walk-forward:** from 2025-01, each month is predicted by a model trained on all earlier trades whose exit
+  happened before the month began (a purge; tested). A setup is traded when its predicted R is above 0; the
+  chosen setups are then traded one at a time, like the unfiltered setup, over the same months.
+
+| Setup | Labelled trades | Unfiltered (OOS) | Filtered, predicted R > 0 | > 0.05 | > 0.10 |
+|---|---|---|---|---|---|
+| 1m, swing 3, CHoCH, 2R | 8,802 | 3,500 trades, −0.109R, −$38,205 | 566, −0.049R, −$2,790 | 289, −0.088R | 131, −0.022R |
+| 5m, swing 2, CHoCH, 2R | 1,404 | 690 trades, −0.064R, −$4,431 | 90, −0.109R, −$980 | 39, +0.008R | 16, +0.211R |
+
+What it shows:
+- **No filtered version is reliably profitable.** The only positive figures come from 16–39 trades.
+- **The model does not rank setups by outcome.** Mean out-of-sample R by prediction quintile (lowest to highest):
+  1m −0.177 / −0.079 / −0.165 / −0.120 / −0.074; 5m −0.017 / −0.045 / −0.008 / −0.125 / −0.118 (backwards).
+  The 1m rank correlation (0.20) is misleading: a losing trade's R is −1 minus its cost share, which the model
+  can predict from the stop size without predicting direction.
+- **A trivial rule matches it.** Taking the same number of 1m setups with the largest stops (in spreads) gave
+  +0.029R against the model's −0.049R. That rule picks its cut-off from the whole test period, so it is not a
+  tradable result, but it shows the model's gain is mostly cost avoidance. Both lose in 2025.
+
+**Conclusion:** on 2.7 years of real 1m gold data at the measured spread, these structure scalps have no edge
+that survives costs, with or without a learned filter. Setups held longer with larger stops (15m–1h) are the
+better place to look, because costs become a small share of each trade.
