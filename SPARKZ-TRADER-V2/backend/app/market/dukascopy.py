@@ -98,7 +98,7 @@ class _Throttle:
 
 
 def _fetch_day(client, symbol: str, side: str, day: pd.Timestamp, throttle: _Throttle | None = None,
-               cache_dir: Path | None = None, retries: int = 8) -> bytes:
+               cache_dir: Path | None = None, retries: int = 15) -> bytes:
     """One day's file. A cached copy (an empty file records "no data that day") is used when present,
     so an interrupted download resumes where it stopped. 429/5xx answers are retried with a growing
     pause of up to two minutes."""
@@ -127,7 +127,7 @@ def _fetch_day(client, symbol: str, side: str, day: pd.Timestamp, throttle: _Thr
     return b""
 
 
-def download_1m(symbol: str, start, end=None, client=None, workers: int = 2, pause: float = 1.0,
+def download_1m(symbol: str, start, end=None, client=None, workers: int = 1, pause: float = 1.5,
                 cache_dir: Path | None = None, progress=None) -> tuple[pd.DataFrame, dict]:
     """1m mid candles for every complete UTC day from `start` to `end` (default: yesterday)."""
     factor = _factor(symbol)
