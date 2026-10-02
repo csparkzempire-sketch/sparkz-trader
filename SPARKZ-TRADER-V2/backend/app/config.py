@@ -50,6 +50,7 @@ class ProviderKind(str, Enum):
     HISTORICAL = "HISTORICAL"     # stored candles, replayed
     YAHOO = "YAHOO"               # delayed public data, no credentials (XAUUSD = GC=F futures proxy)
     BROKER = "BROKER"             # broker REST API, market data only (OANDA v20)
+    BRIDGE = "BRIDGE"             # quotes pushed from the user's MetaTrader 5 terminal (bridge/mt5_bridge.py)
 
 
 class EntryMode(str, Enum):

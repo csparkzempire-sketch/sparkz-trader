@@ -20,6 +20,10 @@ def make_provider(settings: Settings, **kw) -> MarketDataProvider:
         from app.market.providers.broker_provider import BrokerProvider
 
         return BrokerProvider(m.symbol, m.timeframe, **kw)
+    if m.provider == ProviderKind.BRIDGE:
+        from app.market.providers.bridge_provider import BridgeProvider
+
+        return BridgeProvider(m.symbol, m.timeframe, **kw)
     if m.provider == ProviderKind.HISTORICAL:
         from app.market.history import load_history
         from app.market.providers.historical_provider import HistoricalDataProvider

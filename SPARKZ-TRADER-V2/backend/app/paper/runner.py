@@ -68,10 +68,15 @@ class PaperRunner:
                            f"data from {self.info.name}{' (delayed)' if self.info.delayed else ''}. "
                            "PAPER ACCOUNT: all orders are simulated.", {"provider": self.info.name,
                                                                          "notes": self.info.notes})
+        self._load_history()
+
+    def _load_history(self) -> None:
+        """Warm the indicators up on the provider's closed history. A provider that has no history yet (the MT5
+        bridge before it connects) is asked again on every step until it does."""
         try:
             hist = self.provider.get_candles(self.s.market.timeframe, self.s.market.history_bars)
-            self.robot.warm_up(hist)
             if len(hist):
+                self.robot.warm_up(hist)
                 self.last_bar_ts = pd.Timestamp(hist["timestamp"].iloc[-1])
         except Exception as e:
             self._error(f"history: {e}")
@@ -95,6 +100,8 @@ class PaperRunner:
             self.market_open = st.open
         except Exception as e:
             self._error(f"market status: {e}")
+        if self.last_bar_ts is None:
+            self._load_history()
         try:
             candles = self.provider.get_candles(self.s.market.timeframe, 5)
             for _, row in candles.iterrows():
