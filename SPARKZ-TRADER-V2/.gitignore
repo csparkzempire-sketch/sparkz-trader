@@ -4,6 +4,7 @@ __pycache__/
 .env
 backend/data/candles/
 data/candles/
+data/cache/
 data/*.db
 data/*.sqlite
 reports/runs/

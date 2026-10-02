@@ -1,0 +1,34 @@
+{
+ "source": "dukascopy (datafeed.dukascopy.com, free bid/ask feed; OANDA unavailable in the user's country)",
+ "command": "python -m app.cli download --source dukascopy --start 2024-01-01",
+ "symbol": "XAUUSD",
+ "requested_start": "2024-01-01",
+ "days_requested": 1005,
+ "days_with_data": 859,
+ "missing_weekdays": [
+  "2024-03-29",
+  "2025-04-18",
+  "2026-04-03"
+ ],
+ "missing_weekdays_note": "Good Friday each year: gold does not trade",
+ "spread_source": "1m candle close, ask minus bid, over all 1m candles",
+ "spread_median": 0.54,
+ "spread_p90": 0.79,
+ "spread_p99": 1.36,
+ "backtest_spread_assumption": 0.3,
+ "timeframes": {
+  "1m": {
+   "candles": 977051,
+   "first": "2024-01-01 23:00:00+00:00",
+   "last": "2026-10-01 23:59:00+00:00",
+   "invalid_ohlc_dropped": 0
+  },
+  "15m": {
+   "candles": 65155,
+   "first": "2024-01-01 23:00:00+00:00",
+   "last": "2026-10-01 23:45:00+00:00",
+   "invalid_ohlc_dropped": 0,
+   "note": "resampled from the 1m mid candles"
+  }
+ }
+}

@@ -101,6 +101,45 @@ OANDA candles are spot XAU_USD and are kept in their own store (`data/candles/oa
 with Yahoo's GC=F futures, which trade at a different price level. The download also reports the broker's
 real spread (median and 90th/99th percentile), to check the backtest's 0.30 spread assumption.
 
+### Long fine-grained history from Dukascopy (free, no account)
+
+Dukascopy publishes free bid/ask history with UTC timestamps. With `datafeed.dukascopy.com` allowed:
+
+```bash
+python -m app.cli download --source dukascopy --start 2024-01-01   # stores 1m AND 15m (resampled from the 1m)
+python -m app.research.fine_path_study --source dukascopy --path 1m
+```
+
+The download fetches two small files per day (bid and ask, about 1,000 days from 2024 to now), stores mid
+candles in `data/candles/dukascopy/`, drops flat zero-volume minutes (weekends) and reports the real
+spread (median and 90th/99th percentile of the 1m close spread). Without network access to the feed,
+export the data from the Dukascopy website ("Historical Data Feed": XAUUSD, 1 minute, one BID and one ASK
+CSV file) and import it:
+
+```bash
+python -m app.cli import-dukascopy --bid XAUUSD_Candlestick_1_M_BID.csv --ask XAUUSD_Candlestick_1_M_ASK.csv
+```
+
+Dukascopy's spread is a bank feed's and is usually tighter than a retail broker's; an MT5 export from
+the broker you would actually use shows that broker's spread.
+
+### Long fine-grained history from an MT5 export
+
+Where OANDA is not available (it does not serve every country), any broker's MetaTrader 5 history works.
+In MT5: View > Symbols (Ctrl+U) > Bars, pick XAUUSD, choose M1 (then M15) from 2024-01-01, Request, then
+Export Bars. Import each file into its own `mt5` store:
+
+```bash
+python -m app.cli import-csv XAUUSD_M15.csv --source mt5 --timeframe 15m --tz Etc/GMT-2
+python -m app.cli import-csv XAUUSD_M1.csv  --source mt5 --timeframe 1m  --tz Etc/GMT-2
+python -m app.research.fine_path_study --source mt5 --path 1m
+```
+
+`--tz` is the broker server's zone (MT5 exports use server time; many brokers run GMT+2, written
+`Etc/GMT-2`, or GMT+3 in summer). If the export has a `<SPREAD>` column, the import reports its median and
+90th/99th percentile in price units; pass `--point 0.001` when the broker quotes XAUUSD with 3 digits
+(the default 0.01 is for 2 digits).
+
 ### Daily candle archive
 
 Yahoo keeps 1-minute gold candles for only 7 days and 5-minute candles for 60. Run
