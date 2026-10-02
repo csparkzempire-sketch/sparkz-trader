@@ -123,6 +123,22 @@ python -m app.cli import-dukascopy --bid XAUUSD_Candlestick_1_M_BID.csv --ask XA
 Dukascopy's spread is a bank feed's and is usually tighter than a retail broker's; an MT5 export from
 the broker you would actually use shows that broker's spread.
 
+### Market structure and a structure scalping setup (research)
+
+`app/research/structure.py` reads market structure from candles without look-ahead: swing highs/lows (a pivot
+counts only once its right-hand candles have closed), trend, break of structure (BOS), change of character
+(CHoCH), the Asia session range and liquidity sweeps. `app/research/scalp.py` turns it into a scalping setup:
+15m structure bias, a 1m/5m CHoCH in the bias direction (optionally after a liquidity sweep), stop beyond the
+pullback, fixed-R target, London/New York hours only, one trade at a time, exits checked on every 1m candle
+at the real bid/ask spread (stop assumed when stop and target share a candle).
+
+```bash
+python -m app.research.scalp_study --source dukascopy --split 2025-01-01 --spread 0.54
+```
+
+Every parameter combination is run; the best on the in-sample period (before `--split`) is reported on the
+out-of-sample period after it, next to all the others (`reports/studies/scalp_structure_<source>.json`).
+
 ### Long fine-grained history from an MT5 export
 
 Where OANDA is not available (it does not serve every country), any broker's MetaTrader 5 history works.
