@@ -117,7 +117,7 @@ def download(symbol: str, timeframe: str, source: str = "yahoo", start: str | No
 
         if not start:
             raise ValueError("a Dukascopy download needs --start (e.g. 2024-01-01)")
-        df, stats = download_1m(symbol, start, end, progress=progress)
+        df, stats = download_1m(symbol, start, end, cache_dir=DATA_DIR / "cache" / "dukascopy", progress=progress)
         return store_dukascopy(df, symbol, timeframe, stats)
     from app.market.providers.yahoo_provider import YahooProvider
 

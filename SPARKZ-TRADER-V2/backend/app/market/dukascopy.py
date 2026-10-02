@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import lzma
 import struct
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
@@ -80,27 +81,54 @@ def resample(df: pd.DataFrame, timeframe: str) -> pd.DataFrame:
     return r.reset_index()[COLUMNS]
 
 
-def _fetch_day(client, symbol: str, side: str, day: pd.Timestamp, retries: int = 3) -> bytes:
+class _Throttle:
+    """At most one feed request every `pause` seconds across all worker threads (the feed answers
+    429 Too Many Requests to anything faster)."""
+
+    def __init__(self, pause: float):
+        self.pause, self.next, self.lock = pause, 0.0, threading.Lock()
+
+    def wait(self):
+        with self.lock:
+            now = time.monotonic()
+            delay = max(0.0, self.next - now)
+            self.next = max(now, self.next) + self.pause
+        if delay:
+            time.sleep(delay)
+
+
+def _fetch_day(client, symbol: str, side: str, day: pd.Timestamp, throttle: _Throttle | None = None,
+               cache_dir: Path | None = None, retries: int = 8) -> bytes:
+    """One day's file. A cached copy (an empty file records "no data that day") is used when present,
+    so an interrupted download resumes where it stopped. 429/5xx answers are retried with a growing
+    pause of up to two minutes."""
     url = f"{FEED}/{symbol.upper()}/{day.year}/{day.month - 1:02d}/{day.day:02d}/{side}_candles_min_1.bi5"
+    cached = cache_dir / symbol.upper() / f"{day:%Y-%m-%d}_{side}.bi5" if cache_dir else None
+    if cached and cached.exists():
+        return cached.read_bytes()
     for attempt in range(retries + 1):
+        if throttle:
+            throttle.wait()
         try:
             r = client.get(url)
         except Exception as exc:
             if attempt == retries:
                 raise ProviderError(f"Dukascopy request failed: {type(exc).__name__}") from exc
         else:
-            if r.status_code == 200:
-                return r.content
-            if r.status_code == 404:
-                return b""                                   # no file: market closed that day
+            if r.status_code in (200, 404):
+                content = r.content if r.status_code == 200 else b""      # 404: market closed that day
+                if cached:
+                    cached.parent.mkdir(parents=True, exist_ok=True)
+                    cached.write_bytes(content)
+                return content
             if attempt == retries:
                 raise ProviderError(f"Dukascopy returned HTTP {r.status_code} for {symbol} {side} {day:%Y-%m-%d}")
-        time.sleep(2 ** attempt)
+        time.sleep(min(120, 5 * 2 ** attempt))
     return b""
 
 
-def download_1m(symbol: str, start, end=None, client=None, workers: int = 8,
-                progress=None) -> tuple[pd.DataFrame, dict]:
+def download_1m(symbol: str, start, end=None, client=None, workers: int = 2, pause: float = 1.0,
+                cache_dir: Path | None = None, progress=None) -> tuple[pd.DataFrame, dict]:
     """1m mid candles for every complete UTC day from `start` to `end` (default: yesterday)."""
     factor = _factor(symbol)
     start = pd.Timestamp(start, tz="UTC") if pd.Timestamp(start).tzinfo is None else pd.Timestamp(start)
@@ -112,9 +140,11 @@ def download_1m(symbol: str, start, end=None, client=None, workers: int = 8,
         import httpx
 
         client = httpx.Client(timeout=30.0)
+    throttle = _Throttle(pause) if pause else None
 
     def one(day):
-        bid, ask = (decode_day(_fetch_day(client, symbol, s, day), day, factor) for s in ("BID", "ASK"))
+        bid, ask = (decode_day(_fetch_day(client, symbol, s, day, throttle, cache_dir), day, factor)
+                    for s in ("BID", "ASK"))
         return combine(bid, ask, symbol) if len(bid) and len(ask) else None
 
     frames, spreads = [], []

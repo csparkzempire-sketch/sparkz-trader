@@ -40,6 +40,30 @@ class FakeFeed:
         return Resp(404)
 
 
+def test_throttled_requests_are_retried_and_cached(tmp_path, monkeypatch):
+    monkeypatch.setattr(dukascopy.time, "sleep", lambda s: None)
+
+    class Busy(FakeFeed):
+        def __init__(self):
+            super().__init__()
+            self.refused = 0
+
+        def get(self, url):
+            if self.refused < 3:
+                self.refused += 1
+                return Resp(429)
+            return super().get(url)
+
+    feed = Busy()
+    df, _ = dukascopy.download_1m("XAUUSD", "2025-01-06", "2025-01-08", client=feed, workers=1,
+                                  pause=0, cache_dir=tmp_path)
+    assert len(df) == 50 and feed.refused == 3
+    n = len(feed.urls)
+    again, _ = dukascopy.download_1m("XAUUSD", "2025-01-06", "2025-01-08", client=feed, workers=1,
+                                     pause=0, cache_dir=tmp_path)
+    assert len(again) == 50 and len(feed.urls) == n             # second run served from the cache (404s too)
+
+
 @pytest.fixture
 def history(tmp_path, monkeypatch):
     from app.market import history
@@ -84,7 +108,8 @@ def test_misscaled_prices_are_rejected():
 
 def test_download_stores_1m_and_15m(history, monkeypatch):
     real = dukascopy.download_1m
-    monkeypatch.setattr(dukascopy, "download_1m", lambda *a, **k: real(*a, client=FakeFeed(), workers=1))
+    monkeypatch.setattr(dukascopy, "download_1m", lambda *a, **k: real(*a, client=FakeFeed(), workers=1, pause=0,
+                                                                       cache_dir=None))
     out, rep = history.download("XAUUSD", "15m", "dukascopy", "2025-01-06", "2025-01-07")
     assert rep["stored"] == 50 and rep["stored_15m"] == 4 and rep["source"] == "dukascopy"
     m15 = history.load_history("XAUUSD", "15m", "dukascopy")
