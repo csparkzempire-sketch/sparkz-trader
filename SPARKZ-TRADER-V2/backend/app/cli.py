@@ -2,6 +2,7 @@
 Command line.
 
   python -m app.cli download     --symbol XAUUSD --timeframe 15m
+  python -m app.cli download     --source oanda --timeframe 1m --start 2024-01-01   (read-only broker history)
   python -m app.cli import-csv   FILE --symbol XAUUSD --timeframe 15m
   python -m app.cli backtest     [--preset video_style] [--data stored|synthetic:<scenario>] [--set key=value ...]
   python -m app.cli stress       [--preset ...]
@@ -63,15 +64,15 @@ def _settings(a):
     return load_settings(a.preset, overrides=_overrides(a.set))
 
 
-def _data(s, spec: str, bars: int):
+def _data(s, spec: str, bars: int, source: str = "yahoo"):
     from app.market.history import load_history
     from app.market.providers.mock_provider import generate_candles
 
     if spec.startswith("synthetic"):
         scenario = spec.split(":", 1)[1] if ":" in spec else "normal"
         return generate_candles(s.market.symbol, s.market.timeframe, bars, scenario, seed=1), f"synthetic:{scenario}"
-    df = load_history(s.market.symbol, s.market.timeframe)
-    return df, f"stored {s.market.symbol} {s.market.timeframe} ({len(df)} candles)"
+    df = load_history(s.market.symbol, s.market.timeframe, source)
+    return df, f"stored {source} {s.market.symbol} {s.market.timeframe} ({len(df)} candles)"
 
 
 def _save(kind: str, name: str, payload: dict) -> str:
@@ -86,9 +87,15 @@ def cmd_backtest(a) -> None:
     from app.backtest.engine import run_backtest
     from app.backtest.metrics import report
 
+    from app.market.history import load_history
+
     s = _settings(a)
-    df, label = _data(s, a.data, a.bars)
-    rep = report(run_backtest(s, df, label))
+    df, label = _data(s, a.data, a.bars, a.source)
+    path = None
+    if a.path:
+        path = load_history(s.market.symbol, a.path, a.source)
+        label += f", intrabar path from {a.path} candles where available"
+    rep = report(run_backtest(s, df, label, path_candles=path))
     m = rep["metrics"]
     print(f"{s.name} on {label}: {m['start']} -> {m['end']}  (SIMULATED)")
     for k in ("net_pnl", "return_pct", "baskets", "win_rate_pct", "profit_factor", "largest_basket_loss",
@@ -104,7 +111,7 @@ def cmd_stress(a) -> None:
     s = _settings(a)
     df = None
     if a.data != "synthetic":
-        df, _ = _data(s, a.data, a.bars)
+        df, _ = _data(s, a.data, a.bars, a.source)
     out = run_all(s, df, a.data, bars=a.bars)
     for k, v in out["market_scenarios"].items():
         print(f"  {k:14s} mean {v['mean_net_pnl']:9.2f}  worst basket {v['worst_basket']:9.2f}  "
@@ -118,7 +125,7 @@ def cmd_walk_forward(a) -> None:
     from app.backtest.walk_forward import walk_forward
 
     s = _settings(a)
-    df, label = _data(s, a.data, a.bars)
+    df, label = _data(s, a.data, a.bars, a.source)
     out = walk_forward(s, df, _space(a.space) or None, folds=a.folds, label=label)
     print(json.dumps(out["summary"], indent=1))
     print("report:", _save("walk_forward", s.name, out))
@@ -128,7 +135,7 @@ def cmd_lab(a) -> None:
     from app.backtest.walk_forward import parameter_lab
 
     s = _settings(a)
-    df, label = _data(s, a.data, a.bars)
+    df, label = _data(s, a.data, a.bars, a.source)
     out = parameter_lab(s, df, _space(a.space), label=label)
     print("chosen:", out["chosen"], "test:", out["test"], "warnings:", out["warnings"])
     print("report:", _save("lab", s.name, out))
@@ -168,15 +175,21 @@ def main(argv: list[str] | None = None) -> None:
         p.add_argument("--set", action="append", default=[], help="override, e.g. grid.distance=3")
         p.add_argument("--data", default=data, help="stored | synthetic[:scenario]")
         p.add_argument("--bars", type=int, default=3000, help="synthetic series length")
+        p.add_argument("--source", default="yahoo", choices=["yahoo", "oanda"], help="stored data source")
 
     p = sub.add_parser("download")
     p.add_argument("--symbol", default="XAUUSD")
     p.add_argument("--timeframe", default="15m")
+    p.add_argument("--source", default="yahoo", choices=["yahoo", "oanda"])
+    p.add_argument("--start", default=None, help="oanda: first date, e.g. 2024-01-01")
+    p.add_argument("--end", default=None)
     p = sub.add_parser("import-csv")
     p.add_argument("file")
     p.add_argument("--symbol", default="XAUUSD")
     p.add_argument("--timeframe", default="15m")
-    common(sub.add_parser("backtest"))
+    p = sub.add_parser("backtest")
+    common(p)
+    p.add_argument("--path", default=None, help="finer stored timeframe for the intrabar price path, e.g. 1m")
     common(sub.add_parser("stress"), data="synthetic")
     p = sub.add_parser("walk-forward")
     common(p)
@@ -198,7 +211,9 @@ def main(argv: list[str] | None = None) -> None:
 
     if a.cmd == "download":
         from app.market.history import download
-        df, rep = download(a.symbol, a.timeframe)
+        df, rep = download(a.symbol, a.timeframe, a.source, a.start, a.end,
+                           progress=lambda n, t: print(f"  page {n}: up to {t:%Y-%m-%d %H:%M}", flush=True)
+                           if n % 20 == 0 else None)
         print(rep, df["timestamp"].min(), "->", df["timestamp"].max())
     elif a.cmd == "import-csv":
         from app.market.history import import_csv

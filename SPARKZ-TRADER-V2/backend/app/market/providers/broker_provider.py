@@ -95,6 +95,47 @@ class BrokerProvider(MarketDataProvider):
         return pd.DataFrame(rows, columns=["timestamp", "open", "high", "low", "close", "volume"]).tail(count) \
             .reset_index(drop=True)
 
+    def get_history(self, timeframe: str, start: datetime, end: datetime | None = None,
+                    max_pages: int = 2000, progress=None) -> tuple[pd.DataFrame, dict]:
+        """Closed candles from `start` to `end` (default: now), paged 5000 at a time.
+
+        Requests bid/ask candles ("BA") and stores the mid OHLC. It also returns statistics of the
+        candle-close spread, so the backtest's spread assumption can be checked against the broker."""
+        end = end or datetime.now(timezone.utc)
+        cur = pd.Timestamp(start).tz_convert("UTC") if pd.Timestamp(start).tzinfo else pd.Timestamp(start, tz="UTC")
+        end_ts = pd.Timestamp(end).tz_convert("UTC") if pd.Timestamp(end).tzinfo else pd.Timestamp(end, tz="UTC")
+        rows, spreads, pages = [], [], 0
+        while cur < end_ts and pages < max_pages:
+            data = self._get(f"/v3/instruments/{self.instrument.broker}/candles",
+                             {"granularity": GRANULARITY[timeframe], "from": cur.isoformat(), "count": 5000,
+                              "price": "BA", "includeFirst": "false" if rows else "true"})
+            pages += 1
+            batch = [c for c in data.get("candles", []) if c.get("complete")]
+            if not batch:
+                break
+            for c in batch:
+                t = pd.Timestamp(c["time"]).tz_convert("UTC")
+                if t >= end_ts:
+                    break
+                b, a = c["bid"], c["ask"]
+                mid = {k: (float(b[k]) + float(a[k])) / 2 for k in ("o", "h", "l", "c")}
+                rows.append({"timestamp": t, "open": mid["o"], "high": mid["h"], "low": mid["l"],
+                             "close": mid["c"], "volume": float(c.get("volume", 0))})
+                spreads.append(float(a["c"]) - float(b["c"]))
+            last = pd.Timestamp(batch[-1]["time"]).tz_convert("UTC")
+            if last <= cur:
+                break
+            cur = last
+            if progress:
+                progress(pages, cur)
+        df = pd.DataFrame(rows, columns=["timestamp", "open", "high", "low", "close", "volume"])
+        sp = pd.Series(spreads, dtype=float)
+        stats = {"pages": pages, "candles": len(df),
+                 "spread_median": float(sp.median()) if len(sp) else None,
+                 "spread_p90": float(sp.quantile(0.9)) if len(sp) else None,
+                 "spread_p99": float(sp.quantile(0.99)) if len(sp) else None}
+        return df, stats
+
     def get_symbol_info(self) -> SymbolInfo:
         data = self._get(f"/v3/accounts/{self.account_id}/instruments", {"instruments": self.instrument.broker})
         i = self.instrument

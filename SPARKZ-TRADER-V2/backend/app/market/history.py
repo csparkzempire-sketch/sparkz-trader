@@ -23,8 +23,16 @@ CANDLES_DIR = DATA_DIR / "candles"
 COLUMNS = ["timestamp", "open", "high", "low", "close", "volume"]
 
 
-def path_for(symbol: str, timeframe: str) -> Path:
-    return CANDLES_DIR / f"{symbol.upper()}_{timeframe}.csv.gz"
+SOURCES = ("yahoo", "oanda")
+
+
+def path_for(symbol: str, timeframe: str, source: str = "yahoo") -> Path:
+    """Each data source has its own store: Yahoo's gold is the GC=F future, OANDA's is spot XAU_USD, and
+    the two trade at different price levels, so they must never be merged into one series."""
+    if source not in SOURCES:
+        raise ValueError(f"unknown data source {source!r}; choose from {', '.join(SOURCES)}")
+    base = CANDLES_DIR if source == "yahoo" else CANDLES_DIR / source      # yahoo keeps its original location
+    return base / f"{symbol.upper()}_{timeframe}.csv.gz"
 
 
 def validate(df: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
@@ -41,32 +49,37 @@ def validate(df: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
     return df[COLUMNS], {"rows_in": n0, "rows_out": len(df), "invalid_ohlc": bad}
 
 
-def load_history(symbol: str, timeframe: str) -> pd.DataFrame:
-    """Stored candles merged with the daily archive (data/archive/, see market/archive.py)."""
+def load_history(symbol: str, timeframe: str, source: str = "yahoo") -> pd.DataFrame:
+    """Stored candles for one data source. Yahoo candles are merged with the daily Yahoo archive
+    (data/archive/, see market/archive.py)."""
     from app.market.archive import load_archive
 
-    p = path_for(symbol, timeframe)
+    p = path_for(symbol, timeframe, source)
     parts = []
     if p.exists():
         df = pd.read_csv(p)
         df["timestamp"] = pd.to_datetime(df["timestamp"], utc=True)
         parts.append(df)
-    arch = load_archive(symbol, timeframe)
-    if len(arch):
-        parts.append(arch)
+    if source == "yahoo":
+        arch = load_archive(symbol, timeframe)
+        if len(arch):
+            parts.append(arch)
     if not parts:
-        raise FileNotFoundError(f"no stored candles for {symbol} {timeframe}; run "
-                                f"`python -m app.cli download --symbol {symbol} --timeframe {timeframe}`")
+        hint = f" --source {source} --start YYYY-MM-DD" if source != "yahoo" else ""
+        raise FileNotFoundError(f"no stored {source} candles for {symbol} {timeframe}; run "
+                                f"`python -m app.cli download --symbol {symbol} --timeframe {timeframe}{hint}`")
     if len(parts) == 1:
         return parts[0]
     return validate(pd.concat(parts, ignore_index=True))[0]
 
 
-def merge_into_store(new: pd.DataFrame, symbol: str, timeframe: str) -> tuple[pd.DataFrame, dict]:
+def merge_into_store(new: pd.DataFrame, symbol: str, timeframe: str,
+                     source: str = "yahoo") -> tuple[pd.DataFrame, dict]:
     new, report = validate(new)
-    p = path_for(symbol, timeframe)
+    p = path_for(symbol, timeframe, source)
     if p.exists():
-        old = load_history(symbol, timeframe)
+        old = pd.read_csv(p)
+        old["timestamp"] = pd.to_datetime(old["timestamp"], utc=True)
         new, _ = validate(pd.concat([old, new], ignore_index=True))
         report["previously_stored"] = len(old)
     p.parent.mkdir(parents=True, exist_ok=True)
@@ -75,12 +88,26 @@ def merge_into_store(new: pd.DataFrame, symbol: str, timeframe: str) -> tuple[pd
     return new, report
 
 
-def download(symbol: str, timeframe: str) -> tuple[pd.DataFrame, dict]:
+def download(symbol: str, timeframe: str, source: str = "yahoo", start: str | None = None,
+             end: str | None = None, progress=None) -> tuple[pd.DataFrame, dict]:
+    """source "yahoo": the longest window Yahoo serves. source "oanda": broker history from `start`
+    (read-only OANDA API; needs OANDA_API_TOKEN / OANDA_ACCOUNT_ID in the environment)."""
+    get_instrument(symbol)
+    if source == "oanda":
+        from app.market.providers.broker_provider import BrokerProvider
+
+        if not start:
+            raise ValueError("an OANDA download needs --start (e.g. 2024-01-01)")
+        df, stats = BrokerProvider(symbol, timeframe).get_history(timeframe, pd.Timestamp(start, tz="UTC"),
+                                                                  pd.Timestamp(end, tz="UTC") if end else None,
+                                                                  progress=progress)
+        out, report = merge_into_store(df, symbol, timeframe, "oanda")
+        return out, {**report, "source": "oanda", **stats}
     from app.market.providers.yahoo_provider import YahooProvider
 
-    get_instrument(symbol)
     df = YahooProvider(symbol, timeframe).get_candles(timeframe, 1_000_000)
-    return merge_into_store(df, symbol, timeframe)
+    out, report = merge_into_store(df, symbol, timeframe)
+    return out, {**report, "source": "yahoo"}
 
 
 def import_csv(file: str | Path, symbol: str, timeframe: str, tz: str = "UTC") -> tuple[pd.DataFrame, dict]:

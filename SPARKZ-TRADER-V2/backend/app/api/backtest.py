@@ -19,6 +19,7 @@ class RunBody(BaseModel):
     data: str = "stored"                 # stored | synthetic:<scenario>
     bars: int = 3000
     path: str | None = None              # finer stored timeframe for the intrabar path, e.g. "5m"
+    source: str = "yahoo"                # stored data source: yahoo (GC=F future) or oanda (spot)
     space: dict[str, list] = Field(default_factory=dict)
     folds: int = 3
 
@@ -31,7 +32,8 @@ def _load(b: RunBody):
     if b.data.startswith("synthetic"):
         sc = b.data.split(":", 1)[1] if ":" in b.data else "normal"
         return s, generate_candles(s.market.symbol, s.market.timeframe, b.bars, sc, seed=1), f"synthetic:{sc}"
-    return s, load_history(s.market.symbol, s.market.timeframe), f"stored {s.market.symbol} {s.market.timeframe}"
+    return (s, load_history(s.market.symbol, s.market.timeframe, b.source),
+            f"stored {b.source} {s.market.symbol} {s.market.timeframe}")
 
 
 def _backtest(b: RunBody):
@@ -40,7 +42,7 @@ def _backtest(b: RunBody):
     from app.market.history import load_history
 
     s, df, label = _load(b)
-    path = load_history(s.market.symbol, b.path) if b.path else None
+    path = load_history(s.market.symbol, b.path, b.source) if b.path else None
     out = report(run_backtest(s, df, label, path_candles=path))
     out["data_label"] = label + (f" (intrabar path from {b.path} candles where available)" if b.path else "")
     return out
