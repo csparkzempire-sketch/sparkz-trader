@@ -139,6 +139,16 @@ python -m app.research.scalp_study --source dukascopy --split 2025-01-01 --sprea
 Every parameter combination is run; the best on the in-sample period (before `--split`) is reported on the
 out-of-sample period after it, next to all the others (`reports/studies/scalp_structure_<source>.json`).
 
+`app/research/setup_model.py` adds a model that filters these setups: a shallow gradient-boosting regressor
+(scikit-learn) predicts each setup's net R from features known when it appears (session, stop size against
+ATR and spread, break strength, momentum, higher-timeframe trend age and slope, Asia range), retrained every
+month on earlier trades only (purged: no outcome overlaps the test month). Setups predicted to beat their
+costs are traded one at a time and compared with the unfiltered setup on the same months:
+
+```bash
+python -m app.research.setup_model --tf 1m --swing-n 3 --variant choch --rr 2.0 --start 2025-01-01
+```
+
 ### Long fine-grained history from an MT5 export
 
 Where OANDA is not available (it does not serve every country), any broker's MetaTrader 5 history works.

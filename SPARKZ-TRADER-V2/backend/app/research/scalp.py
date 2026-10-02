@@ -96,16 +96,18 @@ def signals(m1: pd.DataFrame, p: ScalpParams, htf: pd.DataFrame | None = None) -
     return pd.DataFrame({"time": close_time.to_numpy()[idx], "dir": d, "stop": stop})
 
 
-def simulate(m1: pd.DataFrame, sig: pd.DataFrame, p: ScalpParams) -> pd.DataFrame:
-    """Trade the signals on 1m candles (mid prices; bid = mid - spread/2, ask = mid + spread/2)."""
+def simulate(m1: pd.DataFrame, sig: pd.DataFrame, p: ScalpParams, one_at_a_time: bool = True) -> pd.DataFrame:
+    """Trade the signals on 1m candles (mid prices; bid = mid - spread/2, ask = mid + spread/2).
+    one_at_a_time=False simulates every signal on its own (overlapping trades), e.g. to label a dataset.
+    Output rows keep the signal's row label in column `signal`."""
     ts = pd.to_datetime(m1["timestamp"], utc=True).to_numpy()
     o, h, l, c = (m1[k].to_numpy(float) for k in ("open", "high", "low", "close"))
     half, slip = p.spread / 2, p.slippage
     hold = np.timedelta64(p.max_hold_min, "m")
     rows, busy_until = [], -1
     entry_idx = np.searchsorted(ts, pd.to_datetime(sig["time"], utc=True).to_numpy(), side="left")
-    for (_, s), k0 in zip(sig.iterrows(), entry_idx):
-        if k0 >= len(ts) or k0 <= busy_until:
+    for (label, s), k0 in zip(sig.iterrows(), entry_idx):
+        if k0 >= len(ts) or (one_at_a_time and k0 <= busy_until):
             continue
         d = int(s["dir"])
         entry = o[k0] + d * (half + slip)
@@ -138,7 +140,7 @@ def simulate(m1: pd.DataFrame, sig: pd.DataFrame, p: ScalpParams) -> pd.DataFram
             exit_px, reason = c[k] - d * half - d * slip, "END_OF_DATA"
         r = (exit_px - entry) * d / risk
         cost = p.spread + slip * (1 + (reason not in ("TARGET", "TARGET_GAP")))
-        rows.append({"entry_time": pd.Timestamp(ts[k0]), "exit_time": pd.Timestamp(ts[k]), "dir": d,
+        rows.append({"signal": label, "entry_time": pd.Timestamp(ts[k0]), "exit_time": pd.Timestamp(ts[k]), "dir": d,
                      "entry": entry, "stop": stop, "target": target, "exit": exit_px, "risk": risk,
                      "r": r, "gross_r": r + cost / risk, "pnl_usd": r * p.risk_usd, "reason": reason,
                      "ambiguous": ambiguous})
