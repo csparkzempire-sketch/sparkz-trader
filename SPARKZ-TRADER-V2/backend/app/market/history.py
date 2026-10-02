@@ -23,12 +23,12 @@ CANDLES_DIR = DATA_DIR / "candles"
 COLUMNS = ["timestamp", "open", "high", "low", "close", "volume"]
 
 
-SOURCES = ("yahoo", "oanda", "mt5")
+SOURCES = ("yahoo", "oanda", "mt5", "dukascopy")
 
 
 def path_for(symbol: str, timeframe: str, source: str = "yahoo") -> Path:
     """Each data source has its own store: Yahoo's gold is the GC=F future, OANDA's is spot XAU_USD, MT5
-    exports are one broker's spot XAUUSD, and they trade at different price levels, so they must never be
+    exports are one broker's spot XAUUSD, Dukascopy's is its own spot feed, and they trade at different price levels, so they must never be
     merged into one series."""
     if source not in SOURCES:
         raise ValueError(f"unknown data source {source!r}; choose from {', '.join(SOURCES)}")
@@ -66,6 +66,10 @@ def load_history(symbol: str, timeframe: str, source: str = "yahoo") -> pd.DataF
         if len(arch):
             parts.append(arch)
     if not parts:
+        if source == "dukascopy":
+            raise FileNotFoundError(f"no stored dukascopy candles for {symbol} {timeframe}; run `python -m app.cli "
+                                    f"download --source dukascopy --symbol {symbol} --start YYYY-MM-DD` or "
+                                    f"`import-dukascopy --bid FILE --ask FILE`")
         if source == "mt5":
             raise FileNotFoundError(f"no stored mt5 candles for {symbol} {timeframe}; run `python -m app.cli "
                                     f"import-csv FILE --source mt5 --symbol {symbol} --timeframe {timeframe}`")
@@ -95,7 +99,8 @@ def merge_into_store(new: pd.DataFrame, symbol: str, timeframe: str,
 def download(symbol: str, timeframe: str, source: str = "yahoo", start: str | None = None,
              end: str | None = None, progress=None) -> tuple[pd.DataFrame, dict]:
     """source "yahoo": the longest window Yahoo serves. source "oanda": broker history from `start`
-    (read-only OANDA API; needs OANDA_API_TOKEN / OANDA_ACCOUNT_ID in the environment)."""
+    (read-only OANDA API; needs OANDA_API_TOKEN / OANDA_ACCOUNT_ID in the environment). source
+    "dukascopy": free bid/ask feed from `start`, see store_dukascopy."""
     get_instrument(symbol)
     if source == "oanda":
         from app.market.providers.broker_provider import BrokerProvider
@@ -107,6 +112,13 @@ def download(symbol: str, timeframe: str, source: str = "yahoo", start: str | No
                                                                   progress=progress)
         out, report = merge_into_store(df, symbol, timeframe, "oanda")
         return out, {**report, "source": "oanda", **stats}
+    if source == "dukascopy":
+        from app.market.dukascopy import download_1m
+
+        if not start:
+            raise ValueError("a Dukascopy download needs --start (e.g. 2024-01-01)")
+        df, stats = download_1m(symbol, start, end, progress=progress)
+        return store_dukascopy(df, symbol, timeframe, stats)
     from app.market.providers.yahoo_provider import YahooProvider
 
     df = YahooProvider(symbol, timeframe).get_candles(timeframe, 1_000_000)
@@ -143,3 +155,25 @@ def import_csv(file: str | Path, symbol: str, timeframe: str, tz: str = "UTC", s
                        "spread_p90": float(sp.quantile(0.9)) if len(sp) else None,
                        "spread_p99": float(sp.quantile(0.99)) if len(sp) else None})
     return out, report
+
+
+def store_dukascopy(df_1m: pd.DataFrame, symbol: str, timeframe: str, stats: dict) -> tuple[pd.DataFrame, dict]:
+    """Dukascopy data always arrives as 1m candles: store them, and also `timeframe` resampled from them
+    (one download fills both the 1m path and the 15m decision candles). Returns the `timeframe` store."""
+    from app.market.dukascopy import resample
+
+    out, report = merge_into_store(df_1m, symbol, "1m", "dukascopy")
+    report = {**report, "source": "dukascopy", **stats}
+    if timeframe != "1m":
+        out, rep_tf = merge_into_store(resample(df_1m, timeframe), symbol, timeframe, "dukascopy")
+        report = {**report, f"stored_{timeframe}": rep_tf["stored"]}
+    return out, report
+
+
+def import_dukascopy(bid_file: str | Path, ask_file: str | Path, symbol: str,
+                     timeframe: str = "15m") -> tuple[pd.DataFrame, dict]:
+    """Dukascopy website exports (BID and ASK, 1-minute) into the dukascopy store, plus `timeframe`."""
+    from app.market.dukascopy import import_exports
+
+    df, stats = import_exports(bid_file, ask_file, symbol)
+    return store_dukascopy(df, symbol, timeframe, stats)

@@ -70,7 +70,7 @@ def test_sources_have_separate_stores(tmp_path, monkeypatch):
     with pytest.raises(FileNotFoundError):
         history.load_history("XAUUSD", "1m", "yahoo")
     with pytest.raises(ValueError):
-        history.path_for("XAUUSD", "1m", "dukascopy")
+        history.path_for("XAUUSD", "1m", "nosuchfeed")
 
 
 def test_oanda_download_requires_start():

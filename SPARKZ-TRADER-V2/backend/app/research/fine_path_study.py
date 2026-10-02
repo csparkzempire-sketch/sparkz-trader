@@ -2,7 +2,7 @@
 Fine-path study: every preset on XAUUSD 15m decisions, with stored 1m (or 5m) candles as the intrabar
 price path, under each intrabar-order assumption, next to the plain 15m OHLC path.
 
-  python -m app.research.fine_path_study [--source oanda|mt5] [--path 1m] [--start 2024-01-01]
+  python -m app.research.fine_path_study [--source oanda|mt5|dukascopy] [--path 1m] [--start 2024-01-01]
 
 With real 1m data the ordering assumption only matters inside each minute, so the three orderings
 should nearly agree; whatever result remains is far closer to what the strategy would really have done.
@@ -24,7 +24,7 @@ from app.research.studies import ORDERS, _m
 def main(argv=None) -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--path", default="1m")
-    ap.add_argument("--source", default="oanda", choices=["yahoo", "oanda", "mt5"])
+    ap.add_argument("--source", default="oanda", choices=["yahoo", "oanda", "mt5", "dukascopy"])
     ap.add_argument("--start", default=None, help="only trade from this date (YYYY-MM-DD)")
     ap.add_argument("--presets", default=",".join(list_presets()))
     a = ap.parse_args(argv)

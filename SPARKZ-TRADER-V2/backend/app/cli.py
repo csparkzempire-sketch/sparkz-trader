@@ -4,6 +4,8 @@ Command line.
   python -m app.cli download     --symbol XAUUSD --timeframe 15m
   python -m app.cli download     --source oanda --timeframe 1m --start 2024-01-01   (read-only broker history)
   python -m app.cli import-csv   FILE --symbol XAUUSD --timeframe 15m
+  python -m app.cli download     --source dukascopy --start 2024-01-01   (free bid/ask feed: stores 1m + 15m)
+  python -m app.cli import-dukascopy --bid BID.csv --ask ASK.csv           (Dukascopy website 1m exports)
   python -m app.cli import-csv   XAUUSD_M1.csv --source mt5 --timeframe 1m --tz Etc/GMT-2   (MT5 export)
   python -m app.cli backtest     [--preset video_style] [--data stored|synthetic:<scenario>] [--set key=value ...]
   python -m app.cli stress       [--preset ...]
@@ -176,13 +178,13 @@ def main(argv: list[str] | None = None) -> None:
         p.add_argument("--set", action="append", default=[], help="override, e.g. grid.distance=3")
         p.add_argument("--data", default=data, help="stored | synthetic[:scenario]")
         p.add_argument("--bars", type=int, default=3000, help="synthetic series length")
-        p.add_argument("--source", default="yahoo", choices=["yahoo", "oanda", "mt5"], help="stored data source")
+        p.add_argument("--source", default="yahoo", choices=["yahoo", "oanda", "mt5", "dukascopy"], help="stored data source")
 
     p = sub.add_parser("download")
     p.add_argument("--symbol", default="XAUUSD")
     p.add_argument("--timeframe", default="15m")
-    p.add_argument("--source", default="yahoo", choices=["yahoo", "oanda"])
-    p.add_argument("--start", default=None, help="oanda: first date, e.g. 2024-01-01")
+    p.add_argument("--source", default="yahoo", choices=["yahoo", "oanda", "dukascopy"])
+    p.add_argument("--start", default=None, help="oanda/dukascopy: first date, e.g. 2024-01-01")
     p.add_argument("--end", default=None)
     p = sub.add_parser("import-csv")
     p.add_argument("file")
@@ -192,6 +194,11 @@ def main(argv: list[str] | None = None) -> None:
                    help="store to merge into: mt5 for MetaTrader 5 exports (kept apart from Yahoo's futures)")
     p.add_argument("--tz", default="UTC", help="zone of the file's times, e.g. Etc/GMT-2 for an MT5 server")
     p.add_argument("--point", type=float, default=0.01, help="price of one MT5 spread point (0.01 or 0.001)")
+    p = sub.add_parser("import-dukascopy", help="Dukascopy website exports: 1-minute BID and ASK CSV files")
+    p.add_argument("--bid", required=True)
+    p.add_argument("--ask", required=True)
+    p.add_argument("--symbol", default="XAUUSD")
+    p.add_argument("--timeframe", default="15m", help="also store this timeframe, resampled from the 1m data")
     p = sub.add_parser("backtest")
     common(p)
     p.add_argument("--path", default=None, help="finer stored timeframe for the intrabar price path, e.g. 1m")
@@ -216,13 +223,18 @@ def main(argv: list[str] | None = None) -> None:
 
     if a.cmd == "download":
         from app.market.history import download
+        unit = "day" if a.source == "dukascopy" else "page"
         df, rep = download(a.symbol, a.timeframe, a.source, a.start, a.end,
-                           progress=lambda n, t: print(f"  page {n}: up to {t:%Y-%m-%d %H:%M}", flush=True)
+                           progress=lambda n, t: print(f"  {unit} {n}: up to {t:%Y-%m-%d %H:%M}", flush=True)
                            if n % 20 == 0 else None)
         print(rep, df["timestamp"].min(), "->", df["timestamp"].max())
     elif a.cmd == "import-csv":
         from app.market.history import import_csv
         df, rep = import_csv(a.file, a.symbol, a.timeframe, a.tz, a.source, a.point)
+        print(rep, df["timestamp"].min(), "->", df["timestamp"].max())
+    elif a.cmd == "import-dukascopy":
+        from app.market.history import import_dukascopy
+        df, rep = import_dukascopy(a.bid, a.ask, a.symbol, a.timeframe)
         print(rep, df["timestamp"].min(), "->", df["timestamp"].max())
     elif a.cmd == "archive":
         from app.market.archive import collect, status
