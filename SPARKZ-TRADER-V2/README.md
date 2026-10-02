@@ -86,6 +86,21 @@ cd ../frontend && npm install && npm run dev        # dashboard on http://localh
 Credentials are read only from environment variables. They are never placed in the frontend, the repository,
 logs or reports, and `repr()` hides the token.
 
+### Long fine-grained history from OANDA (read-only)
+
+With `OANDA_API_TOKEN` and `OANDA_ACCOUNT_ID` set, and `api-fxpractice.oanda.com` allowed:
+
+```bash
+python -m app.cli download --source oanda --timeframe 15m --start 2024-01-01
+python -m app.cli download --source oanda --timeframe 1m  --start 2024-01-01   # ~150 requests, a few minutes
+python -m app.cli backtest --source oanda --preset video_style --path 1m      # 1m candles as the intrabar path
+python -m app.research.fine_path_study --source oanda --path 1m               # every preset x every intrabar order
+```
+
+OANDA candles are spot XAU_USD and are kept in their own store (`data/candles/oanda/`). They are never mixed
+with Yahoo's GC=F futures, which trade at a different price level. The download also reports the broker's
+real spread (median and 90th/99th percentile), to check the backtest's 0.30 spread assumption.
+
 ### Daily candle archive
 
 Yahoo keeps 1-minute gold candles for only 7 days and 5-minute candles for 60. Run
