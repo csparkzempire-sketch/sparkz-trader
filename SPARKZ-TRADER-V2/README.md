@@ -134,6 +134,7 @@ at the real bid/ask spread (stop assumed when stop and target share a candle).
 
 ```bash
 python -m app.research.scalp_study --source dukascopy --split 2025-01-01 --spread 0.54
+python -m app.research.scalp_study --tfs 15m,1h --min-trades 50    # same setup on 15m/1h (1h/4h bias, wider stops)
 ```
 
 Every parameter combination is run; the best on the in-sample period (before `--split`) is reported on the

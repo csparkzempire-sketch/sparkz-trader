@@ -27,7 +27,7 @@ import pandas as pd
 
 from app.research.structure import asia_range, structure, sweeps
 
-TF_MIN = {"1m": 1, "5m": 5, "15m": 15, "1h": 60}
+TF_MIN = {"1m": 1, "5m": 5, "15m": 15, "1h": 60, "4h": 240}
 
 
 @dataclass(frozen=True)

@@ -1,0 +1,4248 @@
+{
+ "meta": {
+  "source": "dukascopy",
+  "symbol": "XAUUSD",
+  "first": "2024-01-01 23:00:00+00:00",
+  "last": "2026-10-01 23:59:00+00:00",
+  "split": "2025-01-01 00:00:00+00:00",
+  "min_trades": 50,
+  "selection": "best in-sample net expectancy (R per trade)",
+  "grid": {
+   "swing_n": [
+    2,
+    3,
+    5
+   ],
+   "variant": [
+    "choch",
+    "sweep_choch"
+   ]
+  },
+  "tf_settings": {
+   "15m": {
+    "htf": "1h",
+    "lookback": 20,
+    "max_hold_min": 480,
+    "max_risk": 40.0,
+    "rr": [
+     1.5,
+     2.0,
+     3.0
+    ]
+   },
+   "1h": {
+    "htf": "4h",
+    "lookback": 12,
+    "max_hold_min": 2880,
+    "max_risk": 80.0,
+    "rr": [
+     1.5,
+     2.0,
+     3.0
+    ]
+   }
+  },
+  "fixed_params": {
+   "tf": "1m",
+   "swing_n": 3,
+   "variant": "sweep_choch",
+   "htf": "15m",
+   "htf_swing_n": 3,
+   "lookback": 30,
+   "rr": 1.5,
+   "buffer": 0.2,
+   "min_risk_spreads": 2.0,
+   "max_risk": 15.0,
+   "max_hold_min": 120,
+   "session": [
+    7,
+    20
+   ],
+   "spread": 0.54,
+   "slippage": 0.05,
+   "risk_usd": 100.0,
+   "equity": 10000.0
+  }
+ },
+ "chosen": {
+  "params": {
+   "tf": "1h",
+   "swing_n": 2,
+   "variant": "sweep_choch",
+   "rr": 3.0
+  },
+  "in_sample": {
+   "trades": 57,
+   "win_rate_pct": 36.8,
+   "expectancy_r": -0.024,
+   "gross_expectancy_r": 0.014,
+   "avg_cost_r": 0.038,
+   "avg_risk_price": 19.28,
+   "net_usd": -137.0,
+   "profit_factor": 0.95,
+   "max_drawdown_pct": -10.4,
+   "max_consecutive_losses": 10,
+   "ambiguous_stop_and_target_bars": 0,
+   "exit_reasons": {
+    "STOP": 27,
+    "TIME": 24,
+    "TARGET": 6
+   },
+   "by_direction": {
+    "LONG": {
+     "trades": 29,
+     "expectancy_r": 0.306,
+     "net_usd": 888.0
+    },
+    "SHORT": {
+     "trades": 28,
+     "expectancy_r": -0.366,
+     "net_usd": -1025.0
+    }
+   },
+   "by_session": {
+    "LONDON": {
+     "trades": 8,
+     "expectancy_r": 0.129,
+     "net_usd": 103.0
+    },
+    "NEW_YORK": {
+     "trades": 49,
+     "expectancy_r": -0.049,
+     "net_usd": -240.0
+    }
+   },
+   "by_year": {
+    "2024": {
+     "trades": 57,
+     "expectancy_r": -0.024,
+     "net_usd": -137.0
+    }
+   }
+  },
+  "out_of_sample": {
+   "trades": 70,
+   "win_rate_pct": 37.1,
+   "expectancy_r": 0.075,
+   "gross_expectancy_r": 0.096,
+   "avg_cost_r": 0.021,
+   "avg_risk_price": 37.23,
+   "net_usd": 526.0,
+   "profit_factor": 1.13,
+   "max_drawdown_pct": -9.6,
+   "max_consecutive_losses": 8,
+   "ambiguous_stop_and_target_bars": 0,
+   "exit_reasons": {
+    "STOP": 33,
+    "TIME": 25,
+    "TARGET": 10,
+    "STOP_GAP": 1,
+    "END_OF_DATA": 1
+   },
+   "by_direction": {
+    "LONG": {
+     "trades": 40,
+     "expectancy_r": -0.098,
+     "net_usd": -394.0
+    },
+    "SHORT": {
+     "trades": 30,
+     "expectancy_r": 0.307,
+     "net_usd": 920.0
+    }
+   },
+   "by_session": {
+    "LONDON": {
+     "trades": 17,
+     "expectancy_r": 0.263,
+     "net_usd": 448.0
+    },
+    "NEW_YORK": {
+     "trades": 53,
+     "expectancy_r": 0.015,
+     "net_usd": 78.0
+    }
+   },
+   "by_year": {
+    "2025": {
+     "trades": 36,
+     "expectancy_r": -0.034,
+     "net_usd": -122.0
+    },
+    "2026": {
+     "trades": 34,
+     "expectancy_r": 0.191,
+     "net_usd": 648.0
+    }
+   }
+  }
+ },
+ "all": [
+  {
+   "params": {
+    "tf": "15m",
+    "swing_n": 2,
+    "variant": "choch",
+    "rr": 1.5
+   },
+   "in_sample": {
+    "trades": 240,
+    "win_rate_pct": 39.6,
+    "expectancy_r": -0.154,
+    "gross_expectancy_r": -0.081,
+    "avg_cost_r": 0.074,
+    "avg_risk_price": 10.95,
+    "net_usd": -3699.0,
+    "profit_factor": 0.66,
+    "max_drawdown_pct": -49.5,
+    "max_consecutive_losses": 10,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 119,
+     "STOP": 88,
+     "TARGET": 32,
+     "STOP_GAP": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 145,
+      "expectancy_r": -0.109,
+      "net_usd": -1586.0
+     },
+     "SHORT": {
+      "trades": 95,
+      "expectancy_r": -0.223,
+      "net_usd": -2114.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 83,
+      "expectancy_r": -0.221,
+      "net_usd": -1834.0
+     },
+     "NEW_YORK": {
+      "trades": 157,
+      "expectancy_r": -0.119,
+      "net_usd": -1865.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 240,
+      "expectancy_r": -0.154,
+      "net_usd": -3699.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 351,
+    "win_rate_pct": 43.9,
+    "expectancy_r": -0.02,
+    "gross_expectancy_r": 0.019,
+    "avg_cost_r": 0.039,
+    "avg_risk_price": 19.91,
+    "net_usd": -701.0,
+    "profit_factor": 0.96,
+    "max_drawdown_pct": -18.8,
+    "max_consecutive_losses": 9,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "STOP": 139,
+     "TIME": 127,
+     "TARGET": 81,
+     "STOP_GAP": 3,
+     "TARGET_GAP": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 201,
+      "expectancy_r": 0.016,
+      "net_usd": 328.0
+     },
+     "SHORT": {
+      "trades": 150,
+      "expectancy_r": -0.069,
+      "net_usd": -1030.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 129,
+      "expectancy_r": -0.072,
+      "net_usd": -926.0
+     },
+     "NEW_YORK": {
+      "trades": 222,
+      "expectancy_r": 0.01,
+      "net_usd": 225.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 215,
+      "expectancy_r": 0.013,
+      "net_usd": 287.0
+     },
+     "2026": {
+      "trades": 136,
+      "expectancy_r": -0.073,
+      "net_usd": -988.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "15m",
+    "swing_n": 2,
+    "variant": "choch",
+    "rr": 2.0
+   },
+   "in_sample": {
+    "trades": 240,
+    "win_rate_pct": 38.3,
+    "expectancy_r": -0.155,
+    "gross_expectancy_r": -0.081,
+    "avg_cost_r": 0.074,
+    "avg_risk_price": 10.95,
+    "net_usd": -3718.0,
+    "profit_factor": 0.67,
+    "max_drawdown_pct": -50.9,
+    "max_consecutive_losses": 10,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 128,
+     "STOP": 90,
+     "TARGET": 21,
+     "STOP_GAP": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 145,
+      "expectancy_r": -0.117,
+      "net_usd": -1698.0
+     },
+     "SHORT": {
+      "trades": 95,
+      "expectancy_r": -0.213,
+      "net_usd": -2020.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 83,
+      "expectancy_r": -0.194,
+      "net_usd": -1613.0
+     },
+     "NEW_YORK": {
+      "trades": 157,
+      "expectancy_r": -0.134,
+      "net_usd": -2105.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 240,
+      "expectancy_r": -0.155,
+      "net_usd": -3718.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 349,
+    "win_rate_pct": 41.0,
+    "expectancy_r": -0.037,
+    "gross_expectancy_r": 0.002,
+    "avg_cost_r": 0.039,
+    "avg_risk_price": 19.86,
+    "net_usd": -1296.0,
+    "profit_factor": 0.93,
+    "max_drawdown_pct": -26.4,
+    "max_consecutive_losses": 9,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 152,
+     "STOP": 145,
+     "TARGET": 48,
+     "STOP_GAP": 3,
+     "TARGET_GAP": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 201,
+      "expectancy_r": -0.025,
+      "net_usd": -506.0
+     },
+     "SHORT": {
+      "trades": 148,
+      "expectancy_r": -0.053,
+      "net_usd": -789.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 129,
+      "expectancy_r": -0.108,
+      "net_usd": -1398.0
+     },
+     "NEW_YORK": {
+      "trades": 220,
+      "expectancy_r": 0.005,
+      "net_usd": 102.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 213,
+      "expectancy_r": 0.047,
+      "net_usd": 1012.0
+     },
+     "2026": {
+      "trades": 136,
+      "expectancy_r": -0.17,
+      "net_usd": -2307.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "15m",
+    "swing_n": 2,
+    "variant": "choch",
+    "rr": 3.0
+   },
+   "in_sample": {
+    "trades": 239,
+    "win_rate_pct": 37.7,
+    "expectancy_r": -0.118,
+    "gross_expectancy_r": -0.044,
+    "avg_cost_r": 0.074,
+    "avg_risk_price": 10.94,
+    "net_usd": -2831.0,
+    "profit_factor": 0.75,
+    "max_drawdown_pct": -44.4,
+    "max_consecutive_losses": 11,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 134,
+     "STOP": 91,
+     "TARGET": 13,
+     "STOP_GAP": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 145,
+      "expectancy_r": -0.074,
+      "net_usd": -1072.0
+     },
+     "SHORT": {
+      "trades": 94,
+      "expectancy_r": -0.187,
+      "net_usd": -1758.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 83,
+      "expectancy_r": -0.07,
+      "net_usd": -584.0
+     },
+     "NEW_YORK": {
+      "trades": 156,
+      "expectancy_r": -0.144,
+      "net_usd": -2246.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 239,
+      "expectancy_r": -0.118,
+      "net_usd": -2831.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 348,
+    "win_rate_pct": 40.2,
+    "expectancy_r": 0.002,
+    "gross_expectancy_r": 0.041,
+    "avg_cost_r": 0.039,
+    "avg_risk_price": 19.84,
+    "net_usd": 70.0,
+    "profit_factor": 1.0,
+    "max_drawdown_pct": -21.1,
+    "max_consecutive_losses": 9,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 173,
+     "STOP": 147,
+     "TARGET": 24,
+     "STOP_GAP": 3,
+     "TARGET_GAP": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 200,
+      "expectancy_r": 0.038,
+      "net_usd": 755.0
+     },
+     "SHORT": {
+      "trades": 148,
+      "expectancy_r": -0.046,
+      "net_usd": -685.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 129,
+      "expectancy_r": -0.062,
+      "net_usd": -795.0
+     },
+     "NEW_YORK": {
+      "trades": 219,
+      "expectancy_r": 0.039,
+      "net_usd": 865.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 212,
+      "expectancy_r": 0.079,
+      "net_usd": 1676.0
+     },
+     "2026": {
+      "trades": 136,
+      "expectancy_r": -0.118,
+      "net_usd": -1606.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "15m",
+    "swing_n": 2,
+    "variant": "sweep_choch",
+    "rr": 1.5
+   },
+   "in_sample": {
+    "trades": 218,
+    "win_rate_pct": 40.4,
+    "expectancy_r": -0.146,
+    "gross_expectancy_r": -0.073,
+    "avg_cost_r": 0.073,
+    "avg_risk_price": 11.05,
+    "net_usd": -3178.0,
+    "profit_factor": 0.68,
+    "max_drawdown_pct": -41.3,
+    "max_consecutive_losses": 8,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 109,
+     "STOP": 79,
+     "TARGET": 29,
+     "STOP_GAP": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 129,
+      "expectancy_r": -0.13,
+      "net_usd": -1671.0
+     },
+     "SHORT": {
+      "trades": 89,
+      "expectancy_r": -0.169,
+      "net_usd": -1506.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 74,
+      "expectancy_r": -0.273,
+      "net_usd": -2022.0
+     },
+     "NEW_YORK": {
+      "trades": 144,
+      "expectancy_r": -0.08,
+      "net_usd": -1155.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 218,
+      "expectancy_r": -0.146,
+      "net_usd": -3178.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 316,
+    "win_rate_pct": 43.4,
+    "expectancy_r": -0.022,
+    "gross_expectancy_r": 0.017,
+    "avg_cost_r": 0.038,
+    "avg_risk_price": 20.13,
+    "net_usd": -688.0,
+    "profit_factor": 0.95,
+    "max_drawdown_pct": -19.1,
+    "max_consecutive_losses": 8,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "STOP": 127,
+     "TIME": 112,
+     "TARGET": 73,
+     "STOP_GAP": 3,
+     "TARGET_GAP": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 183,
+      "expectancy_r": 0.023,
+      "net_usd": 420.0
+     },
+     "SHORT": {
+      "trades": 133,
+      "expectancy_r": -0.083,
+      "net_usd": -1108.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 111,
+      "expectancy_r": -0.075,
+      "net_usd": -830.0
+     },
+     "NEW_YORK": {
+      "trades": 205,
+      "expectancy_r": 0.007,
+      "net_usd": 142.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 192,
+      "expectancy_r": 0.01,
+      "net_usd": 186.0
+     },
+     "2026": {
+      "trades": 124,
+      "expectancy_r": -0.07,
+      "net_usd": -874.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "15m",
+    "swing_n": 2,
+    "variant": "sweep_choch",
+    "rr": 2.0
+   },
+   "in_sample": {
+    "trades": 218,
+    "win_rate_pct": 39.0,
+    "expectancy_r": -0.147,
+    "gross_expectancy_r": -0.074,
+    "avg_cost_r": 0.073,
+    "avg_risk_price": 11.05,
+    "net_usd": -3202.0,
+    "profit_factor": 0.68,
+    "max_drawdown_pct": -42.9,
+    "max_consecutive_losses": 8,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 116,
+     "STOP": 81,
+     "TARGET": 20,
+     "STOP_GAP": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 129,
+      "expectancy_r": -0.143,
+      "net_usd": -1840.0
+     },
+     "SHORT": {
+      "trades": 89,
+      "expectancy_r": -0.153,
+      "net_usd": -1362.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 74,
+      "expectancy_r": -0.255,
+      "net_usd": -1887.0
+     },
+     "NEW_YORK": {
+      "trades": 144,
+      "expectancy_r": -0.091,
+      "net_usd": -1316.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 218,
+      "expectancy_r": -0.147,
+      "net_usd": -3202.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 314,
+    "win_rate_pct": 40.1,
+    "expectancy_r": -0.047,
+    "gross_expectancy_r": -0.009,
+    "avg_cost_r": 0.039,
+    "avg_risk_price": 20.08,
+    "net_usd": -1488.0,
+    "profit_factor": 0.91,
+    "max_drawdown_pct": -27.5,
+    "max_consecutive_losses": 8,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 135,
+     "STOP": 133,
+     "TARGET": 42,
+     "STOP_GAP": 3,
+     "TARGET_GAP": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 183,
+      "expectancy_r": -0.031,
+      "net_usd": -564.0
+     },
+     "SHORT": {
+      "trades": 131,
+      "expectancy_r": -0.07,
+      "net_usd": -923.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 111,
+      "expectancy_r": -0.135,
+      "net_usd": -1500.0
+     },
+     "NEW_YORK": {
+      "trades": 203,
+      "expectancy_r": 0.001,
+      "net_usd": 12.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 190,
+      "expectancy_r": 0.04,
+      "net_usd": 763.0
+     },
+     "2026": {
+      "trades": 124,
+      "expectancy_r": -0.182,
+      "net_usd": -2251.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "15m",
+    "swing_n": 2,
+    "variant": "sweep_choch",
+    "rr": 3.0
+   },
+   "in_sample": {
+    "trades": 217,
+    "win_rate_pct": 38.2,
+    "expectancy_r": -0.111,
+    "gross_expectancy_r": -0.037,
+    "avg_cost_r": 0.074,
+    "avg_risk_price": 11.03,
+    "net_usd": -2415.0,
+    "profit_factor": 0.76,
+    "max_drawdown_pct": -37.5,
+    "max_consecutive_losses": 9,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 122,
+     "STOP": 82,
+     "TARGET": 12,
+     "STOP_GAP": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 129,
+      "expectancy_r": -0.11,
+      "net_usd": -1414.0
+     },
+     "SHORT": {
+      "trades": 88,
+      "expectancy_r": -0.114,
+      "net_usd": -1001.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 74,
+      "expectancy_r": -0.143,
+      "net_usd": -1058.0
+     },
+     "NEW_YORK": {
+      "trades": 143,
+      "expectancy_r": -0.095,
+      "net_usd": -1357.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 217,
+      "expectancy_r": -0.111,
+      "net_usd": -2415.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 314,
+    "win_rate_pct": 39.5,
+    "expectancy_r": -0.007,
+    "gross_expectancy_r": 0.032,
+    "avg_cost_r": 0.039,
+    "avg_risk_price": 20.08,
+    "net_usd": -227.0,
+    "profit_factor": 0.99,
+    "max_drawdown_pct": -22.7,
+    "max_consecutive_losses": 8,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 155,
+     "STOP": 134,
+     "TARGET": 21,
+     "STOP_GAP": 3,
+     "TARGET_GAP": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 183,
+      "expectancy_r": 0.038,
+      "net_usd": 701.0
+     },
+     "SHORT": {
+      "trades": 131,
+      "expectancy_r": -0.071,
+      "net_usd": -929.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 111,
+      "expectancy_r": -0.061,
+      "net_usd": -679.0
+     },
+     "NEW_YORK": {
+      "trades": 203,
+      "expectancy_r": 0.022,
+      "net_usd": 452.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 190,
+      "expectancy_r": 0.077,
+      "net_usd": 1462.0
+     },
+     "2026": {
+      "trades": 124,
+      "expectancy_r": -0.136,
+      "net_usd": -1689.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "15m",
+    "swing_n": 3,
+    "variant": "choch",
+    "rr": 1.5
+   },
+   "in_sample": {
+    "trades": 185,
+    "win_rate_pct": 40.0,
+    "expectancy_r": -0.126,
+    "gross_expectancy_r": -0.058,
+    "avg_cost_r": 0.068,
+    "avg_risk_price": 12.19,
+    "net_usd": -2327.0,
+    "profit_factor": 0.71,
+    "max_drawdown_pct": -32.8,
+    "max_consecutive_losses": 10,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 93,
+     "STOP": 65,
+     "TARGET": 26,
+     "STOP_GAP": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 112,
+      "expectancy_r": -0.082,
+      "net_usd": -918.0
+     },
+     "SHORT": {
+      "trades": 73,
+      "expectancy_r": -0.193,
+      "net_usd": -1409.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 61,
+      "expectancy_r": -0.131,
+      "net_usd": -797.0
+     },
+     "NEW_YORK": {
+      "trades": 124,
+      "expectancy_r": -0.123,
+      "net_usd": -1530.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 185,
+      "expectancy_r": -0.126,
+      "net_usd": -2327.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 252,
+    "win_rate_pct": 45.2,
+    "expectancy_r": 0.008,
+    "gross_expectancy_r": 0.045,
+    "avg_cost_r": 0.037,
+    "avg_risk_price": 20.88,
+    "net_usd": 198.0,
+    "profit_factor": 1.02,
+    "max_drawdown_pct": -7.6,
+    "max_consecutive_losses": 7,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 96,
+     "STOP": 95,
+     "TARGET": 58,
+     "STOP_GAP": 2,
+     "TARGET_GAP": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 140,
+      "expectancy_r": 0.029,
+      "net_usd": 405.0
+     },
+     "SHORT": {
+      "trades": 112,
+      "expectancy_r": -0.018,
+      "net_usd": -207.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 94,
+      "expectancy_r": -0.083,
+      "net_usd": -776.0
+     },
+     "NEW_YORK": {
+      "trades": 158,
+      "expectancy_r": 0.062,
+      "net_usd": 974.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 162,
+      "expectancy_r": 0.044,
+      "net_usd": 711.0
+     },
+     "2026": {
+      "trades": 90,
+      "expectancy_r": -0.057,
+      "net_usd": -513.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "15m",
+    "swing_n": 3,
+    "variant": "choch",
+    "rr": 2.0
+   },
+   "in_sample": {
+    "trades": 185,
+    "win_rate_pct": 38.4,
+    "expectancy_r": -0.14,
+    "gross_expectancy_r": -0.072,
+    "avg_cost_r": 0.068,
+    "avg_risk_price": 12.19,
+    "net_usd": -2595.0,
+    "profit_factor": 0.69,
+    "max_drawdown_pct": -36.6,
+    "max_consecutive_losses": 10,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 102,
+     "STOP": 67,
+     "TARGET": 15,
+     "STOP_GAP": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 112,
+      "expectancy_r": -0.11,
+      "net_usd": -1227.0
+     },
+     "SHORT": {
+      "trades": 73,
+      "expectancy_r": -0.187,
+      "net_usd": -1368.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 61,
+      "expectancy_r": -0.143,
+      "net_usd": -872.0
+     },
+     "NEW_YORK": {
+      "trades": 124,
+      "expectancy_r": -0.139,
+      "net_usd": -1723.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 185,
+      "expectancy_r": -0.14,
+      "net_usd": -2595.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 252,
+    "win_rate_pct": 42.9,
+    "expectancy_r": 0.007,
+    "gross_expectancy_r": 0.044,
+    "avg_cost_r": 0.037,
+    "avg_risk_price": 20.88,
+    "net_usd": 173.0,
+    "profit_factor": 1.01,
+    "max_drawdown_pct": -11.7,
+    "max_consecutive_losses": 7,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 116,
+     "STOP": 99,
+     "TARGET": 35,
+     "STOP_GAP": 2
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 140,
+      "expectancy_r": 0.003,
+      "net_usd": 48.0
+     },
+     "SHORT": {
+      "trades": 112,
+      "expectancy_r": 0.011,
+      "net_usd": 125.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 94,
+      "expectancy_r": -0.115,
+      "net_usd": -1076.0
+     },
+     "NEW_YORK": {
+      "trades": 158,
+      "expectancy_r": 0.079,
+      "net_usd": 1250.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 162,
+      "expectancy_r": 0.081,
+      "net_usd": 1304.0
+     },
+     "2026": {
+      "trades": 90,
+      "expectancy_r": -0.126,
+      "net_usd": -1131.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "15m",
+    "swing_n": 3,
+    "variant": "choch",
+    "rr": 3.0
+   },
+   "in_sample": {
+    "trades": 184,
+    "win_rate_pct": 38.0,
+    "expectancy_r": -0.112,
+    "gross_expectancy_r": -0.043,
+    "avg_cost_r": 0.069,
+    "avg_risk_price": 12.16,
+    "net_usd": -2062.0,
+    "profit_factor": 0.75,
+    "max_drawdown_pct": -31.8,
+    "max_consecutive_losses": 10,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 109,
+     "STOP": 67,
+     "TARGET": 7,
+     "STOP_GAP": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 111,
+      "expectancy_r": -0.067,
+      "net_usd": -740.0
+     },
+     "SHORT": {
+      "trades": 73,
+      "expectancy_r": -0.181,
+      "net_usd": -1322.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 61,
+      "expectancy_r": -0.056,
+      "net_usd": -343.0
+     },
+     "NEW_YORK": {
+      "trades": 123,
+      "expectancy_r": -0.14,
+      "net_usd": -1719.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 184,
+      "expectancy_r": -0.112,
+      "net_usd": -2062.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 252,
+    "win_rate_pct": 42.1,
+    "expectancy_r": 0.021,
+    "gross_expectancy_r": 0.058,
+    "avg_cost_r": 0.038,
+    "avg_risk_price": 20.88,
+    "net_usd": 519.0,
+    "profit_factor": 1.04,
+    "max_drawdown_pct": -11.0,
+    "max_consecutive_losses": 7,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 137,
+     "STOP": 100,
+     "TARGET": 13,
+     "STOP_GAP": 2
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 140,
+      "expectancy_r": 0.044,
+      "net_usd": 611.0
+     },
+     "SHORT": {
+      "trades": 112,
+      "expectancy_r": -0.008,
+      "net_usd": -92.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 94,
+      "expectancy_r": -0.089,
+      "net_usd": -836.0
+     },
+     "NEW_YORK": {
+      "trades": 158,
+      "expectancy_r": 0.086,
+      "net_usd": 1355.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 162,
+      "expectancy_r": 0.074,
+      "net_usd": 1203.0
+     },
+     "2026": {
+      "trades": 90,
+      "expectancy_r": -0.076,
+      "net_usd": -684.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "15m",
+    "swing_n": 3,
+    "variant": "sweep_choch",
+    "rr": 1.5
+   },
+   "in_sample": {
+    "trades": 164,
+    "win_rate_pct": 39.6,
+    "expectancy_r": -0.128,
+    "gross_expectancy_r": -0.061,
+    "avg_cost_r": 0.067,
+    "avg_risk_price": 12.47,
+    "net_usd": -2104.0,
+    "profit_factor": 0.7,
+    "max_drawdown_pct": -27.8,
+    "max_consecutive_losses": 9,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 86,
+     "STOP": 56,
+     "TARGET": 21,
+     "STOP_GAP": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 96,
+      "expectancy_r": -0.078,
+      "net_usd": -752.0
+     },
+     "SHORT": {
+      "trades": 68,
+      "expectancy_r": -0.199,
+      "net_usd": -1353.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 51,
+      "expectancy_r": -0.197,
+      "net_usd": -1005.0
+     },
+     "NEW_YORK": {
+      "trades": 113,
+      "expectancy_r": -0.097,
+      "net_usd": -1100.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 164,
+      "expectancy_r": -0.128,
+      "net_usd": -2104.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 230,
+    "win_rate_pct": 43.9,
+    "expectancy_r": -0.008,
+    "gross_expectancy_r": 0.029,
+    "avg_cost_r": 0.037,
+    "avg_risk_price": 20.8,
+    "net_usd": -187.0,
+    "profit_factor": 0.98,
+    "max_drawdown_pct": -9.6,
+    "max_consecutive_losses": 7,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 89,
+     "STOP": 87,
+     "TARGET": 51,
+     "STOP_GAP": 2,
+     "TARGET_GAP": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 128,
+      "expectancy_r": 0.036,
+      "net_usd": 460.0
+     },
+     "SHORT": {
+      "trades": 102,
+      "expectancy_r": -0.063,
+      "net_usd": -647.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 81,
+      "expectancy_r": -0.123,
+      "net_usd": -996.0
+     },
+     "NEW_YORK": {
+      "trades": 149,
+      "expectancy_r": 0.054,
+      "net_usd": 809.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 149,
+      "expectancy_r": 0.019,
+      "net_usd": 282.0
+     },
+     "2026": {
+      "trades": 81,
+      "expectancy_r": -0.058,
+      "net_usd": -470.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "15m",
+    "swing_n": 3,
+    "variant": "sweep_choch",
+    "rr": 2.0
+   },
+   "in_sample": {
+    "trades": 164,
+    "win_rate_pct": 37.8,
+    "expectancy_r": -0.135,
+    "gross_expectancy_r": -0.068,
+    "avg_cost_r": 0.067,
+    "avg_risk_price": 12.47,
+    "net_usd": -2220.0,
+    "profit_factor": 0.69,
+    "max_drawdown_pct": -30.3,
+    "max_consecutive_losses": 9,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 91,
+     "STOP": 58,
+     "TARGET": 14,
+     "STOP_GAP": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 96,
+      "expectancy_r": -0.11,
+      "net_usd": -1055.0
+     },
+     "SHORT": {
+      "trades": 68,
+      "expectancy_r": -0.171,
+      "net_usd": -1164.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 51,
+      "expectancy_r": -0.188,
+      "net_usd": -957.0
+     },
+     "NEW_YORK": {
+      "trades": 113,
+      "expectancy_r": -0.112,
+      "net_usd": -1263.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 164,
+      "expectancy_r": -0.135,
+      "net_usd": -2220.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 230,
+    "win_rate_pct": 41.3,
+    "expectancy_r": -0.014,
+    "gross_expectancy_r": 0.023,
+    "avg_cost_r": 0.037,
+    "avg_risk_price": 20.8,
+    "net_usd": -316.0,
+    "profit_factor": 0.97,
+    "max_drawdown_pct": -12.3,
+    "max_consecutive_losses": 7,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 106,
+     "STOP": 91,
+     "TARGET": 31,
+     "STOP_GAP": 2
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 128,
+      "expectancy_r": 0.004,
+      "net_usd": 55.0
+     },
+     "SHORT": {
+      "trades": 102,
+      "expectancy_r": -0.036,
+      "net_usd": -372.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 81,
+      "expectancy_r": -0.166,
+      "net_usd": -1343.0
+     },
+     "NEW_YORK": {
+      "trades": 149,
+      "expectancy_r": 0.069,
+      "net_usd": 1027.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 149,
+      "expectancy_r": 0.052,
+      "net_usd": 780.0
+     },
+     "2026": {
+      "trades": 81,
+      "expectancy_r": -0.135,
+      "net_usd": -1096.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "15m",
+    "swing_n": 3,
+    "variant": "sweep_choch",
+    "rr": 3.0
+   },
+   "in_sample": {
+    "trades": 163,
+    "win_rate_pct": 37.4,
+    "expectancy_r": -0.11,
+    "gross_expectancy_r": -0.042,
+    "avg_cost_r": 0.068,
+    "avg_risk_price": 12.44,
+    "net_usd": -1787.0,
+    "profit_factor": 0.75,
+    "max_drawdown_pct": -26.6,
+    "max_consecutive_losses": 9,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 98,
+     "STOP": 58,
+     "TARGET": 6,
+     "STOP_GAP": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 95,
+      "expectancy_r": -0.07,
+      "net_usd": -669.0
+     },
+     "SHORT": {
+      "trades": 68,
+      "expectancy_r": -0.164,
+      "net_usd": -1118.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 51,
+      "expectancy_r": -0.104,
+      "net_usd": -528.0
+     },
+     "NEW_YORK": {
+      "trades": 112,
+      "expectancy_r": -0.112,
+      "net_usd": -1259.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 163,
+      "expectancy_r": -0.11,
+      "net_usd": -1787.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 230,
+    "win_rate_pct": 40.4,
+    "expectancy_r": -0.007,
+    "gross_expectancy_r": 0.03,
+    "avg_cost_r": 0.037,
+    "avg_risk_price": 20.8,
+    "net_usd": -168.0,
+    "profit_factor": 0.98,
+    "max_drawdown_pct": -11.7,
+    "max_consecutive_losses": 7,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 125,
+     "STOP": 92,
+     "TARGET": 11,
+     "STOP_GAP": 2
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 128,
+      "expectancy_r": 0.053,
+      "net_usd": 677.0
+     },
+     "SHORT": {
+      "trades": 102,
+      "expectancy_r": -0.083,
+      "net_usd": -845.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 81,
+      "expectancy_r": -0.141,
+      "net_usd": -1144.0
+     },
+     "NEW_YORK": {
+      "trades": 149,
+      "expectancy_r": 0.065,
+      "net_usd": 976.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 149,
+      "expectancy_r": 0.039,
+      "net_usd": 581.0
+     },
+     "2026": {
+      "trades": 81,
+      "expectancy_r": -0.092,
+      "net_usd": -749.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "15m",
+    "swing_n": 5,
+    "variant": "choch",
+    "rr": 1.5
+   },
+   "in_sample": {
+    "trades": 124,
+    "win_rate_pct": 35.5,
+    "expectancy_r": -0.238,
+    "gross_expectancy_r": -0.18,
+    "avg_cost_r": 0.058,
+    "avg_risk_price": 13.42,
+    "net_usd": -2954.0,
+    "profit_factor": 0.48,
+    "max_drawdown_pct": -34.5,
+    "max_consecutive_losses": 10,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 69,
+     "STOP": 44,
+     "TARGET": 10,
+     "STOP_GAP": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 72,
+      "expectancy_r": -0.225,
+      "net_usd": -1620.0
+     },
+     "SHORT": {
+      "trades": 52,
+      "expectancy_r": -0.257,
+      "net_usd": -1334.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 45,
+      "expectancy_r": -0.256,
+      "net_usd": -1154.0
+     },
+     "NEW_YORK": {
+      "trades": 79,
+      "expectancy_r": -0.228,
+      "net_usd": -1800.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 124,
+      "expectancy_r": -0.238,
+      "net_usd": -2954.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 148,
+    "win_rate_pct": 44.6,
+    "expectancy_r": -0.028,
+    "gross_expectancy_r": 0.005,
+    "avg_cost_r": 0.033,
+    "avg_risk_price": 23.24,
+    "net_usd": -409.0,
+    "profit_factor": 0.94,
+    "max_drawdown_pct": -7.3,
+    "max_consecutive_losses": 9,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 65,
+     "STOP": 54,
+     "TARGET": 29
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 87,
+      "expectancy_r": 0.045,
+      "net_usd": 391.0
+     },
+     "SHORT": {
+      "trades": 61,
+      "expectancy_r": -0.131,
+      "net_usd": -800.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 56,
+      "expectancy_r": -0.227,
+      "net_usd": -1270.0
+     },
+     "NEW_YORK": {
+      "trades": 92,
+      "expectancy_r": 0.094,
+      "net_usd": 861.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 92,
+      "expectancy_r": 0.005,
+      "net_usd": 46.0
+     },
+     "2026": {
+      "trades": 56,
+      "expectancy_r": -0.081,
+      "net_usd": -454.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "15m",
+    "swing_n": 5,
+    "variant": "choch",
+    "rr": 2.0
+   },
+   "in_sample": {
+    "trades": 124,
+    "win_rate_pct": 33.9,
+    "expectancy_r": -0.26,
+    "gross_expectancy_r": -0.202,
+    "avg_cost_r": 0.059,
+    "avg_risk_price": 13.42,
+    "net_usd": -3227.0,
+    "profit_factor": 0.44,
+    "max_drawdown_pct": -37.8,
+    "max_consecutive_losses": 10,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 73,
+     "STOP": 45,
+     "TARGET": 5,
+     "STOP_GAP": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 72,
+      "expectancy_r": -0.279,
+      "net_usd": -2012.0
+     },
+     "SHORT": {
+      "trades": 52,
+      "expectancy_r": -0.233,
+      "net_usd": -1214.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 45,
+      "expectancy_r": -0.288,
+      "net_usd": -1296.0
+     },
+     "NEW_YORK": {
+      "trades": 79,
+      "expectancy_r": -0.244,
+      "net_usd": -1931.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 124,
+      "expectancy_r": -0.26,
+      "net_usd": -3227.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 148,
+    "win_rate_pct": 43.2,
+    "expectancy_r": -0.017,
+    "gross_expectancy_r": 0.016,
+    "avg_cost_r": 0.033,
+    "avg_risk_price": 23.24,
+    "net_usd": -249.0,
+    "profit_factor": 0.96,
+    "max_drawdown_pct": -9.4,
+    "max_consecutive_losses": 9,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 77,
+     "STOP": 56,
+     "TARGET": 15
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 87,
+      "expectancy_r": 0.088,
+      "net_usd": 765.0
+     },
+     "SHORT": {
+      "trades": 61,
+      "expectancy_r": -0.166,
+      "net_usd": -1014.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 56,
+      "expectancy_r": -0.227,
+      "net_usd": -1272.0
+     },
+     "NEW_YORK": {
+      "trades": 92,
+      "expectancy_r": 0.111,
+      "net_usd": 1023.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 92,
+      "expectancy_r": 0.031,
+      "net_usd": 284.0
+     },
+     "2026": {
+      "trades": 56,
+      "expectancy_r": -0.095,
+      "net_usd": -533.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "15m",
+    "swing_n": 5,
+    "variant": "choch",
+    "rr": 3.0
+   },
+   "in_sample": {
+    "trades": 124,
+    "win_rate_pct": 33.9,
+    "expectancy_r": -0.254,
+    "gross_expectancy_r": -0.195,
+    "avg_cost_r": 0.059,
+    "avg_risk_price": 13.42,
+    "net_usd": -3152.0,
+    "profit_factor": 0.46,
+    "max_drawdown_pct": -37.5,
+    "max_consecutive_losses": 10,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 76,
+     "STOP": 45,
+     "TARGET": 2,
+     "STOP_GAP": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 72,
+      "expectancy_r": -0.287,
+      "net_usd": -2063.0
+     },
+     "SHORT": {
+      "trades": 52,
+      "expectancy_r": -0.209,
+      "net_usd": -1088.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 45,
+      "expectancy_r": -0.262,
+      "net_usd": -1177.0
+     },
+     "NEW_YORK": {
+      "trades": 79,
+      "expectancy_r": -0.25,
+      "net_usd": -1974.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 124,
+      "expectancy_r": -0.254,
+      "net_usd": -3152.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 148,
+    "win_rate_pct": 43.2,
+    "expectancy_r": 0.007,
+    "gross_expectancy_r": 0.04,
+    "avg_cost_r": 0.033,
+    "avg_risk_price": 23.24,
+    "net_usd": 99.0,
+    "profit_factor": 1.01,
+    "max_drawdown_pct": -9.1,
+    "max_consecutive_losses": 9,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 89,
+     "STOP": 56,
+     "TARGET": 3
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 87,
+      "expectancy_r": 0.132,
+      "net_usd": 1146.0
+     },
+     "SHORT": {
+      "trades": 61,
+      "expectancy_r": -0.172,
+      "net_usd": -1046.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 56,
+      "expectancy_r": -0.221,
+      "net_usd": -1239.0
+     },
+     "NEW_YORK": {
+      "trades": 92,
+      "expectancy_r": 0.145,
+      "net_usd": 1338.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 92,
+      "expectancy_r": 0.054,
+      "net_usd": 493.0
+     },
+     "2026": {
+      "trades": 56,
+      "expectancy_r": -0.07,
+      "net_usd": -393.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "15m",
+    "swing_n": 5,
+    "variant": "sweep_choch",
+    "rr": 1.5
+   },
+   "in_sample": {
+    "trades": 102,
+    "win_rate_pct": 34.3,
+    "expectancy_r": -0.241,
+    "gross_expectancy_r": -0.185,
+    "avg_cost_r": 0.056,
+    "avg_risk_price": 14.0,
+    "net_usd": -2458.0,
+    "profit_factor": 0.44,
+    "max_drawdown_pct": -26.7,
+    "max_consecutive_losses": 10,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 62,
+     "STOP": 32,
+     "TARGET": 7,
+     "STOP_GAP": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 61,
+      "expectancy_r": -0.243,
+      "net_usd": -1480.0
+     },
+     "SHORT": {
+      "trades": 41,
+      "expectancy_r": -0.238,
+      "net_usd": -978.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 31,
+      "expectancy_r": -0.345,
+      "net_usd": -1070.0
+     },
+     "NEW_YORK": {
+      "trades": 71,
+      "expectancy_r": -0.195,
+      "net_usd": -1388.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 102,
+      "expectancy_r": -0.241,
+      "net_usd": -2458.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 126,
+    "win_rate_pct": 45.2,
+    "expectancy_r": 0.004,
+    "gross_expectancy_r": 0.036,
+    "avg_cost_r": 0.033,
+    "avg_risk_price": 23.28,
+    "net_usd": 45.0,
+    "profit_factor": 1.01,
+    "max_drawdown_pct": -7.2,
+    "max_consecutive_losses": 8,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 54,
+     "STOP": 45,
+     "TARGET": 27
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 74,
+      "expectancy_r": 0.082,
+      "net_usd": 609.0
+     },
+     "SHORT": {
+      "trades": 52,
+      "expectancy_r": -0.108,
+      "net_usd": -564.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 44,
+      "expectancy_r": -0.183,
+      "net_usd": -806.0
+     },
+     "NEW_YORK": {
+      "trades": 82,
+      "expectancy_r": 0.104,
+      "net_usd": 851.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 80,
+      "expectancy_r": 0.076,
+      "net_usd": 609.0
+     },
+     "2026": {
+      "trades": 46,
+      "expectancy_r": -0.123,
+      "net_usd": -564.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "15m",
+    "swing_n": 5,
+    "variant": "sweep_choch",
+    "rr": 2.0
+   },
+   "in_sample": {
+    "trades": 102,
+    "win_rate_pct": 32.4,
+    "expectancy_r": -0.282,
+    "gross_expectancy_r": -0.226,
+    "avg_cost_r": 0.056,
+    "avg_risk_price": 14.0,
+    "net_usd": -2880.0,
+    "profit_factor": 0.36,
+    "max_drawdown_pct": -30.8,
+    "max_consecutive_losses": 11,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 66,
+     "STOP": 33,
+     "TARGET": 2,
+     "STOP_GAP": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 61,
+      "expectancy_r": -0.323,
+      "net_usd": -1972.0
+     },
+     "SHORT": {
+      "trades": 41,
+      "expectancy_r": -0.221,
+      "net_usd": -908.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 31,
+      "expectancy_r": -0.439,
+      "net_usd": -1361.0
+     },
+     "NEW_YORK": {
+      "trades": 71,
+      "expectancy_r": -0.214,
+      "net_usd": -1518.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 102,
+      "expectancy_r": -0.282,
+      "net_usd": -2880.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 126,
+    "win_rate_pct": 44.4,
+    "expectancy_r": 0.037,
+    "gross_expectancy_r": 0.07,
+    "avg_cost_r": 0.033,
+    "avg_risk_price": 23.28,
+    "net_usd": 471.0,
+    "profit_factor": 1.08,
+    "max_drawdown_pct": -7.1,
+    "max_consecutive_losses": 8,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 65,
+     "STOP": 46,
+     "TARGET": 15
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 74,
+      "expectancy_r": 0.135,
+      "net_usd": 999.0
+     },
+     "SHORT": {
+      "trades": 52,
+      "expectancy_r": -0.102,
+      "net_usd": -528.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 44,
+      "expectancy_r": -0.184,
+      "net_usd": -809.0
+     },
+     "NEW_YORK": {
+      "trades": 82,
+      "expectancy_r": 0.156,
+      "net_usd": 1279.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 80,
+      "expectancy_r": 0.106,
+      "net_usd": 848.0
+     },
+     "2026": {
+      "trades": 46,
+      "expectancy_r": -0.082,
+      "net_usd": -377.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "15m",
+    "swing_n": 5,
+    "variant": "sweep_choch",
+    "rr": 3.0
+   },
+   "in_sample": {
+    "trades": 102,
+    "win_rate_pct": 32.4,
+    "expectancy_r": -0.287,
+    "gross_expectancy_r": -0.231,
+    "avg_cost_r": 0.056,
+    "avg_risk_price": 14.0,
+    "net_usd": -2924.0,
+    "profit_factor": 0.35,
+    "max_drawdown_pct": -30.8,
+    "max_consecutive_losses": 11,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 68,
+     "STOP": 33,
+     "STOP_GAP": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 61,
+      "expectancy_r": -0.335,
+      "net_usd": -2042.0
+     },
+     "SHORT": {
+      "trades": 41,
+      "expectancy_r": -0.215,
+      "net_usd": -882.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 31,
+      "expectancy_r": -0.439,
+      "net_usd": -1361.0
+     },
+     "NEW_YORK": {
+      "trades": 71,
+      "expectancy_r": -0.22,
+      "net_usd": -1562.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 102,
+      "expectancy_r": -0.287,
+      "net_usd": -2924.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 126,
+    "win_rate_pct": 44.4,
+    "expectancy_r": 0.065,
+    "gross_expectancy_r": 0.098,
+    "avg_cost_r": 0.033,
+    "avg_risk_price": 23.28,
+    "net_usd": 819.0,
+    "profit_factor": 1.15,
+    "max_drawdown_pct": -6.9,
+    "max_consecutive_losses": 8,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 77,
+     "STOP": 46,
+     "TARGET": 3
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 74,
+      "expectancy_r": 0.186,
+      "net_usd": 1379.0
+     },
+     "SHORT": {
+      "trades": 52,
+      "expectancy_r": -0.108,
+      "net_usd": -560.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 44,
+      "expectancy_r": -0.176,
+      "net_usd": -776.0
+     },
+     "NEW_YORK": {
+      "trades": 82,
+      "expectancy_r": 0.194,
+      "net_usd": 1594.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 80,
+      "expectancy_r": 0.132,
+      "net_usd": 1056.0
+     },
+     "2026": {
+      "trades": 46,
+      "expectancy_r": -0.052,
+      "net_usd": -237.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "1h",
+    "swing_n": 2,
+    "variant": "choch",
+    "rr": 1.5
+   },
+   "in_sample": {
+    "trades": 66,
+    "win_rate_pct": 40.9,
+    "expectancy_r": -0.085,
+    "gross_expectancy_r": -0.048,
+    "avg_cost_r": 0.038,
+    "avg_risk_price": 19.08,
+    "net_usd": -563.0,
+    "profit_factor": 0.83,
+    "max_drawdown_pct": -11.7,
+    "max_consecutive_losses": 11,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "STOP": 30,
+     "TIME": 22,
+     "TARGET": 14
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 37,
+      "expectancy_r": 0.161,
+      "net_usd": 596.0
+     },
+     "SHORT": {
+      "trades": 29,
+      "expectancy_r": -0.4,
+      "net_usd": -1159.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 14,
+      "expectancy_r": 0.33,
+      "net_usd": 461.0
+     },
+     "NEW_YORK": {
+      "trades": 52,
+      "expectancy_r": -0.197,
+      "net_usd": -1024.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 66,
+      "expectancy_r": -0.085,
+      "net_usd": -563.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 87,
+    "win_rate_pct": 46.0,
+    "expectancy_r": 0.035,
+    "gross_expectancy_r": 0.055,
+    "avg_cost_r": 0.02,
+    "avg_risk_price": 39.12,
+    "net_usd": 301.0,
+    "profit_factor": 1.07,
+    "max_drawdown_pct": -10.1,
+    "max_consecutive_losses": 7,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "STOP": 34,
+     "TIME": 25,
+     "TARGET": 25,
+     "TARGET_GAP": 1,
+     "STOP_GAP": 1,
+     "END_OF_DATA": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 49,
+      "expectancy_r": -0.039,
+      "net_usd": -192.0
+     },
+     "SHORT": {
+      "trades": 38,
+      "expectancy_r": 0.13,
+      "net_usd": 493.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 24,
+      "expectancy_r": 0.095,
+      "net_usd": 228.0
+     },
+     "NEW_YORK": {
+      "trades": 63,
+      "expectancy_r": 0.012,
+      "net_usd": 74.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 46,
+      "expectancy_r": -0.002,
+      "net_usd": -10.0
+     },
+     "2026": {
+      "trades": 41,
+      "expectancy_r": 0.076,
+      "net_usd": 311.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "1h",
+    "swing_n": 2,
+    "variant": "choch",
+    "rr": 2.0
+   },
+   "in_sample": {
+    "trades": 64,
+    "win_rate_pct": 39.1,
+    "expectancy_r": -0.121,
+    "gross_expectancy_r": -0.083,
+    "avg_cost_r": 0.038,
+    "avg_risk_price": 19.07,
+    "net_usd": -773.0,
+    "profit_factor": 0.77,
+    "max_drawdown_pct": -13.1,
+    "max_consecutive_losses": 11,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "STOP": 31,
+     "TIME": 25,
+     "TARGET": 7,
+     "TARGET_GAP": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 35,
+      "expectancy_r": 0.153,
+      "net_usd": 537.0
+     },
+     "SHORT": {
+      "trades": 29,
+      "expectancy_r": -0.451,
+      "net_usd": -1309.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 13,
+      "expectancy_r": 0.033,
+      "net_usd": 43.0
+     },
+     "NEW_YORK": {
+      "trades": 51,
+      "expectancy_r": -0.16,
+      "net_usd": -816.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 64,
+      "expectancy_r": -0.121,
+      "net_usd": -773.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 87,
+    "win_rate_pct": 40.2,
+    "expectancy_r": 0.005,
+    "gross_expectancy_r": 0.026,
+    "avg_cost_r": 0.02,
+    "avg_risk_price": 39.12,
+    "net_usd": 46.0,
+    "profit_factor": 1.01,
+    "max_drawdown_pct": -10.9,
+    "max_consecutive_losses": 10,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "STOP": 38,
+     "TIME": 29,
+     "TARGET": 18,
+     "STOP_GAP": 1,
+     "END_OF_DATA": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 49,
+      "expectancy_r": -0.106,
+      "net_usd": -521.0
+     },
+     "SHORT": {
+      "trades": 38,
+      "expectancy_r": 0.149,
+      "net_usd": 568.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 24,
+      "expectancy_r": 0.043,
+      "net_usd": 102.0
+     },
+     "NEW_YORK": {
+      "trades": 63,
+      "expectancy_r": -0.009,
+      "net_usd": -56.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 46,
+      "expectancy_r": 0.004,
+      "net_usd": 18.0
+     },
+     "2026": {
+      "trades": 41,
+      "expectancy_r": 0.007,
+      "net_usd": 28.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "1h",
+    "swing_n": 2,
+    "variant": "choch",
+    "rr": 3.0
+   },
+   "in_sample": {
+    "trades": 64,
+    "win_rate_pct": 37.5,
+    "expectancy_r": -0.078,
+    "gross_expectancy_r": -0.04,
+    "avg_cost_r": 0.038,
+    "avg_risk_price": 19.07,
+    "net_usd": -502.0,
+    "profit_factor": 0.85,
+    "max_drawdown_pct": -11.6,
+    "max_consecutive_losses": 11,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "STOP": 32,
+     "TIME": 26,
+     "TARGET": 6
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 35,
+      "expectancy_r": 0.174,
+      "net_usd": 608.0
+     },
+     "SHORT": {
+      "trades": 29,
+      "expectancy_r": -0.383,
+      "net_usd": -1109.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 13,
+      "expectancy_r": -0.121,
+      "net_usd": -157.0
+     },
+     "NEW_YORK": {
+      "trades": 51,
+      "expectancy_r": -0.067,
+      "net_usd": -344.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 64,
+      "expectancy_r": -0.078,
+      "net_usd": -502.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 86,
+    "win_rate_pct": 37.2,
+    "expectancy_r": 0.024,
+    "gross_expectancy_r": 0.044,
+    "avg_cost_r": 0.02,
+    "avg_risk_price": 39.43,
+    "net_usd": 205.0,
+    "profit_factor": 1.04,
+    "max_drawdown_pct": -12.3,
+    "max_consecutive_losses": 10,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "STOP": 40,
+     "TIME": 34,
+     "TARGET": 10,
+     "STOP_GAP": 1,
+     "END_OF_DATA": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 48,
+      "expectancy_r": -0.124,
+      "net_usd": -595.0
+     },
+     "SHORT": {
+      "trades": 38,
+      "expectancy_r": 0.211,
+      "net_usd": 800.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 24,
+      "expectancy_r": 0.195,
+      "net_usd": 469.0
+     },
+     "NEW_YORK": {
+      "trades": 62,
+      "expectancy_r": -0.042,
+      "net_usd": -263.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 45,
+      "expectancy_r": -0.109,
+      "net_usd": -489.0
+     },
+     "2026": {
+      "trades": 41,
+      "expectancy_r": 0.169,
+      "net_usd": 695.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "1h",
+    "swing_n": 2,
+    "variant": "sweep_choch",
+    "rr": 1.5
+   },
+   "in_sample": {
+    "trades": 58,
+    "win_rate_pct": 37.9,
+    "expectancy_r": -0.156,
+    "gross_expectancy_r": -0.118,
+    "avg_cost_r": 0.038,
+    "avg_risk_price": 19.23,
+    "net_usd": -903.0,
+    "profit_factor": 0.7,
+    "max_drawdown_pct": -11.5,
+    "max_consecutive_losses": 10,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "STOP": 27,
+     "TIME": 21,
+     "TARGET": 10
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 30,
+      "expectancy_r": 0.141,
+      "net_usd": 422.0
+     },
+     "SHORT": {
+      "trades": 28,
+      "expectancy_r": -0.473,
+      "net_usd": -1325.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 9,
+      "expectancy_r": 0.097,
+      "net_usd": 87.0
+     },
+     "NEW_YORK": {
+      "trades": 49,
+      "expectancy_r": -0.202,
+      "net_usd": -989.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 58,
+      "expectancy_r": -0.156,
+      "net_usd": -903.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 71,
+    "win_rate_pct": 45.1,
+    "expectancy_r": 0.028,
+    "gross_expectancy_r": 0.05,
+    "avg_cost_r": 0.021,
+    "avg_risk_price": 36.88,
+    "net_usd": 201.0,
+    "profit_factor": 1.06,
+    "max_drawdown_pct": -7.5,
+    "max_consecutive_losses": 5,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "STOP": 29,
+     "TARGET": 21,
+     "TIME": 18,
+     "TARGET_GAP": 1,
+     "STOP_GAP": 1,
+     "END_OF_DATA": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 41,
+      "expectancy_r": -0.119,
+      "net_usd": -489.0
+     },
+     "SHORT": {
+      "trades": 30,
+      "expectancy_r": 0.23,
+      "net_usd": 689.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 17,
+      "expectancy_r": 0.019,
+      "net_usd": 33.0
+     },
+     "NEW_YORK": {
+      "trades": 54,
+      "expectancy_r": 0.031,
+      "net_usd": 168.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 37,
+      "expectancy_r": -0.038,
+      "net_usd": -140.0
+     },
+     "2026": {
+      "trades": 34,
+      "expectancy_r": 0.1,
+      "net_usd": 341.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "1h",
+    "swing_n": 2,
+    "variant": "sweep_choch",
+    "rr": 2.0
+   },
+   "in_sample": {
+    "trades": 57,
+    "win_rate_pct": 36.8,
+    "expectancy_r": -0.124,
+    "gross_expectancy_r": -0.087,
+    "avg_cost_r": 0.038,
+    "avg_risk_price": 19.28,
+    "net_usd": -708.0,
+    "profit_factor": 0.76,
+    "max_drawdown_pct": -10.8,
+    "max_consecutive_losses": 10,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "STOP": 27,
+     "TIME": 23,
+     "TARGET": 6,
+     "TARGET_GAP": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 29,
+      "expectancy_r": 0.178,
+      "net_usd": 517.0
+     },
+     "SHORT": {
+      "trades": 28,
+      "expectancy_r": -0.437,
+      "net_usd": -1225.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 8,
+      "expectancy_r": 0.004,
+      "net_usd": 3.0
+     },
+     "NEW_YORK": {
+      "trades": 49,
+      "expectancy_r": -0.145,
+      "net_usd": -711.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 57,
+      "expectancy_r": -0.124,
+      "net_usd": -708.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 71,
+    "win_rate_pct": 39.4,
+    "expectancy_r": 0.013,
+    "gross_expectancy_r": 0.035,
+    "avg_cost_r": 0.021,
+    "avg_risk_price": 36.88,
+    "net_usd": 93.0,
+    "profit_factor": 1.02,
+    "max_drawdown_pct": -8.5,
+    "max_consecutive_losses": 8,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "STOP": 32,
+     "TIME": 21,
+     "TARGET": 16,
+     "STOP_GAP": 1,
+     "END_OF_DATA": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 41,
+      "expectancy_r": -0.151,
+      "net_usd": -621.0
+     },
+     "SHORT": {
+      "trades": 30,
+      "expectancy_r": 0.238,
+      "net_usd": 714.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 17,
+      "expectancy_r": 0.063,
+      "net_usd": 108.0
+     },
+     "NEW_YORK": {
+      "trades": 54,
+      "expectancy_r": -0.003,
+      "net_usd": -14.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 37,
+      "expectancy_r": 0.023,
+      "net_usd": 85.0
+     },
+     "2026": {
+      "trades": 34,
+      "expectancy_r": 0.002,
+      "net_usd": 8.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "1h",
+    "swing_n": 2,
+    "variant": "sweep_choch",
+    "rr": 3.0
+   },
+   "in_sample": {
+    "trades": 57,
+    "win_rate_pct": 36.8,
+    "expectancy_r": -0.024,
+    "gross_expectancy_r": 0.014,
+    "avg_cost_r": 0.038,
+    "avg_risk_price": 19.28,
+    "net_usd": -137.0,
+    "profit_factor": 0.95,
+    "max_drawdown_pct": -10.4,
+    "max_consecutive_losses": 10,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "STOP": 27,
+     "TIME": 24,
+     "TARGET": 6
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 29,
+      "expectancy_r": 0.306,
+      "net_usd": 888.0
+     },
+     "SHORT": {
+      "trades": 28,
+      "expectancy_r": -0.366,
+      "net_usd": -1025.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 8,
+      "expectancy_r": 0.129,
+      "net_usd": 103.0
+     },
+     "NEW_YORK": {
+      "trades": 49,
+      "expectancy_r": -0.049,
+      "net_usd": -240.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 57,
+      "expectancy_r": -0.024,
+      "net_usd": -137.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 70,
+    "win_rate_pct": 37.1,
+    "expectancy_r": 0.075,
+    "gross_expectancy_r": 0.096,
+    "avg_cost_r": 0.021,
+    "avg_risk_price": 37.23,
+    "net_usd": 526.0,
+    "profit_factor": 1.13,
+    "max_drawdown_pct": -9.6,
+    "max_consecutive_losses": 8,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "STOP": 33,
+     "TIME": 25,
+     "TARGET": 10,
+     "STOP_GAP": 1,
+     "END_OF_DATA": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 40,
+      "expectancy_r": -0.098,
+      "net_usd": -394.0
+     },
+     "SHORT": {
+      "trades": 30,
+      "expectancy_r": 0.307,
+      "net_usd": 920.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 17,
+      "expectancy_r": 0.263,
+      "net_usd": 448.0
+     },
+     "NEW_YORK": {
+      "trades": 53,
+      "expectancy_r": 0.015,
+      "net_usd": 78.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 36,
+      "expectancy_r": -0.034,
+      "net_usd": -122.0
+     },
+     "2026": {
+      "trades": 34,
+      "expectancy_r": 0.191,
+      "net_usd": 648.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "1h",
+    "swing_n": 3,
+    "variant": "choch",
+    "rr": 1.5
+   },
+   "in_sample": {
+    "trades": 49,
+    "win_rate_pct": 42.9,
+    "expectancy_r": 0.008,
+    "gross_expectancy_r": 0.044,
+    "avg_cost_r": 0.036,
+    "avg_risk_price": 20.36,
+    "net_usd": 37.0,
+    "profit_factor": 1.02,
+    "max_drawdown_pct": -5.7,
+    "max_consecutive_losses": 6,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "STOP": 20,
+     "TIME": 17,
+     "TARGET": 12
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 30,
+      "expectancy_r": 0.179,
+      "net_usd": 536.0
+     },
+     "SHORT": {
+      "trades": 19,
+      "expectancy_r": -0.263,
+      "net_usd": -499.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 11,
+      "expectancy_r": 0.122,
+      "net_usd": 134.0
+     },
+     "NEW_YORK": {
+      "trades": 38,
+      "expectancy_r": -0.026,
+      "net_usd": -97.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 49,
+      "expectancy_r": 0.008,
+      "net_usd": 37.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 59,
+    "win_rate_pct": 44.1,
+    "expectancy_r": -0.031,
+    "gross_expectancy_r": -0.013,
+    "avg_cost_r": 0.018,
+    "avg_risk_price": 42.15,
+    "net_usd": -185.0,
+    "profit_factor": 0.93,
+    "max_drawdown_pct": -11.4,
+    "max_consecutive_losses": 9,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "STOP": 24,
+     "TIME": 20,
+     "TARGET": 13,
+     "TARGET_GAP": 1,
+     "END_OF_DATA": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 34,
+      "expectancy_r": -0.088,
+      "net_usd": -300.0
+     },
+     "SHORT": {
+      "trades": 25,
+      "expectancy_r": 0.046,
+      "net_usd": 116.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 15,
+      "expectancy_r": 0.229,
+      "net_usd": 343.0
+     },
+     "NEW_YORK": {
+      "trades": 44,
+      "expectancy_r": -0.12,
+      "net_usd": -528.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 37,
+      "expectancy_r": -0.161,
+      "net_usd": -595.0
+     },
+     "2026": {
+      "trades": 22,
+      "expectancy_r": 0.187,
+      "net_usd": 410.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "1h",
+    "swing_n": 3,
+    "variant": "choch",
+    "rr": 2.0
+   },
+   "in_sample": {
+    "trades": 48,
+    "win_rate_pct": 39.6,
+    "expectancy_r": -0.026,
+    "gross_expectancy_r": 0.01,
+    "avg_cost_r": 0.036,
+    "avg_risk_price": 20.44,
+    "net_usd": -127.0,
+    "profit_factor": 0.95,
+    "max_drawdown_pct": -6.1,
+    "max_consecutive_losses": 6,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "STOP": 21,
+     "TIME": 20,
+     "TARGET": 6,
+     "TARGET_GAP": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 29,
+      "expectancy_r": 0.197,
+      "net_usd": 573.0
+     },
+     "SHORT": {
+      "trades": 19,
+      "expectancy_r": -0.368,
+      "net_usd": -700.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 10,
+      "expectancy_r": -0.2,
+      "net_usd": -200.0
+     },
+     "NEW_YORK": {
+      "trades": 38,
+      "expectancy_r": 0.019,
+      "net_usd": 73.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 48,
+      "expectancy_r": -0.026,
+      "net_usd": -127.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 59,
+    "win_rate_pct": 40.7,
+    "expectancy_r": -0.058,
+    "gross_expectancy_r": -0.039,
+    "avg_cost_r": 0.018,
+    "avg_risk_price": 42.15,
+    "net_usd": -341.0,
+    "profit_factor": 0.88,
+    "max_drawdown_pct": -12.2,
+    "max_consecutive_losses": 9,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "STOP": 26,
+     "TIME": 24,
+     "TARGET": 8,
+     "END_OF_DATA": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 34,
+      "expectancy_r": -0.185,
+      "net_usd": -630.0
+     },
+     "SHORT": {
+      "trades": 25,
+      "expectancy_r": 0.116,
+      "net_usd": 289.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 15,
+      "expectancy_r": 0.111,
+      "net_usd": 166.0
+     },
+     "NEW_YORK": {
+      "trades": 44,
+      "expectancy_r": -0.115,
+      "net_usd": -507.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 37,
+      "expectancy_r": -0.174,
+      "net_usd": -643.0
+     },
+     "2026": {
+      "trades": 22,
+      "expectancy_r": 0.137,
+      "net_usd": 302.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "1h",
+    "swing_n": 3,
+    "variant": "choch",
+    "rr": 3.0
+   },
+   "in_sample": {
+    "trades": 48,
+    "win_rate_pct": 39.6,
+    "expectancy_r": 0.064,
+    "gross_expectancy_r": 0.101,
+    "avg_cost_r": 0.036,
+    "avg_risk_price": 20.44,
+    "net_usd": 308.0,
+    "profit_factor": 1.13,
+    "max_drawdown_pct": -5.7,
+    "max_consecutive_losses": 6,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 22,
+     "STOP": 21,
+     "TARGET": 5
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 29,
+      "expectancy_r": 0.313,
+      "net_usd": 908.0
+     },
+     "SHORT": {
+      "trades": 19,
+      "expectancy_r": -0.316,
+      "net_usd": -600.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 10,
+      "expectancy_r": -0.1,
+      "net_usd": -100.0
+     },
+     "NEW_YORK": {
+      "trades": 38,
+      "expectancy_r": 0.107,
+      "net_usd": 408.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 48,
+      "expectancy_r": 0.064,
+      "net_usd": 308.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 58,
+    "win_rate_pct": 39.7,
+    "expectancy_r": -0.045,
+    "gross_expectancy_r": -0.026,
+    "avg_cost_r": 0.019,
+    "avg_risk_price": 42.13,
+    "net_usd": -260.0,
+    "profit_factor": 0.91,
+    "max_drawdown_pct": -13.5,
+    "max_consecutive_losses": 9,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 28,
+     "STOP": 26,
+     "TARGET": 3,
+     "END_OF_DATA": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 33,
+      "expectancy_r": -0.104,
+      "net_usd": -342.0
+     },
+     "SHORT": {
+      "trades": 25,
+      "expectancy_r": 0.033,
+      "net_usd": 82.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 14,
+      "expectancy_r": 0.352,
+      "net_usd": 493.0
+     },
+     "NEW_YORK": {
+      "trades": 44,
+      "expectancy_r": -0.171,
+      "net_usd": -753.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 36,
+      "expectancy_r": -0.219,
+      "net_usd": -789.0
+     },
+     "2026": {
+      "trades": 22,
+      "expectancy_r": 0.24,
+      "net_usd": 529.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "1h",
+    "swing_n": 3,
+    "variant": "sweep_choch",
+    "rr": 1.5
+   },
+   "in_sample": {
+    "trades": 40,
+    "win_rate_pct": 42.5,
+    "expectancy_r": -0.029,
+    "gross_expectancy_r": 0.006,
+    "avg_cost_r": 0.036,
+    "avg_risk_price": 21.09,
+    "net_usd": -118.0,
+    "profit_factor": 0.94,
+    "max_drawdown_pct": -4.9,
+    "max_consecutive_losses": 5,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 16,
+     "STOP": 16,
+     "TARGET": 8
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 24,
+      "expectancy_r": 0.266,
+      "net_usd": 638.0
+     },
+     "SHORT": {
+      "trades": 16,
+      "expectancy_r": -0.472,
+      "net_usd": -756.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 8,
+      "expectancy_r": 0.231,
+      "net_usd": 185.0
+     },
+     "NEW_YORK": {
+      "trades": 32,
+      "expectancy_r": -0.095,
+      "net_usd": -303.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 40,
+      "expectancy_r": -0.029,
+      "net_usd": -118.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 44,
+    "win_rate_pct": 45.5,
+    "expectancy_r": -0.01,
+    "gross_expectancy_r": 0.009,
+    "avg_cost_r": 0.019,
+    "avg_risk_price": 39.77,
+    "net_usd": -44.0,
+    "profit_factor": 0.98,
+    "max_drawdown_pct": -8.1,
+    "max_consecutive_losses": 6,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "STOP": 19,
+     "TIME": 13,
+     "TARGET": 10,
+     "TARGET_GAP": 1,
+     "END_OF_DATA": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 28,
+      "expectancy_r": -0.157,
+      "net_usd": -441.0
+     },
+     "SHORT": {
+      "trades": 16,
+      "expectancy_r": 0.248,
+      "net_usd": 397.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 10,
+      "expectancy_r": 0.332,
+      "net_usd": 332.0
+     },
+     "NEW_YORK": {
+      "trades": 34,
+      "expectancy_r": -0.111,
+      "net_usd": -376.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 28,
+      "expectancy_r": -0.145,
+      "net_usd": -406.0
+     },
+     "2026": {
+      "trades": 16,
+      "expectancy_r": 0.226,
+      "net_usd": 362.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "1h",
+    "swing_n": 3,
+    "variant": "sweep_choch",
+    "rr": 2.0
+   },
+   "in_sample": {
+    "trades": 39,
+    "win_rate_pct": 41.0,
+    "expectancy_r": -0.047,
+    "gross_expectancy_r": -0.011,
+    "avg_cost_r": 0.036,
+    "avg_risk_price": 21.21,
+    "net_usd": -182.0,
+    "profit_factor": 0.9,
+    "max_drawdown_pct": -5.2,
+    "max_consecutive_losses": 5,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 19,
+     "STOP": 16,
+     "TARGET": 4
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 23,
+      "expectancy_r": 0.249,
+      "net_usd": 573.0
+     },
+     "SHORT": {
+      "trades": 16,
+      "expectancy_r": -0.472,
+      "net_usd": -756.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 7,
+      "expectancy_r": 0.145,
+      "net_usd": 101.0
+     },
+     "NEW_YORK": {
+      "trades": 32,
+      "expectancy_r": -0.089,
+      "net_usd": -283.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 39,
+      "expectancy_r": -0.047,
+      "net_usd": -182.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 44,
+    "win_rate_pct": 43.2,
+    "expectancy_r": -0.001,
+    "gross_expectancy_r": 0.019,
+    "avg_cost_r": 0.019,
+    "avg_risk_price": 39.77,
+    "net_usd": -3.0,
+    "profit_factor": 1.0,
+    "max_drawdown_pct": -8.4,
+    "max_consecutive_losses": 6,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "STOP": 20,
+     "TIME": 16,
+     "TARGET": 7,
+     "END_OF_DATA": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 28,
+      "expectancy_r": -0.187,
+      "net_usd": -523.0
+     },
+     "SHORT": {
+      "trades": 16,
+      "expectancy_r": 0.325,
+      "net_usd": 520.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 10,
+      "expectancy_r": 0.405,
+      "net_usd": 405.0
+     },
+     "NEW_YORK": {
+      "trades": 34,
+      "expectancy_r": -0.12,
+      "net_usd": -408.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 28,
+      "expectancy_r": -0.074,
+      "net_usd": -206.0
+     },
+     "2026": {
+      "trades": 16,
+      "expectancy_r": 0.127,
+      "net_usd": 203.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "1h",
+    "swing_n": 3,
+    "variant": "sweep_choch",
+    "rr": 3.0
+   },
+   "in_sample": {
+    "trades": 39,
+    "win_rate_pct": 41.0,
+    "expectancy_r": -0.012,
+    "gross_expectancy_r": 0.024,
+    "avg_cost_r": 0.036,
+    "avg_risk_price": 21.21,
+    "net_usd": -46.0,
+    "profit_factor": 0.97,
+    "max_drawdown_pct": -5.1,
+    "max_consecutive_losses": 5,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 21,
+     "STOP": 16,
+     "TARGET": 2
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 23,
+      "expectancy_r": 0.308,
+      "net_usd": 709.0
+     },
+     "SHORT": {
+      "trades": 16,
+      "expectancy_r": -0.472,
+      "net_usd": -756.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 7,
+      "expectancy_r": 0.288,
+      "net_usd": 201.0
+     },
+     "NEW_YORK": {
+      "trades": 32,
+      "expectancy_r": -0.077,
+      "net_usd": -247.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 39,
+      "expectancy_r": -0.012,
+      "net_usd": -46.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 44,
+    "win_rate_pct": 40.9,
+    "expectancy_r": -0.005,
+    "gross_expectancy_r": 0.014,
+    "avg_cost_r": 0.02,
+    "avg_risk_price": 39.77,
+    "net_usd": -23.0,
+    "profit_factor": 0.99,
+    "max_drawdown_pct": -10.4,
+    "max_consecutive_losses": 6,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "STOP": 21,
+     "TIME": 19,
+     "TARGET": 3,
+     "END_OF_DATA": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 28,
+      "expectancy_r": -0.12,
+      "net_usd": -336.0
+     },
+     "SHORT": {
+      "trades": 16,
+      "expectancy_r": 0.195,
+      "net_usd": 312.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 10,
+      "expectancy_r": 0.631,
+      "net_usd": 631.0
+     },
+     "NEW_YORK": {
+      "trades": 34,
+      "expectancy_r": -0.193,
+      "net_usd": -655.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 28,
+      "expectancy_r": -0.162,
+      "net_usd": -453.0
+     },
+     "2026": {
+      "trades": 16,
+      "expectancy_r": 0.268,
+      "net_usd": 429.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "1h",
+    "swing_n": 5,
+    "variant": "choch",
+    "rr": 1.5
+   },
+   "in_sample": {
+    "trades": 46,
+    "win_rate_pct": 43.5,
+    "expectancy_r": 0.015,
+    "gross_expectancy_r": 0.051,
+    "avg_cost_r": 0.036,
+    "avg_risk_price": 20.99,
+    "net_usd": 68.0,
+    "profit_factor": 1.04,
+    "max_drawdown_pct": -6.0,
+    "max_consecutive_losses": 6,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 20,
+     "STOP": 15,
+     "TARGET": 11
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 26,
+      "expectancy_r": 0.207,
+      "net_usd": 537.0
+     },
+     "SHORT": {
+      "trades": 20,
+      "expectancy_r": -0.235,
+      "net_usd": -469.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 13,
+      "expectancy_r": -0.083,
+      "net_usd": -107.0
+     },
+     "NEW_YORK": {
+      "trades": 33,
+      "expectancy_r": 0.053,
+      "net_usd": 176.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 46,
+      "expectancy_r": 0.015,
+      "net_usd": 68.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 39,
+    "win_rate_pct": 43.6,
+    "expectancy_r": 0.021,
+    "gross_expectancy_r": 0.038,
+    "avg_cost_r": 0.017,
+    "avg_risk_price": 45.74,
+    "net_usd": 82.0,
+    "profit_factor": 1.05,
+    "max_drawdown_pct": -6.9,
+    "max_consecutive_losses": 5,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 15,
+     "STOP": 15,
+     "TARGET": 7,
+     "TARGET_GAP": 1,
+     "END_OF_DATA": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 23,
+      "expectancy_r": 0.075,
+      "net_usd": 173.0
+     },
+     "SHORT": {
+      "trades": 16,
+      "expectancy_r": -0.057,
+      "net_usd": -91.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 9,
+      "expectancy_r": 0.266,
+      "net_usd": 239.0
+     },
+     "NEW_YORK": {
+      "trades": 30,
+      "expectancy_r": -0.052,
+      "net_usd": -157.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 24,
+      "expectancy_r": -0.08,
+      "net_usd": -192.0
+     },
+     "2026": {
+      "trades": 15,
+      "expectancy_r": 0.183,
+      "net_usd": 274.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "1h",
+    "swing_n": 5,
+    "variant": "choch",
+    "rr": 2.0
+   },
+   "in_sample": {
+    "trades": 45,
+    "win_rate_pct": 40.0,
+    "expectancy_r": -0.082,
+    "gross_expectancy_r": -0.046,
+    "avg_cost_r": 0.036,
+    "avg_risk_price": 21.1,
+    "net_usd": -371.0,
+    "profit_factor": 0.82,
+    "max_drawdown_pct": -6.0,
+    "max_consecutive_losses": 6,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 25,
+     "STOP": 16,
+     "TARGET": 4
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 25,
+      "expectancy_r": 0.171,
+      "net_usd": 427.0
+     },
+     "SHORT": {
+      "trades": 20,
+      "expectancy_r": -0.399,
+      "net_usd": -798.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 12,
+      "expectancy_r": -0.368,
+      "net_usd": -441.0
+     },
+     "NEW_YORK": {
+      "trades": 33,
+      "expectancy_r": 0.021,
+      "net_usd": 70.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 45,
+      "expectancy_r": -0.082,
+      "net_usd": -371.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 38,
+    "win_rate_pct": 42.1,
+    "expectancy_r": 0.028,
+    "gross_expectancy_r": 0.045,
+    "avg_cost_r": 0.017,
+    "avg_risk_price": 45.82,
+    "net_usd": 105.0,
+    "profit_factor": 1.06,
+    "max_drawdown_pct": -9.1,
+    "max_consecutive_losses": 4,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 16,
+     "STOP": 15,
+     "TARGET": 5,
+     "TARGET_GAP": 1,
+     "END_OF_DATA": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 23,
+      "expectancy_r": -0.012,
+      "net_usd": -27.0
+     },
+     "SHORT": {
+      "trades": 15,
+      "expectancy_r": 0.088,
+      "net_usd": 132.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 8,
+      "expectancy_r": 0.453,
+      "net_usd": 363.0
+     },
+     "NEW_YORK": {
+      "trades": 30,
+      "expectancy_r": -0.086,
+      "net_usd": -257.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 24,
+      "expectancy_r": -0.143,
+      "net_usd": -342.0
+     },
+     "2026": {
+      "trades": 14,
+      "expectancy_r": 0.32,
+      "net_usd": 448.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "1h",
+    "swing_n": 5,
+    "variant": "choch",
+    "rr": 3.0
+   },
+   "in_sample": {
+    "trades": 45,
+    "win_rate_pct": 40.0,
+    "expectancy_r": -0.052,
+    "gross_expectancy_r": -0.016,
+    "avg_cost_r": 0.037,
+    "avg_risk_price": 21.1,
+    "net_usd": -235.0,
+    "profit_factor": 0.88,
+    "max_drawdown_pct": -6.0,
+    "max_consecutive_losses": 6,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 27,
+     "STOP": 16,
+     "TARGET": 2
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 25,
+      "expectancy_r": 0.185,
+      "net_usd": 463.0
+     },
+     "SHORT": {
+      "trades": 20,
+      "expectancy_r": -0.349,
+      "net_usd": -698.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 12,
+      "expectancy_r": -0.285,
+      "net_usd": -341.0
+     },
+     "NEW_YORK": {
+      "trades": 33,
+      "expectancy_r": 0.032,
+      "net_usd": 106.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 45,
+      "expectancy_r": -0.052,
+      "net_usd": -235.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 38,
+    "win_rate_pct": 42.1,
+    "expectancy_r": 0.051,
+    "gross_expectancy_r": 0.068,
+    "avg_cost_r": 0.017,
+    "avg_risk_price": 45.82,
+    "net_usd": 193.0,
+    "profit_factor": 1.11,
+    "max_drawdown_pct": -9.3,
+    "max_consecutive_losses": 4,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 20,
+     "STOP": 15,
+     "TARGET": 2,
+     "END_OF_DATA": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 23,
+      "expectancy_r": -0.014,
+      "net_usd": -32.0
+     },
+     "SHORT": {
+      "trades": 15,
+      "expectancy_r": 0.15,
+      "net_usd": 225.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 8,
+      "expectancy_r": 0.611,
+      "net_usd": 489.0
+     },
+     "NEW_YORK": {
+      "trades": 30,
+      "expectancy_r": -0.098,
+      "net_usd": -295.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 24,
+      "expectancy_r": -0.115,
+      "net_usd": -276.0
+     },
+     "2026": {
+      "trades": 14,
+      "expectancy_r": 0.335,
+      "net_usd": 470.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "1h",
+    "swing_n": 5,
+    "variant": "sweep_choch",
+    "rr": 1.5
+   },
+   "in_sample": {
+    "trades": 29,
+    "win_rate_pct": 41.4,
+    "expectancy_r": -0.01,
+    "gross_expectancy_r": 0.027,
+    "avg_cost_r": 0.037,
+    "avg_risk_price": 20.82,
+    "net_usd": -28.0,
+    "profit_factor": 0.98,
+    "max_drawdown_pct": -4.8,
+    "max_consecutive_losses": 5,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 11,
+     "STOP": 11,
+     "TARGET": 7
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 17,
+      "expectancy_r": 0.406,
+      "net_usd": 690.0
+     },
+     "SHORT": {
+      "trades": 12,
+      "expectancy_r": -0.598,
+      "net_usd": -718.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 7,
+      "expectancy_r": -0.227,
+      "net_usd": -159.0
+     },
+     "NEW_YORK": {
+      "trades": 22,
+      "expectancy_r": 0.059,
+      "net_usd": 131.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 29,
+      "expectancy_r": -0.01,
+      "net_usd": -28.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 22,
+    "win_rate_pct": 36.4,
+    "expectancy_r": -0.13,
+    "gross_expectancy_r": -0.111,
+    "avg_cost_r": 0.019,
+    "avg_risk_price": 42.21,
+    "net_usd": -285.0,
+    "profit_factor": 0.76,
+    "max_drawdown_pct": -9.3,
+    "max_consecutive_losses": 7,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "STOP": 10,
+     "TIME": 7,
+     "TARGET": 4,
+     "END_OF_DATA": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 15,
+      "expectancy_r": -0.269,
+      "net_usd": -403.0
+     },
+     "SHORT": {
+      "trades": 7,
+      "expectancy_r": 0.168,
+      "net_usd": 118.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 6,
+      "expectancy_r": 0.137,
+      "net_usd": 82.0
+     },
+     "NEW_YORK": {
+      "trades": 16,
+      "expectancy_r": -0.23,
+      "net_usd": -367.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 15,
+      "expectancy_r": -0.249,
+      "net_usd": -373.0
+     },
+     "2026": {
+      "trades": 7,
+      "expectancy_r": 0.126,
+      "net_usd": 88.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "1h",
+    "swing_n": 5,
+    "variant": "sweep_choch",
+    "rr": 2.0
+   },
+   "in_sample": {
+    "trades": 28,
+    "win_rate_pct": 39.3,
+    "expectancy_r": -0.011,
+    "gross_expectancy_r": 0.026,
+    "avg_cost_r": 0.037,
+    "avg_risk_price": 20.98,
+    "net_usd": -30.0,
+    "profit_factor": 0.98,
+    "max_drawdown_pct": -4.8,
+    "max_consecutive_losses": 5,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 14,
+     "STOP": 11,
+     "TARGET": 3
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 16,
+      "expectancy_r": 0.43,
+      "net_usd": 688.0
+     },
+     "SHORT": {
+      "trades": 12,
+      "expectancy_r": -0.598,
+      "net_usd": -718.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 6,
+      "expectancy_r": -0.487,
+      "net_usd": -292.0
+     },
+     "NEW_YORK": {
+      "trades": 22,
+      "expectancy_r": 0.119,
+      "net_usd": 262.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 28,
+      "expectancy_r": -0.011,
+      "net_usd": -30.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 22,
+    "win_rate_pct": 36.4,
+    "expectancy_r": -0.096,
+    "gross_expectancy_r": -0.078,
+    "avg_cost_r": 0.019,
+    "avg_risk_price": 42.21,
+    "net_usd": -212.0,
+    "profit_factor": 0.82,
+    "max_drawdown_pct": -9.2,
+    "max_consecutive_losses": 7,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "STOP": 10,
+     "TIME": 8,
+     "TARGET": 3,
+     "END_OF_DATA": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 15,
+      "expectancy_r": -0.235,
+      "net_usd": -353.0
+     },
+     "SHORT": {
+      "trades": 7,
+      "expectancy_r": 0.202,
+      "net_usd": 141.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 6,
+      "expectancy_r": 0.093,
+      "net_usd": 56.0
+     },
+     "NEW_YORK": {
+      "trades": 16,
+      "expectancy_r": -0.167,
+      "net_usd": -267.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 15,
+      "expectancy_r": -0.182,
+      "net_usd": -273.0
+     },
+     "2026": {
+      "trades": 7,
+      "expectancy_r": 0.088,
+      "net_usd": 61.0
+     }
+    }
+   }
+  },
+  {
+   "params": {
+    "tf": "1h",
+    "swing_n": 5,
+    "variant": "sweep_choch",
+    "rr": 3.0
+   },
+   "in_sample": {
+    "trades": 28,
+    "win_rate_pct": 39.3,
+    "expectancy_r": 0.002,
+    "gross_expectancy_r": 0.04,
+    "avg_cost_r": 0.037,
+    "avg_risk_price": 20.98,
+    "net_usd": 6.0,
+    "profit_factor": 1.0,
+    "max_drawdown_pct": -4.8,
+    "max_consecutive_losses": 5,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 16,
+     "STOP": 11,
+     "TARGET": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 16,
+      "expectancy_r": 0.452,
+      "net_usd": 724.0
+     },
+     "SHORT": {
+      "trades": 12,
+      "expectancy_r": -0.598,
+      "net_usd": -718.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 6,
+      "expectancy_r": -0.487,
+      "net_usd": -292.0
+     },
+     "NEW_YORK": {
+      "trades": 22,
+      "expectancy_r": 0.136,
+      "net_usd": 298.0
+     }
+    },
+    "by_year": {
+     "2024": {
+      "trades": 28,
+      "expectancy_r": 0.002,
+      "net_usd": 6.0
+     }
+    }
+   },
+   "out_of_sample": {
+    "trades": 22,
+    "win_rate_pct": 36.4,
+    "expectancy_r": -0.054,
+    "gross_expectancy_r": -0.035,
+    "avg_cost_r": 0.019,
+    "avg_risk_price": 42.21,
+    "net_usd": -119.0,
+    "profit_factor": 0.9,
+    "max_drawdown_pct": -9.2,
+    "max_consecutive_losses": 7,
+    "ambiguous_stop_and_target_bars": 0,
+    "exit_reasons": {
+     "TIME": 10,
+     "STOP": 10,
+     "TARGET": 1,
+     "END_OF_DATA": 1
+    },
+    "by_direction": {
+     "LONG": {
+      "trades": 15,
+      "expectancy_r": -0.169,
+      "net_usd": -253.0
+     },
+     "SHORT": {
+      "trades": 7,
+      "expectancy_r": 0.191,
+      "net_usd": 133.0
+     }
+    },
+    "by_session": {
+     "LONDON": {
+      "trades": 6,
+      "expectancy_r": 0.136,
+      "net_usd": 82.0
+     },
+     "NEW_YORK": {
+      "trades": 16,
+      "expectancy_r": -0.126,
+      "net_usd": -201.0
+     }
+    },
+    "by_year": {
+     "2025": {
+      "trades": 15,
+      "expectancy_r": -0.138,
+      "net_usd": -207.0
+     },
+     "2026": {
+      "trades": 7,
+      "expectancy_r": 0.125,
+      "net_usd": 88.0
+     }
+    }
+   }
+  }
+ ]
+}

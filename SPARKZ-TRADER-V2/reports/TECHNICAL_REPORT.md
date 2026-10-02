@@ -53,6 +53,8 @@ studies (`scalp_structure_dukascopy.json`, `setup_model_dukascopy_*.json`, §16)
    no look-ahead) drives a 1m/5m scalping setup with a 15m bias, tested on the same 2.7 years at 0.54 spread.
    - All **36 parameter combinations lose**, in-sample (2024) and out-of-sample (2025-01 → 2026-10).
    - Before costs the setups break even (−0.09R to +0.05R per trade); spread and slippage cost 0.07–0.24R.
+   - On 15m and 1h setups (§16.4) costs drop to 0.02–0.07R, but results scatter around zero and none is
+     statistically distinguishable from chance (best t = 0.64).
    - A walk-forward **setup-filter model** (gradient boosting, retrained monthly on earlier trades only) cuts the
      1m setup's loss from −0.109R to −0.049R per trade, still negative. It mainly learned to avoid setups whose
      stop is small against the spread; a plain "bigger stops" rule did as well, and the model's rankings do not
@@ -554,6 +556,7 @@ python -m app.research.studies             # regenerates reports/studies/*.json 
 python -m app.cli download --source dukascopy --start 2024-01-01   # 2.7 years of 1m + 15m (rate-limited: hours)
 python -m app.research.fine_path_study --source dukascopy --path 1m [--spread 0.54]   # §9.6 (~75 min)
 python -m app.research.scalp_study --source dukascopy --split 2025-01-01               # §16.2 (~3 min)
+python -m app.research.scalp_study --tfs 15m,1h --min-trades 50                        # §16.4 (~2 min)
 python -m app.research.setup_model --tf 1m --swing-n 3 --variant choch --rr 2.0         # §16.3 (~2 min)
 uvicorn app.main:app --port 8000           # API + paper loop (MOCK data by default)
 cd ../frontend && npm install && npm run build   # served by the API at http://localhost:8000
@@ -658,6 +661,33 @@ What it shows:
   +0.029R against the model's −0.049R. That rule picks its cut-off from the whole test period, so it is not a
   tradable result, but it shows the model's gain is mostly cost avoidance. Both lose in 2025.
 
-**Conclusion:** on 2.7 years of real 1m gold data at the measured spread, these structure scalps have no edge
-that survives costs, with or without a learned filter. Setups held longer with larger stops (15m–1h) are the
-better place to look, because costs become a small share of each trade.
+### 16.4 The same setup on 15m and 1h
+
+`python -m app.research.scalp_study --tfs 15m,1h --min-trades 50` (`scalp_structure_dukascopy_15m-1h.json`).
+Each setup timeframe gets its own settings: 15m setups use a 1h bias, a 20-candle stop window, an 8-hour
+maximum hold and stops up to $40; 1h setups use a 4h bias, a 12-candle window, a 2-day hold and stops up to
+$80. Targets 1.5, 2 or 3R; same costs; chosen on 2024, judged on 2025-01 → 2026-10.
+
+| Setup chart | Trades (in / out of sample) | Net R per trade, in-sample | Net R per trade, out-of-sample | OOS combinations > 0 | Cost per trade |
+|---|---|---|---|---|---|
+| 15m | 102–240 / 126–351 | −0.110 to −0.287 (all 18 negative) | −0.047 to +0.065 | 8 of 18 | about 0.04–0.07R |
+| 1h | 28–66 / 22–87 | −0.156 to +0.064 | −0.130 to +0.075 | 9 of 18 | about 0.02R |
+
+- **Costs stop being the problem:** about 0.02R per trade on 1h setups (average stop $37), against 0.11–0.24R
+  on 1m scalps.
+- **But there is no edge to keep.** Before costs, the setups are still around zero. Every 15m combination
+  lost in 2024; the out-of-sample figures scatter around zero, and settings that won in-sample lost
+  out-of-sample (1h, swing 3, CHoCH, 3R: +0.064R → −0.045R).
+- **Nothing is statistically distinguishable from chance.** The in-sample choice (1h, swing 2, sweep + CHoCH,
+  3R) made +0.075R per trade out of sample (70 trades, +$526, profit factor 1.13), with a standard error of
+  0.178R (t = 0.42). It lost in 2025 (−0.034R) and won in 2026 (+0.191R); its longs lost and its shorts won,
+  in a market that rose 106%. The best 15m figure (+0.065R, 126 trades) has t = 0.64. A t-statistic near 2
+  would be needed before calling any of these an edge.
+- **Too little data at these timeframes.** 2.7 years give only 22–87 one-hour trades out of sample. Judging
+  them would need more history (Dukascopy's gold feed goes back many years; a longer download is rate-limited
+  and would take most of a day).
+
+**Conclusion:** on 2.7 years of real 1m gold data at the measured spread, the structure setups have no edge
+that survives costs: scalps (1m/5m) lose clearly, with or without a learned filter, and the 15m/1h versions are
+indistinguishable from zero. Larger timeframes remove the cost problem but leave too few trades to show an
+edge in this period.
