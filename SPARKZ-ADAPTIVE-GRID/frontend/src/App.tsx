@@ -63,6 +63,7 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
         <div className="px-4 py-3 border-t border-base-border text-[10px] text-base-muted leading-relaxed">
           Research and paper simulation only. No broker is connected and no real orders exist. Backtests describe the
           past; they are not a forecast.
+          <a href="https://csparkz-empire.vercel.app" target="_blank" rel="noopener noreferrer" className="mt-2 block font-semibold tracking-wide text-base-muted hover:text-base-text">Powered by C-SPARKZ EMPIRE</a>
         </div>
       </aside>
     </>

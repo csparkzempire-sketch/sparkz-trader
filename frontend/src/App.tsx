@@ -83,6 +83,7 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
         <div className="px-4 py-3 border-t border-base-border text-[10px] text-base-muted leading-relaxed">
           Paper trading only. No real-money orders are placed. Historical performance does not guarantee future
           results.
+          <a href="https://csparkz-empire.vercel.app" target="_blank" rel="noopener noreferrer" className="mt-2 block font-semibold tracking-wide text-base-muted hover:text-base-text">Powered by C-SPARKZ EMPIRE</a>
         </div>
       </aside>
     </>

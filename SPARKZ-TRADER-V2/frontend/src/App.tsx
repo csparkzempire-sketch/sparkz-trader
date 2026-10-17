@@ -44,6 +44,9 @@ export default function App() {
             <a key={id} href={`#${id}`} className={`px-3 py-2 text-sm whitespace-nowrap ${page === id ? "bg-base-tint text-base-text border-l-2 border-accent-brand" : "text-base-muted hover:text-base-text"}`}>{name}</a>
           ))}
         </nav>
+        <div className="hidden md:block px-4 py-3 border-t border-base-border text-[10px]">
+          <a href="https://csparkz-empire.vercel.app" target="_blank" rel="noopener noreferrer" className="block font-semibold tracking-wide text-base-muted hover:text-base-text">Powered by C-SPARKZ EMPIRE</a>
+        </div>
       </aside>
       <main className="min-w-0">
         <div className="sticky top-0 z-10 bg-base-bg/90 backdrop-blur border-b border-base-border px-4 md:px-6 py-2.5 flex flex-wrap items-center gap-x-5 gap-y-2">
