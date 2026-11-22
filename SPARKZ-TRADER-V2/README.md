@@ -87,6 +87,52 @@ cd ../frontend && npm install && npm run dev        # dashboard on http://localh
 Credentials are read only from environment variables. They are never placed in the frontend, the repository,
 logs or reports, and `repr()` hides the token.
 
+### Market assistant (multi-timeframe, multi-strategy analysis before every trade)
+
+`app/assistant` reads **1d, 4h, 1h, 15m, 5m and 1m** candles with nine strategies before the robot may open a
+trade:
+
+| Strategy | Setup it looks for |
+|---|---|
+| Trend following | EMA20 > EMA50 > EMA200 (or the reverse), ADX >= 20, price beyond EMA20 |
+| Market structure | break of structure (BOS, continuation) or change of character (CHoCH, reversal) |
+| Support & resistance | rejection at a level made of several confirmed swing points |
+| Supply & demand | price back in a fresh zone: the base candle before an impulsive candle |
+| Trendline break | close through the line through the last two lower highs / higher lows |
+| S/R flip | a broken level retested from the other side |
+| Range trading | ADX < 20, price at a Bollinger band extreme with RSI stretched |
+| Liquidity sweep | a wick through a swing point / the Asia range with the close back inside |
+| Scalping momentum | 1m/5m: EMA9/21 with a 20-candle breakout, only if the stop is at least 3 spreads |
+
+Every value at a candle uses only candles up to it (a swing point counts once the candles that confirm it
+have closed); tests check this by removing later candles. For the latest candles it reports:
+
+- **strategy fit %**: how well each strategy's conditions match the market now, weighted across timeframes,
+  as a share of the total (the Assistant page shows it as bars);
+- **higher-timeframe bias** from the 1d / 4h / 1h trend and structure;
+- **decision** BUY / SELL / WAIT with a **confidence**: active setups vote, weighted by strength, timeframe,
+  fit and agreement with the bias. BUY or SELL needs `ASSISTANT_MIN_CONFIDENCE` (default 55%), a setup near
+  the robot's timeframe to time the entry, and no opposing bias; otherwise WAIT with the reasons;
+- **trade plan**: entry, stop, target of the strongest agreeing setup;
+- **how long it usually takes**: the same detector's earlier setups on the same timeframe, measured on candles
+  before now: how often the target came first, the average result after the spread, and the minutes to target
+  or stop (25th / median / 75th percentile).
+
+These are measurements of past and present prices, not predictions.
+
+How the robot uses it (paper trading):
+
+- `SPARKZ_PRESET=assistant` (entry mode `ASSISTANT`): the assistant's decision opens the trade (one position,
+  no grid);
+- any other preset with `ASSISTANT_GATE=true` (the default): a rule-based entry is held back unless the
+  assistant says the same side;
+- backtests have no multi-timeframe feed and run without it. Measure the assistant on history instead:
+  `python -m app.assistant.study --source dukascopy --start 2025-01-01` (every BUY/SELL traded with the
+  plan's stop, a 2R target, an 8-hour time stop and the real spread; by confidence band, strategy and quarter);
+- `GET /api/assistant` and the dashboard's **Assistant** page (summary on the Live page) show the latest
+  analysis, refreshed every 30 seconds. With the MT5 bridge it uses all six timeframes (the bridge also sends
+  1h / 4h / daily history); with a single-timeframe feed it builds the higher timeframes from it.
+
 ### Live prices from MetaTrader 5 (MT5 bridge, read-only)
 
 For a broker that offers MetaTrader 5 (OANDA is not available everywhere), a small script on the computer
@@ -116,7 +162,11 @@ a test checks that it contains no order call. The MetaTrader5 Python package run
    indicators are ready at once, then a quote every 2 seconds.
 
 The paper loop then trades the PAPER ACCOUNT on your broker's real bid/ask (`GET /api/bridge/status` shows
-what has arrived). If the quotes stop (terminal closed, weekend), the market shows as closed and new positions
+what has arrived). `GET /api/bridge/spread` reports your broker's real spread: from every distinct live
+quote, and from the spread MT5 records on each 1-minute candle (sent with the start-up history, so it has
+numbers even while the market is closed), with the median, 90th/99th percentile and a split by session (UTC),
+next to the 0.54 the backtests assume. Rerun a study with your figure, e.g.
+`python -m app.research.scalp_study --tfs 15m,1h --spread <median>`. If the quotes stop (terminal closed, weekend), the market shows as closed and new positions
 are blocked until they return. The server rejects pushes without the secret, malformed prices, and times in
 the future (the usual sign of a wrong `--utc-offset`).
 

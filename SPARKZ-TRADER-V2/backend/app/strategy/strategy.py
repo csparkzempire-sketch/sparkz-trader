@@ -24,7 +24,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime
 
-from app.config import GridMode, Settings
+from app.config import EntryMode, GridMode, Settings
 from app.execution.fill_engine import FillEngine
 from app.execution.order_intent import Fill, IntentType, OrderIntent
 from app.market.instruments import get_instrument
@@ -71,6 +71,8 @@ class AdaptiveGridBasketStrategy:
         self.last_analysis: Analysis | None = None
         self.last_decision: EntryDecision | None = None
         self.target_announced = False
+        self.assistant_report: dict | None = None   # latest market-assistant report
+        self.assistant_fn = None                     # set by the paper runner: () -> report, called before a decision
 
     # ---------------------------------------------------------------- helpers
     @property
@@ -114,19 +116,47 @@ class AdaptiveGridBasketStrategy:
         if bar < self.cooldown_until:
             self.last_decision = EntryDecision("WAIT", [f"cooldown until bar {self.cooldown_until}"])
             return [], ev
-        d = self.entry.decide(state, a)
+        if self.assistant_fn is not None:
+            self.assistant_report = self.assistant_fn()
+        d = self._with_assistant(self.entry.decide(state, a))
         self.last_decision = d
+        rep = self.assistant_report
         ev.append(Event("MARKET_ANALYZED", f"Market analyzed: {state.regime}, {d.action}",
-                        {"analysis": a.to_dict(), "decision": d.action, "reasons": d.reasons}))
+                        {"analysis": a.to_dict(), "decision": d.action, "reasons": d.reasons,
+                         "assistant": None if rep is None else {k: rep.get(k) for k in
+                                                                ("action", "confidence_pct", "higher_timeframe_bias")}}))
         if not d.is_entry or not view.data_ok:
             return [], ev
         lots = lots_for_entry(1, self.s.sizing, self.inst)
         ev.append(Event("SIGNAL", f"{d.action} signal generated (rule agreement {d.confidence:.2f})",
                         {"direction": d.action, "reasons": d.reasons}))
         self.pending_open = True
+        meta = {"atr": state.atr, "regime": state.regime, "analysis": a.to_dict()}
+        if rep is not None:
+            meta["assistant"] = {"action": rep.get("action"), "confidence_pct": rep.get("confidence_pct"),
+                                 "plan": rep.get("plan")}
         it = OrderIntent(IntentType.OPEN_BASKET, self.inst.symbol, d.action, lots, "; ".join(d.reasons), now,
-                         None, None, None, {"atr": state.atr, "regime": state.regime, "analysis": a.to_dict()})
+                         None, None, None, meta)
         return [it], ev
+
+    def _with_assistant(self, d: EntryDecision) -> EntryDecision:
+        """Entry mode ASSISTANT: the assistant's decision is the entry decision. Other modes: with
+        assistant.gate_entries, a rule-based entry needs the assistant on the same side. Without a report
+        (backtests, or before the first analysis) the gate does not apply; ASSISTANT mode waits."""
+        rep = self.assistant_report
+        if self.s.entry.mode == EntryMode.ASSISTANT:
+            if rep is None:
+                return EntryDecision("WAIT", ["assistant analysis not available yet"])
+            conf = (rep.get("confidence_pct") or 0) / 100
+            if rep.get("action") in ("BUY", "SELL"):
+                return EntryDecision(rep["action"], [f"assistant {rep['action']} at {rep['confidence_pct']}%"]
+                                     + list(rep.get("reasons", []))[:3], conf)
+            return EntryDecision("WAIT", ["assistant: " + r for r in rep.get("reasons", [])[:3]] or ["assistant: WAIT"], conf)
+        if d.is_entry and rep is not None and self.s.assistant.gate_entries and rep.get("action") != d.action:
+            why = (rep.get("reasons") or [""])[0]
+            return EntryDecision("WAIT", [f"{d.action} signal held back: assistant says {rep.get('action')} "
+                                          f"({rep.get('confidence_pct')}%){': ' + why if why else ''}"], d.confidence)
+        return d
 
     # ---------------------------------------------------------------- ticks
     def on_tick(self, state: MarketState, prev_mid: float, view: StrategyView) -> tuple[list[OrderIntent], list[Event]]:

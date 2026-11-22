@@ -50,7 +50,7 @@ def save(name, obj):
 def main():
     t0 = time.time()
     c15, c5, c1h = (load_history("XAUUSD", tf) for tf in ("15m", "5m", "1h"))
-    presets = list_presets()
+    presets = [p for p in list_presets() if p != "assistant"]      # the assistant needs live multi-timeframe data
 
     out = {p: {o: _m(run_backtest(_s(p, execution={"intrabar_order": o}), c15)) for o in ORDERS} for p in presets}
     save("presets_15m", {"data": f"Yahoo GC=F 15m, {len(c15)} candles", "results": out})

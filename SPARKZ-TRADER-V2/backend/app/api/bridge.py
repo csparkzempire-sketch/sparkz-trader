@@ -46,6 +46,7 @@ class BarIn(BaseModel):
     low: float = Field(gt=0)
     close: float = Field(gt=0)
     volume: float = 0.0
+    spread: float | None = Field(default=None, ge=0)     # price units, as MT5 recorded it on the candle
 
     @field_validator("time")
     @classmethod
@@ -64,6 +65,17 @@ class PushIn(BaseModel):
     broker_symbol: str = Field(min_length=1, max_length=32)
     tick: TickIn | None = None
     bars_1m: list[BarIn] = Field(default_factory=list, max_length=5000)
+    bars_htf: dict[str, list[BarIn]] = Field(default_factory=dict)      # "1h" / "4h" / "1d" closed candles
+
+    @field_validator("bars_htf")
+    @classmethod
+    def _htf(cls, v: dict) -> dict:
+        bad = set(v) - {"1h", "4h", "1d"}
+        if bad:
+            raise ValueError(f"bars_htf timeframes must be 1h, 4h or 1d, not {sorted(bad)}")
+        if any(len(x) > 3000 for x in v.values()):
+            raise ValueError("at most 3000 candles per timeframe")
+        return v
 
 
 def _authorise(token: str | None) -> None:
@@ -78,13 +90,23 @@ def _authorise(token: str | None) -> None:
 def push(body: PushIn, x_bridge_token: str | None = Header(default=None)):
     _authorise(x_bridge_token)
     now = datetime.now(timezone.utc)
-    latest = max([b.time for b in body.bars_1m] + ([body.tick.time] if body.tick else []), default=None)
+    latest = max([b.time for b in body.bars_1m] + [b.time for v in body.bars_htf.values() for b in v]
+                 + ([body.tick.time] if body.tick else []), default=None)
     if latest is not None and latest - now > MAX_FUTURE:
         raise HTTPException(422, f"data is {(latest - now).total_seconds() / 60:.0f} min ahead of UTC: "
                                  "check the bridge's --utc-offset (MT5 reports the broker server's time)")
     tick = Tick(body.symbol.upper(), body.tick.time, body.tick.bid, body.tick.ask) if body.tick else None
     bars = [b.model_dump() for b in body.bars_1m]
-    return STORE.push(body.symbol.upper(), body.broker_symbol, tick, bars)
+    htf = {tf: [b.model_dump() for b in v] for tf, v in body.bars_htf.items()}
+    return STORE.push(body.symbol.upper(), body.broker_symbol, tick, bars, htf)
+
+
+@router.get("/spread")
+def spread():
+    """The broker's real spread from what the bridge has sent, next to the backtests' assumption."""
+    from app.research.scalp import ScalpParams
+
+    return STORE.spread_report(assumed=ScalpParams().spread)
 
 
 @router.get("/status")

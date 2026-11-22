@@ -28,7 +28,7 @@ def main(argv=None) -> None:
     ap.add_argument("--path", default="1m")
     ap.add_argument("--source", default="oanda", choices=["yahoo", "oanda", "mt5", "dukascopy"])
     ap.add_argument("--start", default=None, help="only trade from this date (YYYY-MM-DD)")
-    ap.add_argument("--presets", default=",".join(list_presets()))
+    ap.add_argument("--presets", default=",".join(p for p in list_presets() if p != "assistant"))   # needs live data
     ap.add_argument("--spread", type=float, default=None,
                     help="spread in price units for every fill (execution.spread_override), e.g. a measured median")
     a = ap.parse_args(argv)

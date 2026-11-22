@@ -32,6 +32,8 @@ import urllib.request
 from datetime import datetime, timedelta, timezone
 
 CHUNK = 2000
+HTF = {"1h": ("TIMEFRAME_H1", 2000), "4h": ("TIMEFRAME_H4", 1000), "1d": ("TIMEFRAME_D1", 600)}
+HTF_EVERY = 15 * 60          # seconds between higher-timeframe refreshes
 
 
 def detect_offset_hours(server_epoch: float, utc_epoch: float, tolerance: float = 120.0) -> float | None:
@@ -49,9 +51,15 @@ def to_utc_iso(server_epoch: float, offset_hours: float) -> str:
     return t.isoformat()
 
 
-def bars_payload(rates, offset_hours: float) -> list[dict]:
+def bars_payload(rates, offset_hours: float, point: float | None = None) -> list[dict]:
+    """MT5 candles -> UTC payload. With the symbol's `point`, each candle's recorded spread (in points) is sent
+    in price units too."""
+    rows = list(rates)
+    names = getattr(getattr(rows[0], "dtype", None), "names", None) if rows else None
+    has_spread = point is not None and "spread" in (names or ())
     return [{"time": to_utc_iso(float(r["time"]), offset_hours), "open": float(r["open"]), "high": float(r["high"]),
-             "low": float(r["low"]), "close": float(r["close"]), "volume": float(r["tick_volume"])} for r in rates]
+             "low": float(r["low"]), "close": float(r["close"]), "volume": float(r["tick_volume"]),
+             **({"spread": round(float(r["spread"]) * point, 6)} if has_spread else {})} for r in rows]
 
 
 def tick_payload(tick, offset_hours: float) -> dict:
@@ -77,12 +85,16 @@ class Bridge:
         self.token, self.offset, self.history, self.interval = token, utc_offset, history, interval
         self.post, self.clock, self.sleep, self.log = post, clock, sleep, log
         self.last_bar_time: float | None = None
+        self.point: float | None = None
+        self.htf_sent: float | None = None
 
     def connect(self) -> None:
         if not self.mt5.initialize():
             raise RuntimeError(f"cannot attach to the MetaTrader 5 terminal: {self.mt5.last_error()}")
         if not self.mt5.symbol_select(self.symbol, True):
             raise RuntimeError(f"symbol {self.symbol!r} not available in this terminal (check the broker's name for it)")
+        info = self.mt5.symbol_info(self.symbol)
+        self.point = float(info.point) if info is not None and getattr(info, "point", 0) else None
         if self.offset is None:
             tick = self.mt5.symbol_info_tick(self.symbol)
             self.offset = detect_offset_hours(tick.time_msc / 1000.0, self.clock()) if tick else None
@@ -99,13 +111,30 @@ class Bridge:
         rates = self.mt5.copy_rates_from_pos(self.symbol, self.mt5.TIMEFRAME_M1, 1, self.history)
         if rates is None or not len(rates):
             raise RuntimeError(f"no 1-minute history for {self.symbol}: {self.mt5.last_error()}")
-        bars = bars_payload(rates, self.offset)
+        bars = bars_payload(rates, self.offset, self.point)
         for i in range(0, len(bars), CHUNK):
             self._send(bars=bars[i:i + CHUNK])
         self.last_bar_time = float(rates[-1]["time"])
         self.log(f"sent {len(bars)} closed 1-minute candles, last {bars[-1]['time']}")
+        self.send_higher_timeframes()
+
+    def send_higher_timeframes(self) -> None:
+        """Closed 1h / 4h / daily candles for the market assistant (weeks of 1m candles cannot make a year
+        of daily ones). Sent at start and every 15 minutes."""
+        htf = {}
+        for tf, (const, count) in HTF.items():
+            code = getattr(self.mt5, const, None)
+            rates = self.mt5.copy_rates_from_pos(self.symbol, code, 1, count) if code is not None else None
+            if rates is not None and len(rates):
+                htf[tf] = bars_payload(rates, self.offset)
+        self.htf_sent = self.clock()
+        if htf:
+            self.post(self.url, self.token, {"symbol": self.as_symbol, "broker_symbol": self.symbol,
+                                             "tick": None, "bars_1m": [], "bars_htf": htf})
 
     def step(self) -> dict | None:
+        if self.htf_sent is not None and self.clock() - self.htf_sent >= HTF_EVERY:
+            self.send_higher_timeframes()
         tick = self.mt5.symbol_info_tick(self.symbol)
         rates = self.mt5.copy_rates_from_pos(self.symbol, self.mt5.TIMEFRAME_M1, 1, 5)
         new = [r for r in (rates if rates is not None else []) if self.last_bar_time is None
@@ -114,7 +143,7 @@ class Bridge:
             self.last_bar_time = float(new[-1]["time"])
         if tick is None and not new:
             return None
-        return self._send(tick_payload(tick, self.offset) if tick else None, bars_payload(new, self.offset))
+        return self._send(tick_payload(tick, self.offset) if tick else None, bars_payload(new, self.offset, self.point))
 
     def run(self, max_steps: int | None = None) -> None:
         self.connect()
