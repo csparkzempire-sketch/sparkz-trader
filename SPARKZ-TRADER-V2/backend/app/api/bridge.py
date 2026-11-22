@@ -46,6 +46,7 @@ class BarIn(BaseModel):
     low: float = Field(gt=0)
     close: float = Field(gt=0)
     volume: float = 0.0
+    spread: float | None = Field(default=None, ge=0)     # price units, as MT5 recorded it on the candle
 
     @field_validator("time")
     @classmethod
@@ -85,6 +86,14 @@ def push(body: PushIn, x_bridge_token: str | None = Header(default=None)):
     tick = Tick(body.symbol.upper(), body.tick.time, body.tick.bid, body.tick.ask) if body.tick else None
     bars = [b.model_dump() for b in body.bars_1m]
     return STORE.push(body.symbol.upper(), body.broker_symbol, tick, bars)
+
+
+@router.get("/spread")
+def spread():
+    """The broker's real spread from what the bridge has sent, next to the backtests' assumption."""
+    from app.research.scalp import ScalpParams
+
+    return STORE.spread_report(assumed=ScalpParams().spread)
 
 
 @router.get("/status")

@@ -116,7 +116,11 @@ a test checks that it contains no order call. The MetaTrader5 Python package run
    indicators are ready at once, then a quote every 2 seconds.
 
 The paper loop then trades the PAPER ACCOUNT on your broker's real bid/ask (`GET /api/bridge/status` shows
-what has arrived). If the quotes stop (terminal closed, weekend), the market shows as closed and new positions
+what has arrived). `GET /api/bridge/spread` reports your broker's real spread: from every distinct live
+quote, and from the spread MT5 records on each 1-minute candle (sent with the start-up history, so it has
+numbers even while the market is closed), with the median, 90th/99th percentile and a split by session (UTC),
+next to the 0.54 the backtests assume. Rerun a study with your figure, e.g.
+`python -m app.research.scalp_study --tfs 15m,1h --spread <median>`. If the quotes stop (terminal closed, weekend), the market shows as closed and new positions
 are blocked until they return. The server rejects pushes without the secret, malformed prices, and times in
 the future (the usual sign of a wrong `--utc-offset`).
 

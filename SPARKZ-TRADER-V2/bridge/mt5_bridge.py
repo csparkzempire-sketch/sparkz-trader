@@ -49,9 +49,15 @@ def to_utc_iso(server_epoch: float, offset_hours: float) -> str:
     return t.isoformat()
 
 
-def bars_payload(rates, offset_hours: float) -> list[dict]:
+def bars_payload(rates, offset_hours: float, point: float | None = None) -> list[dict]:
+    """MT5 candles -> UTC payload. With the symbol's `point`, each candle's recorded spread (in points) is sent
+    in price units too."""
+    rows = list(rates)
+    names = getattr(getattr(rows[0], "dtype", None), "names", None) if rows else None
+    has_spread = point is not None and "spread" in (names or ())
     return [{"time": to_utc_iso(float(r["time"]), offset_hours), "open": float(r["open"]), "high": float(r["high"]),
-             "low": float(r["low"]), "close": float(r["close"]), "volume": float(r["tick_volume"])} for r in rates]
+             "low": float(r["low"]), "close": float(r["close"]), "volume": float(r["tick_volume"]),
+             **({"spread": round(float(r["spread"]) * point, 6)} if has_spread else {})} for r in rows]
 
 
 def tick_payload(tick, offset_hours: float) -> dict:
@@ -77,12 +83,15 @@ class Bridge:
         self.token, self.offset, self.history, self.interval = token, utc_offset, history, interval
         self.post, self.clock, self.sleep, self.log = post, clock, sleep, log
         self.last_bar_time: float | None = None
+        self.point: float | None = None
 
     def connect(self) -> None:
         if not self.mt5.initialize():
             raise RuntimeError(f"cannot attach to the MetaTrader 5 terminal: {self.mt5.last_error()}")
         if not self.mt5.symbol_select(self.symbol, True):
             raise RuntimeError(f"symbol {self.symbol!r} not available in this terminal (check the broker's name for it)")
+        info = self.mt5.symbol_info(self.symbol)
+        self.point = float(info.point) if info is not None and getattr(info, "point", 0) else None
         if self.offset is None:
             tick = self.mt5.symbol_info_tick(self.symbol)
             self.offset = detect_offset_hours(tick.time_msc / 1000.0, self.clock()) if tick else None
@@ -99,7 +108,7 @@ class Bridge:
         rates = self.mt5.copy_rates_from_pos(self.symbol, self.mt5.TIMEFRAME_M1, 1, self.history)
         if rates is None or not len(rates):
             raise RuntimeError(f"no 1-minute history for {self.symbol}: {self.mt5.last_error()}")
-        bars = bars_payload(rates, self.offset)
+        bars = bars_payload(rates, self.offset, self.point)
         for i in range(0, len(bars), CHUNK):
             self._send(bars=bars[i:i + CHUNK])
         self.last_bar_time = float(rates[-1]["time"])
@@ -114,7 +123,7 @@ class Bridge:
             self.last_bar_time = float(new[-1]["time"])
         if tick is None and not new:
             return None
-        return self._send(tick_payload(tick, self.offset) if tick else None, bars_payload(new, self.offset))
+        return self._send(tick_payload(tick, self.offset) if tick else None, bars_payload(new, self.offset, self.point))
 
     def run(self, max_steps: int | None = None) -> None:
         self.connect()

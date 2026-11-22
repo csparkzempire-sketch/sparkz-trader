@@ -9,13 +9,20 @@ MetaTrader 5 terminal (a broker demo works) and sends its latest bid/ask and clo
 Candles of the strategy timeframe are built from the pushed 1m candles (labelled by open time; only candles
 whose whole period has closed are returned). The market counts as closed when no tick has arrived for
 `stale_seconds` (terminal closed, broker offline, weekend).
+
+Spread report (`GET /api/bridge/spread`): the broker's real spread, from every distinct live tick (ask - bid)
+and from the spread MT5 stores on each 1-minute candle (sent with the history, so numbers exist before the
+market opens), overall and by session, next to the spread the backtests assume.
 """
 
 from __future__ import annotations
 
 import threading
 import time
+from collections import deque
 from datetime import datetime, timezone
+
+import numpy as np
 
 import pandas as pd
 
@@ -24,6 +31,22 @@ from app.market.instruments import get_instrument
 from app.market.providers.base import MarketDataProvider, MarketStatus, ProviderError, ProviderInfo, Tick
 
 COLUMNS = ["timestamp", "open", "high", "low", "close", "volume"]
+SESSIONS = (("ASIA", 0, 7), ("LONDON", 7, 12), ("NEW_YORK", 12, 21), ("LATE", 21, 24))     # UTC hours
+
+
+def spread_stats(values) -> dict:
+    a = np.asarray(values, float)
+    if not len(a):
+        return {"count": 0}
+    return {"count": int(len(a)), "median": round(float(np.median(a)), 3), "mean": round(float(a.mean()), 3),
+            "p90": round(float(np.quantile(a, 0.9)), 3), "p99": round(float(np.quantile(a, 0.99)), 3),
+            "min": round(float(a.min()), 3), "max": round(float(a.max()), 3)}
+
+
+def by_session(times, values) -> dict:
+    hours = np.array([t.hour for t in times])
+    v = np.asarray(values, float)
+    return {name: spread_stats(v[(hours >= a) & (hours < b)]) for name, a, b in SESSIONS}
 
 
 class BridgeStore:
@@ -41,20 +64,27 @@ class BridgeStore:
             self.tick: Tick | None = None
             self.tick_received: float | None = None
             self.bars: dict[pd.Timestamp, tuple] = {}
+            self.bar_spreads: dict[pd.Timestamp, float] = {}
+            self.tick_spreads: deque = deque(maxlen=200_000)     # (time, spread) of distinct ticks
             self.pushes = 0
 
     def push(self, symbol: str, broker_symbol: str, tick: Tick | None, bars: list[dict]) -> dict:
         with self.lock:
             self.symbol, self.broker_symbol = symbol, broker_symbol
             if tick is not None:
+                if self.tick is None or tick.time != self.tick.time:   # the bridge repeats an unchanged quote
+                    self.tick_spreads.append((tick.time, tick.spread))
                 self.tick, self.tick_received = tick, self.clock()
             for b in bars:
                 ts = pd.Timestamp(b["time"]).tz_convert("UTC")
                 self.bars[ts] = (float(b["open"]), float(b["high"]), float(b["low"]), float(b["close"]),
                                  float(b.get("volume", 0.0)))
+                if b.get("spread") is not None:
+                    self.bar_spreads[ts] = float(b["spread"])
             if len(self.bars) > self.max_bars:
                 for k in sorted(self.bars)[: len(self.bars) - self.max_bars]:
                     del self.bars[k]
+                    self.bar_spreads.pop(k, None)
             self.pushes += 1
             return self.status()
 
@@ -64,6 +94,25 @@ class BridgeStore:
                 "bars_1m": len(self.bars), "last_bar": last.isoformat() if last is not None else None,
                 "last_tick": self.tick.time.isoformat() if self.tick else None,
                 "tick_age_seconds": None if self.tick_received is None else round(self.clock() - self.tick_received, 1)}
+
+    def spread_report(self, assumed: float | None = None) -> dict:
+        with self.lock:
+            ticks = list(self.tick_spreads)
+            bars = sorted(self.bar_spreads.items())
+        out = {"symbol": self.symbol, "broker_symbol": self.broker_symbol, "backtest_assumption": assumed,
+               "live_ticks": {**spread_stats([s for _, s in ticks]),
+                              "first": ticks[0][0].isoformat() if ticks else None,
+                              "last": ticks[-1][0].isoformat() if ticks else None,
+                              "by_session_utc": by_session([t for t, _ in ticks], [s for _, s in ticks])},
+               "mt5_1m_candles": {**spread_stats([s for _, s in bars]),
+                                  "first": bars[0][0].isoformat() if bars else None,
+                                  "last": bars[-1][0].isoformat() if bars else None,
+                                  "by_session_utc": by_session([t for t, _ in bars], [s for _, s in bars]),
+                                  "note": "the spread MetaTrader 5 records on each 1-minute candle"}}
+        med = out["live_ticks"].get("median") or out["mt5_1m_candles"].get("median")
+        if med is not None and assumed:
+            out["vs_backtest"] = f"median spread {med} is {med / assumed:.1f}x the backtest's {assumed}"
+        return out
 
     def frame(self) -> pd.DataFrame:
         with self.lock:
