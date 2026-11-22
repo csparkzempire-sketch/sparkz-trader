@@ -127,3 +127,22 @@ def test_paper_runner_offers_the_assistant(tmp_path):
         clock[0] += 5
         r.step()
     assert r.robot.strategy.assistant_report is not None        # consulted before each entry decision
+
+
+def test_history_study_runs_without_lookahead(tmp_path, monkeypatch):
+    import json
+
+    import app.assistant.study as st
+    m1 = generate_candles("XAUUSD", "1m", 60 * 24 * 12, "normal", seed=6)
+    monkeypatch.setattr(st, "load_history", lambda *a, **k: m1)
+    monkeypatch.setattr(st, "REPORTS_DIR", tmp_path)
+    ctx = st.contexts(m1)
+    t = pd.Timestamp(m1["timestamp"].iloc[5000]) + pd.Timedelta("1min")
+    for tf, c in ctx.items():                       # only candles closed by t are visible
+        i = st.index_at(c, t)
+        assert c.f["timestamp"].iat[i] + pd.Timedelta(minutes=c.minutes) <= t
+        if i + 1 < len(c):
+            assert c.f["timestamp"].iat[i + 1] + pd.Timedelta(minutes=c.minutes) > t
+    st.main(["--every", "16", "--start", str(m1["timestamp"].iloc[60 * 24 * 3])])
+    out = json.loads((tmp_path / "studies" / "assistant_dukascopy.json").read_text())
+    assert out["meta"]["decisions"] > 0 and "overall" in out
