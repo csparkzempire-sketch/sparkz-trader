@@ -75,3 +75,10 @@ def test_websocket_pushes_state(client):
     with client.websocket_connect("/ws/live") as ws:
         msg = ws.receive_json()
     assert msg["account"]["label"] == "PAPER ACCOUNT"
+
+
+def test_assistant_endpoint(client):
+    d = client.get("/api/assistant").json()
+    assert set(d) >= {"report", "error", "gate_entries", "drives_entries", "age_seconds"}
+    if d["report"]:
+        assert d["report"]["action"] in ("BUY", "SELL", "WAIT") and "strategy_fit_pct" in d["report"]

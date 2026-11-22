@@ -1,0 +1,13 @@
+# Assistant: the market assistant (app/assistant) picks the side. It reads 1d/4h/1h/15m/5m/1m candles with nine
+# strategies and opens one position only when its confidence reaches assistant.min_confidence, a setup near
+# 15m times the entry, and the higher timeframes do not point the other way. No grid, no averaging down.
+# Paper trading only: the assistant needs the live data feed (the MT5 bridge gives every timeframe). Backtests
+# of this preset do not trade; use `python -m app.assistant.study` to measure the assistant on history.
+name: assistant
+market: {symbol: XAUUSD, timeframe: 15m}
+entry: {mode: ASSISTANT}
+grid: {mode: NONE}
+sizing: {mode: FIXED, base_lot: 0.01}
+target: {mode: ATR_TARGET, atr_multiplier: 2.0}
+risk: {max_positions: 1, max_basket_loss_usd: 15, max_basket_loss_percent: 2.0}
+assistant: {gate_entries: true, min_confidence: 0.55}

@@ -32,6 +32,8 @@ import urllib.request
 from datetime import datetime, timedelta, timezone
 
 CHUNK = 2000
+HTF = {"1h": ("TIMEFRAME_H1", 2000), "4h": ("TIMEFRAME_H4", 1000), "1d": ("TIMEFRAME_D1", 600)}
+HTF_EVERY = 15 * 60          # seconds between higher-timeframe refreshes
 
 
 def detect_offset_hours(server_epoch: float, utc_epoch: float, tolerance: float = 120.0) -> float | None:
@@ -84,6 +86,7 @@ class Bridge:
         self.post, self.clock, self.sleep, self.log = post, clock, sleep, log
         self.last_bar_time: float | None = None
         self.point: float | None = None
+        self.htf_sent: float | None = None
 
     def connect(self) -> None:
         if not self.mt5.initialize():
@@ -113,8 +116,25 @@ class Bridge:
             self._send(bars=bars[i:i + CHUNK])
         self.last_bar_time = float(rates[-1]["time"])
         self.log(f"sent {len(bars)} closed 1-minute candles, last {bars[-1]['time']}")
+        self.send_higher_timeframes()
+
+    def send_higher_timeframes(self) -> None:
+        """Closed 1h / 4h / daily candles for the market assistant (weeks of 1m candles cannot make a year
+        of daily ones). Sent at start and every 15 minutes."""
+        htf = {}
+        for tf, (const, count) in HTF.items():
+            code = getattr(self.mt5, const, None)
+            rates = self.mt5.copy_rates_from_pos(self.symbol, code, 1, count) if code is not None else None
+            if rates is not None and len(rates):
+                htf[tf] = bars_payload(rates, self.offset)
+        self.htf_sent = self.clock()
+        if htf:
+            self.post(self.url, self.token, {"symbol": self.as_symbol, "broker_symbol": self.symbol,
+                                             "tick": None, "bars_1m": [], "bars_htf": htf})
 
     def step(self) -> dict | None:
+        if self.htf_sent is not None and self.clock() - self.htf_sent >= HTF_EVERY:
+            self.send_higher_timeframes()
         tick = self.mt5.symbol_info_tick(self.symbol)
         rates = self.mt5.copy_rates_from_pos(self.symbol, self.mt5.TIMEFRAME_M1, 1, 5)
         new = [r for r in (rates if rates is not None else []) if self.last_bar_time is None

@@ -29,8 +29,9 @@ from typing import Callable
 
 import pandas as pd
 
+from app.assistant.live import LiveAssistant
 from app.backtest.metrics import clean
-from app.config import Settings
+from app.config import TIMEFRAMES, EntryMode, Settings
 from app.database.repository import Repository
 from app.engine.health import build_health
 from app.engine.robot import Robot
@@ -57,6 +58,10 @@ class PaperRunner:
         self._stop = False
         self.listeners: list[Callable[[dict], None]] = []
         self.lock = threading.RLock()      # the loop thread, the API and the WebSocket share the robot
+        self.assistant = LiveAssistant(settings.assistant.min_confidence, settings.assistant.refresh_seconds, wall)
+        self._assistant_until: pd.Timestamp | None = None
+        if settings.assistant.gate_entries or settings.entry.mode == EntryMode.ASSISTANT:
+            self.robot.strategy.assistant_fn = self._assistant_for_decision
 
     # ------------------------------------------------------------------ setup
     def start(self) -> None:
@@ -108,6 +113,7 @@ class PaperRunner:
                 ts = pd.Timestamp(row["timestamp"])
                 if self.last_bar_ts is None or ts > self.last_bar_ts:
                     self.last_bar_ts = ts
+                    self._assistant_until = ts + pd.Timedelta(seconds=TIMEFRAMES[self.s.market.timeframe])
                     st = self.robot.process_bar_close(row)
                     if st is not None and self.repo is not None and self.run_id is not None and self.robot.equity_curve:
                         self.repo.save_equity(self.run_id, self.robot.equity_curve[-1])
@@ -123,6 +129,28 @@ class PaperRunner:
         except Exception as e:
             self._error(f"tick: {e}")
         self._check_freshness(now_wall)
+
+    # ------------------------------------------------------------------ market assistant
+    def _spread(self) -> float:
+        if self.s.execution.spread_override is not None:
+            return self.s.execution.spread_override
+        if self.last_tick is not None and self.last_tick.spread > 0:
+            return self.last_tick.spread
+        return self.robot.strategy.inst.spread
+
+    def _assistant_for_decision(self) -> dict | None:
+        """Called by the strategy right before it decides on a new basket: the analysis as of that bar's close."""
+        return self.assistant.run(self.provider, self.s.market.timeframe, self._spread(), until=self._assistant_until)
+
+    def assistant_snapshot(self) -> dict:
+        """The latest analysis for the dashboard, refreshed when older than assistant.refresh_seconds."""
+        if self.assistant.stale():
+            with self.lock:
+                self.assistant.run(self.provider, self.s.market.timeframe, self._spread())
+        return {"report": self.assistant.report, "error": self.assistant.error,
+                "gate_entries": self.s.assistant.gate_entries,
+                "drives_entries": self.s.entry.mode == EntryMode.ASSISTANT,
+                "age_seconds": None if self.assistant.updated is None else round(self.wall() - self.assistant.updated, 1)}
 
     def _check_freshness(self, now_wall: float) -> None:
         limit = self.s.market.stale_after_seconds

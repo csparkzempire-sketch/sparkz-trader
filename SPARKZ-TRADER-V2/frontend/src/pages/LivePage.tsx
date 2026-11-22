@@ -2,6 +2,7 @@ import { EquityChart, PriceChart } from "../charts/Charts";
 import { label, money, num, pct, price, signedMoney, tone, when } from "../components/format";
 import { Direction, Empty, KeyValues, Page, PageHeader, Panel, Regime, StatCard, StatGrid, Table } from "../components/ui";
 import { Dict } from "../services/api";
+import { Decision, useAssistant } from "./AssistantPage";
 
 const STATUS_TONE: Record<string, string> = {
   ANALYZING: "text-base-text", WAITING: "text-base-muted", ENTRY: "text-accent-warn", ADDING_POSITION: "text-accent-warn",
@@ -141,6 +142,16 @@ export function EventList({ events, max = 40 }: { events: Dict[]; max?: number }
   );
 }
 
+function AssistantSummary() {
+  const { data } = useAssistant();
+  const r = data?.report;
+  return (
+    <Panel title="Market assistant" right={<a href="#assistant" className="text-xs underline">full analysis</a>}>
+      {r ? <Decision r={r} compact /> : <Empty>{data?.error ?? "Analysing the market…"}</Empty>}
+    </Panel>
+  );
+}
+
 export default function LivePage({ d }: { d: Dict | null }) {
   if (!d) return <Page><PageHeader title="Live" /><Empty>Connecting to the robot…</Empty></Page>;
   return (
@@ -151,6 +162,7 @@ export default function LivePage({ d }: { d: Dict | null }) {
           <Market d={d} />
           <Robot d={d} />
         </div>
+        <AssistantSummary />
         <Panel title="Price"><PriceChart candles={d.candles ?? []} basket={d.basket} live={d.market?.mid} /></Panel>
         <Basket d={d} />
         <Account d={d} />

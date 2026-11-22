@@ -65,10 +65,12 @@ class BridgeStore:
             self.tick_received: float | None = None
             self.bars: dict[pd.Timestamp, tuple] = {}
             self.bar_spreads: dict[pd.Timestamp, float] = {}
+            self.htf: dict[str, dict[pd.Timestamp, tuple]] = {}   # native 1h / 4h / 1d candles from MT5
             self.tick_spreads: deque = deque(maxlen=200_000)     # (time, spread) of distinct ticks
             self.pushes = 0
 
-    def push(self, symbol: str, broker_symbol: str, tick: Tick | None, bars: list[dict]) -> dict:
+    def push(self, symbol: str, broker_symbol: str, tick: Tick | None, bars: list[dict],
+             htf: dict[str, list[dict]] | None = None) -> dict:
         with self.lock:
             self.symbol, self.broker_symbol = symbol, broker_symbol
             if tick is not None:
@@ -81,6 +83,11 @@ class BridgeStore:
                                  float(b.get("volume", 0.0)))
                 if b.get("spread") is not None:
                     self.bar_spreads[ts] = float(b["spread"])
+            for tf, rows in (htf or {}).items():
+                store = self.htf.setdefault(tf, {})
+                for b in rows:
+                    store[pd.Timestamp(b["time"]).tz_convert("UTC")] = (
+                        float(b["open"]), float(b["high"]), float(b["low"]), float(b["close"]), float(b.get("volume", 0.0)))
             if len(self.bars) > self.max_bars:
                 for k in sorted(self.bars)[: len(self.bars) - self.max_bars]:
                     del self.bars[k]
@@ -93,6 +100,7 @@ class BridgeStore:
         return {"symbol": self.symbol, "broker_symbol": self.broker_symbol, "pushes": self.pushes,
                 "bars_1m": len(self.bars), "last_bar": last.isoformat() if last is not None else None,
                 "last_tick": self.tick.time.isoformat() if self.tick else None,
+                "higher_timeframes": {tf: len(v) for tf, v in self.htf.items()},
                 "tick_age_seconds": None if self.tick_received is None else round(self.clock() - self.tick_received, 1)}
 
     def spread_report(self, assumed: float | None = None) -> dict:
@@ -114,9 +122,10 @@ class BridgeStore:
             out["vs_backtest"] = f"median spread {med} is {med / assumed:.1f}x the backtest's {assumed}"
         return out
 
-    def frame(self) -> pd.DataFrame:
+    def frame(self, tf: str | None = None) -> pd.DataFrame:
+        """1m candles, or with `tf` the native higher-timeframe candles MT5 sent."""
         with self.lock:
-            items = sorted(self.bars.items())
+            items = sorted((self.htf.get(tf, {}) if tf else self.bars).items())
         if not items:
             return pd.DataFrame(columns=COLUMNS)
         df = pd.DataFrame([(k, *v) for k, v in items], columns=COLUMNS)
@@ -154,8 +163,9 @@ class BridgeProvider(MarketDataProvider):
     def get_candles(self, timeframe: str, count: int) -> pd.DataFrame:
         self._check_symbol()
         m1 = self.store.frame()
+        native = self.store.frame(timeframe) if timeframe in ("1h", "4h", "1d") else pd.DataFrame(columns=COLUMNS)
         if not len(m1):
-            return m1
+            return native[COLUMNS].tail(count).reset_index(drop=True)
         step = TIMEFRAMES[timeframe]
         closed_until = m1["timestamp"].iloc[-1] + pd.Timedelta(minutes=1)      # the last pushed 1m bar is closed
         if step == 60:
@@ -165,6 +175,8 @@ class BridgeProvider(MarketDataProvider):
                 {"open": "first", "high": "max", "low": "min", "close": "last", "volume": "sum"}
             ).dropna(subset=["open"]).reset_index()
             out = out[out["timestamp"] + pd.Timedelta(seconds=step) <= closed_until]
+            if len(native):                  # MT5's own candles, then the newer ones built from 1m candles
+                out = pd.concat([native, out[out["timestamp"] > native["timestamp"].iloc[-1]]], ignore_index=True)
         return out[COLUMNS].tail(count).reset_index(drop=True)
 
     def get_market_status(self) -> MarketStatus:

@@ -36,7 +36,7 @@ DATA_DIR = Path(os.getenv("SPARKZ_V2_DATA_DIR") or PROJECT_DIR / "data")
 REPORTS_DIR = Path(os.getenv("SPARKZ_V2_REPORTS_DIR") or PROJECT_DIR / "reports")
 
 HARD_MAX_POSITIONS = 20
-TIMEFRAMES = {"1m": 60, "5m": 300, "15m": 900, "30m": 1800, "1h": 3600, "4h": 14400}
+TIMEFRAMES = {"1m": 60, "5m": 300, "15m": 900, "30m": 1800, "1h": 3600, "4h": 14400, "1d": 86400}
 
 
 class Environment(str, Enum):
@@ -56,6 +56,7 @@ class ProviderKind(str, Enum):
 class EntryMode(str, Enum):
     TREND = "TREND"               # the baseline rules (EMA20/50, price vs EMA20, RSI)
     RANGE_FADE = "RANGE_FADE"     # fade Bollinger/RSI extremes in a ranging market
+    ASSISTANT = "ASSISTANT"       # the market assistant's multi-timeframe, multi-strategy decision (app/assistant)
 
 
 class GridMode(str, Enum):
@@ -211,6 +212,15 @@ class ExecutionCfg(BaseModel):
     intrabar_seed: int = 7
 
 
+class AssistantCfg(BaseModel):
+    """Market assistant (app/assistant): analyses 1d/4h/1h/15m/5m/1m with nine strategies before any trade.
+    gate_entries: in paper trading, a new basket opens only when the assistant's decision is the same side
+    (any entry mode). Entry mode ASSISTANT lets the assistant's decision itself open the basket."""
+    gate_entries: bool = True
+    min_confidence: float = Field(default=0.55, ge=0.0, le=1.0)
+    refresh_seconds: float = Field(default=30.0, ge=5.0)
+
+
 class Settings(BaseModel):
     environment: Environment = Environment.DEVELOPMENT
     live_trading_enabled: bool = False
@@ -224,6 +234,7 @@ class Settings(BaseModel):
     target: TargetCfg = Field(default_factory=TargetCfg)
     risk: RiskCfg = Field(default_factory=RiskCfg)
     execution: ExecutionCfg = Field(default_factory=ExecutionCfg)
+    assistant: AssistantCfg = Field(default_factory=AssistantCfg)
 
     @model_validator(mode="after")
     def _safety(self) -> "Settings":
@@ -293,6 +304,8 @@ ENV_KEYS: dict[str, tuple[str, ...]] = {
     "COMMISSION_PER_LOT_SIDE": ("execution", "commission_per_lot_side"),
     "INTRABAR_ORDER": ("execution", "intrabar_order"),
     "EXECUTION_DELAY_MS": ("execution", "delay_ms"),
+    "ASSISTANT_GATE": ("assistant", "gate_entries"),
+    "ASSISTANT_MIN_CONFIDENCE": ("assistant", "min_confidence"),
 }
 
 
