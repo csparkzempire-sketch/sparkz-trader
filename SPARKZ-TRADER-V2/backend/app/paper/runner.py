@@ -71,7 +71,8 @@ class PaperRunner:
         now = datetime.now(timezone.utc)
         self.robot.log.add(now, "STARTED", f"Paper trading started: {self.s.market.symbol} {self.s.market.timeframe}, "
                            f"data from {self.info.name}{' (delayed)' if self.info.delayed else ''}. "
-                           "PAPER ACCOUNT: all orders are simulated.", {"provider": self.info.name,
+                           + ("ORDERS GO TO YOUR MT5 DEMO ACCOUNT through the bridge." if self.robot.live
+                            else "PAPER ACCOUNT: all orders are simulated."), {"provider": self.info.name,
                                                                          "notes": self.info.notes})
         self._load_history()
 
@@ -129,6 +130,10 @@ class PaperRunner:
         except Exception as e:
             self._error(f"tick: {e}")
         self._check_freshness(now_wall)
+        try:
+            self.robot.poll_executor()
+        except Exception as e:
+            self._error(f"execution: {e}")
 
     # ------------------------------------------------------------------ market assistant
     def _spread(self) -> float:

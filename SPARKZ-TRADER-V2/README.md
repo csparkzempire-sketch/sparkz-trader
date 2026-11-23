@@ -170,6 +170,35 @@ next to the 0.54 the backtests assume. Rerun a study with your figure, e.g.
 are blocked until they return. The server rejects pushes without the secret, malformed prices, and times in
 the future (the usual sign of a wrong `--utc-offset`).
 
+### Orders on an MT5 DEMO account (opt-in)
+
+By default every order is simulated. With `EXECUTION_MODE=MT5_DEMO` the paper loop sends the robot's approved
+orders to your own MetaTrader 5 terminal through the bridge, which executes them **on a demo account only**:
+
+```
+# server (window 1)
+$env:MARKET_DATA_PROVIDER = "BRIDGE"; $env:EXECUTION_MODE = "MT5_DEMO"; $env:SPARKZ_PRESET = "assistant"
+$env:SPARKZ_BRIDGE_TOKEN = "<secret>"
+python -m uvicorn app.main:app --port 8010
+# bridge (window 2, MT5 open and logged into a DEMO account, Algo Trading button ON)
+$env:SPARKZ_BRIDGE_TOKEN = "<secret>"
+python bridge\mt5_bridge.py --symbol XAUUSDm --server http://127.0.0.1:8010 --trade
+```
+
+- The bridge stops at start if MT5 is on a real account, and re-checks before every order; the server also
+  refuses to queue an order unless the bridge's latest account report says demo.
+- Each order is at most `MAX_LIVE_LOTS` (default 0.01, hard ceiling 0.1) on the server and `--max-lots` on the
+  bridge. Each opening order carries a protective stop loss in MT5 at twice the basket loss limit.
+- Orders not collected within 30 s are dropped, never sent late; an order id is never executed twice.
+- SPARKZ positions carry their own magic number; positions you open by hand are never touched.
+- If MT5 closes the position (protective stop, or you close it in MT5), the robot books the basket as closed
+  (`BROKER_CLOSED`).
+- STOP ROBOT blocks new orders and cancels uncollected ones; open positions stay in MT5 with their stop.
+- The Live page shows the MT5 account (demo/real, balance, equity, SPARKZ positions) next to the robot's ledger.
+- A real account needs `--allow-real-account` (with a typed confirmation) on the bridge **and**
+  `SPARKZ_ALLOW_REAL_ACCOUNT=I_ACCEPT_THE_RISK` on the server. Every study in `reports/` lost money after costs;
+  this is not recommended.
+
 ### Long fine-grained history from OANDA (read-only)
 
 With `OANDA_API_TOKEN` and `OANDA_ACCOUNT_ID` set, and `api-fxpractice.oanda.com` allowed:

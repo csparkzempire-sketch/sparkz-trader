@@ -1,6 +1,7 @@
 """
-MT5 -> SPARKZ TRADER V2 price bridge. READ-ONLY: it reads quotes and candles from your MetaTrader 5 terminal and
-sends them to the V2 server. It never calls an order function (a test in backend/tests checks this file).
+MT5 -> SPARKZ TRADER V2 price bridge. It reads quotes and candles from your MetaTrader 5 terminal and sends them
+to the V2 server. This file never calls an order function (a test in backend/tests checks it). Only with --trade
+does it load mt5_trader.py, which executes the robot's orders on a DEMO account (see that file).
 
 Runs on the Windows computer where MetaTrader 5 is open and logged in (a broker demo account is enough; the
 MetaTrader5 Python package works on Windows only).
@@ -16,6 +17,10 @@ MetaTrader5 Python package works on Windows only).
   --history     closed 1-minute candles sent at start (default 20000, about two weeks) so the robot's
                 indicators are ready at once
   --interval    seconds between quote pushes (default 2)
+  --trade       also execute the robot's orders in MT5 (DEMO account only; the server needs
+                EXECUTION_MODE=MT5_DEMO). --max-lots caps each order (default 0.01).
+  --allow-real-account   lift the demo-only rule (asks you to type a confirmation; the server must also have
+                SPARKZ_ALLOW_REAL_ACCOUNT=I_ACCEPT_THE_RISK). Not recommended.
 
 The server side: MARKET_DATA_PROVIDER=BRIDGE and the same SPARKZ_BRIDGE_TOKEN (see the V2 README).
 """
@@ -79,7 +84,7 @@ def http_post(url: str, token: str, payload: dict) -> dict:
 class Bridge:
     def __init__(self, mt5, symbol: str, as_symbol: str, server: str, token: str, utc_offset: float | None = None,
                  history: int = 20000, interval: float = 2.0, post=http_post, clock=time.time, sleep=time.sleep,
-                 log=print):
+                 log=print, trader=None):
         self.mt5, self.symbol, self.as_symbol = mt5, symbol, as_symbol.upper()
         self.url = server.rstrip("/") + "/api/bridge/push"
         self.token, self.offset, self.history, self.interval = token, utc_offset, history, interval
@@ -87,6 +92,7 @@ class Bridge:
         self.last_bar_time: float | None = None
         self.point: float | None = None
         self.htf_sent: float | None = None
+        self.trader = trader                 # mt5_trader.Trader when run with --trade
 
     def connect(self) -> None:
         if not self.mt5.initialize():
@@ -103,8 +109,10 @@ class Bridge:
         self.log(f"attached to MT5: {self.symbol} -> {self.as_symbol}, server time = UTC{self.offset:+g} h")
 
     def _send(self, tick=None, bars=None) -> dict:
-        return self.post(self.url, self.token, {"symbol": self.as_symbol, "broker_symbol": self.symbol,
-                                                "tick": tick, "bars_1m": bars or []})
+        body = {"symbol": self.as_symbol, "broker_symbol": self.symbol, "tick": tick, "bars_1m": bars or []}
+        if self.trader is not None:
+            body["account"] = self.trader.account_payload()
+        return self.post(self.url, self.token, body)
 
     def send_history(self) -> None:
         # position 0 is the candle still forming: start at 1, closed candles only
@@ -141,12 +149,17 @@ class Bridge:
                or float(r["time"]) > self.last_bar_time]
         if new:
             self.last_bar_time = float(new[-1]["time"])
-        if tick is None and not new:
+        if tick is None and not new and self.trader is None:
             return None
-        return self._send(tick_payload(tick, self.offset) if tick else None, bars_payload(new, self.offset, self.point))
+        out = self._send(tick_payload(tick, self.offset) if tick else None, bars_payload(new, self.offset, self.point))
+        if self.trader is not None:
+            self.trader.step()
+        return out
 
     def run(self, max_steps: int | None = None) -> None:
         self.connect()
+        if self.trader is not None:
+            self.trader.check_account()
         self.send_history()
         n = 0
         while max_steps is None or n < max_steps:
@@ -166,7 +179,16 @@ def main(argv=None) -> None:
     ap.add_argument("--utc-offset", type=float, default=None)
     ap.add_argument("--history", type=int, default=20000)
     ap.add_argument("--interval", type=float, default=2.0)
+    ap.add_argument("--trade", action="store_true", help="execute the robot's orders (DEMO account only)")
+    ap.add_argument("--max-lots", type=float, default=0.01)
+    ap.add_argument("--allow-real-account", action="store_true")
     a = ap.parse_args(argv)
+    if a.allow_real_account and not a.trade:
+        sys.exit("--allow-real-account only makes sense with --trade")
+    if a.allow_real_account:
+        print("WARNING: every study of this robot lost money after costs. A REAL account risks real money.")
+        if input("Type I ACCEPT THE RISK to allow a real account: ").strip() != "I ACCEPT THE RISK":
+            sys.exit("not confirmed: nothing started")
     token = os.getenv("SPARKZ_BRIDGE_TOKEN", "")
     if not token:
         sys.exit("set SPARKZ_BRIDGE_TOKEN in the environment (the same secret as the server)")
@@ -175,7 +197,13 @@ def main(argv=None) -> None:
     except ImportError:
         sys.exit("pip install MetaTrader5   (Windows only)")
     try:
-        Bridge(mt5, a.symbol, a.as_symbol, a.server, token, a.utc_offset, a.history, a.interval).run()
+        trader = None
+        if a.trade:
+            from mt5_trader import Trader
+            trader = Trader(mt5, a.symbol, a.server, token, http_post, allow_real=a.allow_real_account,
+                            max_lots=a.max_lots)
+        Bridge(mt5, a.symbol, a.as_symbol, a.server, token, a.utc_offset, a.history, a.interval,
+               trader=trader).run()
     except KeyboardInterrupt:
         pass
     finally:

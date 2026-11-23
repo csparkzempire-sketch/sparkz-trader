@@ -205,6 +205,10 @@ class ExecutionCfg(BaseModel):
     slippage_multiplier: float = 1.0
     commission_per_lot_side: float = 0.0
     delay_ms: int = 0                        # simulated order latency (paper loop)
+    # SIMULATION: every order is simulated. MT5_DEMO: paper-loop orders go to the user's MT5 DEMO account
+    # through the bridge (app/execution/mt5_executor.py); backtests are always simulated.
+    mode: Literal["SIMULATION", "MT5_DEMO"] = "SIMULATION"
+    max_live_lots: float = Field(default=0.01, gt=0, le=0.1)     # hard cap per order sent to MT5
     # Backtest only: order of a candle's high and low while a basket is open (unknown from OHLC).
     # FAVOURABLE_FIRST is the default because ADVERSE_FIRST lets a grid buy the dip and take the
     # rebound inside one candle, which flatters grids (see the backtest engine docstring).
@@ -241,6 +245,9 @@ class Settings(BaseModel):
         if self.live_trading_enabled:
             raise ValueError("LIVE_TRADING_ENABLED must be false: SPARKZ TRADER V2 has no live execution. "
                              "All orders are simulated.")
+        if self.execution.mode == "MT5_DEMO" and self.market.provider != ProviderKind.BRIDGE:
+            raise ValueError("EXECUTION_MODE=MT5_DEMO needs MARKET_DATA_PROVIDER=BRIDGE (prices and orders both "
+                             "go through the MT5 bridge)")
         if self.sizing.mode == SizingMode.MULTIPLIER:
             if not self.sizing.allow_multiplier_sizing:
                 raise ValueError("MULTIPLIER sizing is HIGH RISK and disabled by default. "
@@ -298,6 +305,8 @@ ENV_KEYS: dict[str, tuple[str, ...]] = {
     "COOLDOWN": ("risk", "cooldown_bars_after_close"),
     "COOLDOWN_AFTER_LOSS": ("risk", "cooldown_bars_after_loss"),
     "SPREAD_OVERRIDE": ("execution", "spread_override"),
+    "EXECUTION_MODE": ("execution", "mode"),
+    "MAX_LIVE_LOTS": ("execution", "max_live_lots"),
     "SPREAD_MULTIPLIER": ("execution", "spread_multiplier"),
     "SLIPPAGE": ("execution", "slippage"),
     "SLIPPAGE_MULTIPLIER": ("execution", "slippage_multiplier"),

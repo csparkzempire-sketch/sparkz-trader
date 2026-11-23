@@ -1,7 +1,8 @@
 """
 MT5 bridge provider: prices pushed by `bridge/mt5_bridge.py`, a small script that runs next to the user's own
 MetaTrader 5 terminal (a broker demo works) and sends its latest bid/ask and closed 1-minute candles to
-`POST /api/bridge/push`. MARKET DATA ONLY: the bridge reads quotes, nothing here can reach an order.
+`POST /api/bridge/push`. This provider is market data only; orders are a separate, opt-in path
+(EXECUTION_MODE=MT5_DEMO, app/execution/mt5_executor.py).
 
   MARKET_DATA_PROVIDER=BRIDGE      use it for the paper loop
   SPARKZ_BRIDGE_TOKEN=<secret>     shared secret; the push endpoint refuses every request without it
@@ -148,7 +149,7 @@ class BridgeProvider(MarketDataProvider):
         bs = self.store.broker_symbol
         return ProviderInfo("MT5 bridge" + (f" ({bs})" if bs else ""), "BRIDGE", live=True,
                             notes=["prices from the user's MetaTrader 5 terminal via bridge/mt5_bridge.py",
-                                   "market data only: no order is ever sent"])
+                                   "prices only; orders go to MT5 only with EXECUTION_MODE=MT5_DEMO and a bridge run with --trade"])
 
     def _check_symbol(self) -> None:
         if self.store.symbol and self.store.symbol != self.instrument.symbol:
