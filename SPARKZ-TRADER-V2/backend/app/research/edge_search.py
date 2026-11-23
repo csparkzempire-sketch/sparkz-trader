@@ -1,7 +1,12 @@
 """
 Is there a gold strategy that makes money AFTER the spread? A pre-registered search on 1h XAUUSD history.
 
-  python -m app.research.edge_search [--spread 0.54] [--slippage 0.10]
+  python -m app.research.edge_search [--symbol XAUUSD] [--spread 0.54] [--slippage 0.10]
+
+Other markets (EURUSD, GBPUSD, USDJPY): the same 17 variants and rules; the spread and slippage default to the
+instrument's typical retail figures (app/market/instruments.py), or XAUUSD's 0.54 / 0.10. For every variant the
+output also gives the BREAK-EVEN SPREAD: the spread (price units, same slippage) at which its net result over
+the whole period would be zero, so any broker's real spread can be compared at a glance.
 
 Protocol (fixed before any result was seen):
 - data: Dukascopy XAUUSD 1h mid candles (download_1h), 2008 onwards;
@@ -175,7 +180,7 @@ def variants(h1: pd.DataFrame, d: pd.DataFrame) -> dict:
 
 
 # ---------------------------------------------------------------------------------------------- evaluation
-def evaluate(h1: pd.DataFrame, pos: pd.Series, spread: float, slip: float, start, end) -> dict:
+def evaluate(h1: pd.DataFrame, pos: pd.Series, spread: float, slip: float, start, end, inst=None) -> dict:
     ts = pd.DatetimeIndex(h1["timestamp"])
     m = (ts >= pd.Timestamp(start, tz="UTC")) & (ts < pd.Timestamp(end, tz="UTC"))
     c = h1["close"].to_numpy()
@@ -184,11 +189,14 @@ def evaluate(h1: pd.DataFrame, pos: pd.Series, spread: float, slip: float, start
     move = nxt - c                                           # price change while the position is held
     prev = np.append(0.0, p[:-1])
     turn = np.abs(p - prev)
-    usd = p * move - turn * (spread / 2 + slip)              # per 1 oz (0.01 lot)
-    gross_usd = p * move
-    pct = usd / c
+    net_px = p * move - turn * (spread / 2 + slip)           # price units per unit held
+    pct = net_px / c
+    # USD at 0.01 lot (gold: 1 oz; FX: 1,000 units; JPY-quoted P&L divided by the price)
+    per_lot = 0.01 * (inst.contract_size if inst is not None else 100.0)
+    conv = per_lot / c if (inst is not None and inst.quote_ccy == "JPY") else per_lot
+    usd, gross_usd = net_px * conv, p * move * conv
     df = pd.DataFrame({"t": ts, "usd": usd, "gross": gross_usd, "pct": pct, "p": p, "turn": turn,
-                       "bh": move / c})[m]
+                       "gpx": p * move, "bh": move / c})[m]
     if not len(df):
         return {"hours": 0}
     day = df.set_index("t").resample("1D")[["pct", "bh", "usd"]].sum()
@@ -207,6 +215,8 @@ def evaluate(h1: pd.DataFrame, pos: pd.Series, spread: float, slip: float, start
             "cost_usd_0.01lot": round(float((df["gross"] - df["usd"]).sum()), 0),
             "long_usd": round(float(df.loc[df["p"] > 0, "usd"].sum()), 0),
             "short_usd": round(float(df.loc[df["p"] < 0, "usd"].sum()), 0),
+            "break_even_spread": (round(float(2 * (df["gpx"].sum() / df["turn"].sum() - slip)), 6)
+                                  if df["turn"].sum() > 0 else None),
             "sharpe": round(float(sr), 2), "annual_return_pct": round(float(day["pct"].mean() * 252 * 100), 2),
             "beta_to_gold": round(beta, 2), "alpha_annual_pct": round(float(alpha * 252 * 100), 2),
             "alpha_t": round(float(alpha_t), 2), "max_drawdown_usd": round(float((eq - eq.cummax()).min()), 0),
@@ -221,33 +231,41 @@ def passes(r: dict) -> bool:
 
 def main(argv=None) -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--spread", type=float, default=0.54)
-    ap.add_argument("--slippage", type=float, default=0.10)
-    ap.add_argument("--out", default="edge_search")
+    ap.add_argument("--symbol", default="XAUUSD")
+    ap.add_argument("--spread", type=float, default=None)
+    ap.add_argument("--slippage", type=float, default=None)
+    ap.add_argument("--out", default=None)
     a = ap.parse_args(argv)
+    from app.market.instruments import get_instrument
+    sym = a.symbol.upper()
+    inst = get_instrument(sym)
+    gold = sym == "XAUUSD"
+    a.spread = a.spread if a.spread is not None else (0.54 if gold else inst.spread)
+    a.slippage = a.slippage if a.slippage is not None else (0.10 if gold else inst.slippage)
+    a.out = a.out or ("edge_search" if gold else f"edge_search_{sym.lower()}")
     t0 = time.time()
-    h1 = load_history("XAUUSD", "1h", "dukascopy").sort_values("timestamp").reset_index(drop=True)
+    h1 = load_history(sym, "1h", "dukascopy").sort_values("timestamp").reset_index(drop=True)
     d = daily(h1)
     print(f"{len(h1)} hourly candles {h1['timestamp'].iloc[0]:%Y-%m-%d} .. {h1['timestamp'].iloc[-1]:%Y-%m-%d}, "
           f"{len(d)} days", flush=True)
     vs = variants(h1, d)
-    out = {"meta": {"spread": a.spread, "slippage": a.slippage, "periods": PERIODS, "pass_rule": PASS,
+    out = {"meta": {"symbol": sym, "spread": a.spread, "slippage": a.slippage, "periods": PERIODS, "pass_rule": PASS,
                     "variants_tried": len(vs) - 1,
                     "data": f"{h1['timestamp'].iloc[0]} .. {h1['timestamp'].iloc[-1]}"}, "variants": {}}
     for name, (fam, pos) in vs.items():
         res = {"family": fam}
-        dev = evaluate(h1, pos, a.spread, a.slippage, *PERIODS["development"])
+        dev = evaluate(h1, pos, a.spread, a.slippage, *PERIODS["development"], inst)
         res["development"] = dev
         stage = "development"
         if passes(dev) or fam == "benchmark":
-            res["validation"] = evaluate(h1, pos, a.spread, a.slippage, *PERIODS["validation"])
+            res["validation"] = evaluate(h1, pos, a.spread, a.slippage, *PERIODS["validation"], inst)
             stage = "validation"
             if passes(res["validation"]) or fam == "benchmark":
-                res["holdout"] = evaluate(h1, pos, a.spread, a.slippage, *PERIODS["holdout"])
+                res["holdout"] = evaluate(h1, pos, a.spread, a.slippage, *PERIODS["holdout"], inst)
                 stage = "holdout"
         res["reached"] = stage
         res["passed_all"] = fam != "benchmark" and stage == "holdout" and passes(res["holdout"])
-        res["full_period_for_reference"] = evaluate(h1, pos, a.spread, a.slippage, "2008-01-01", "2100-01-01")
+        res["full_period_for_reference"] = evaluate(h1, pos, a.spread, a.slippage, "2008-01-01", "2100-01-01", inst)
         out["variants"][name] = res
         dv = res["development"]
         print(f"{name:28s} dev: sharpe {dv.get('sharpe'):>5} alpha_t {dv.get('alpha_t'):>5} trades {dv.get('trades'):>5} "

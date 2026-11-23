@@ -244,6 +244,8 @@ class Robot:
     def process_tick(self, tick: Tick) -> None:
         st = self.market.on_tick(tick)
         self.last_tick = tick
+        if self.live:
+            self.executor.last_quote = tick
         if st is None:
             return
         prev = self.last_mid if self.last_mid is not None else tick.mid
