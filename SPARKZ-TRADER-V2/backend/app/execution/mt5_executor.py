@@ -1,9 +1,11 @@
 """
-MT5 DEMO execution: the robot's approved orders are sent to the user's own MetaTrader 5 terminal through the
-bridge (bridge/mt5_bridge.py --trade, which loads bridge/mt5_trader.py), and the fills MT5 reports come back.
+MT5 execution: the robot's approved orders are sent to the user's own MetaTrader 5 terminal through the bridge
+(bridge/mt5_bridge.py --trade, which loads bridge/mt5_trader.py), and the fills MT5 reports come back.
 
-  EXECUTION_MODE=MT5_DEMO   (server; needs MARKET_DATA_PROVIDER=BRIDGE)
-  python bridge/mt5_bridge.py --symbol XAUUSDm --trade      (Windows, next to MT5)
+  DEMO account:  EXECUTION_MODE=MT5_DEMO  +  python bridge/mt5_bridge.py --symbol XAUUSDm --trade
+  REAL account:  EXECUTION_MODE=MT5_LIVE  +  python bridge/mt5_bridge.py --symbol XAUUSDm --trade --live
+                 (--live asks you to type a confirmation; MT5_LIVE also trades a demo account)
+  Both need MARKET_DATA_PROVIDER=BRIDGE on the server.
 
 The flow, one order at a time:
 
@@ -12,10 +14,11 @@ The flow, one order at a time:
   ORDERS (result) -> MT5BridgeExecutor.process -> Fill (MT5's price) -> strategy / account
 
 Safety (each one is checked on its own; any one refuses the order):
-- the bridge refuses to trade unless MT5 is logged into a DEMO account (a real account needs --allow-real-account
-  on the bridge, a typed confirmation, and SPARKZ_ALLOW_REAL_ACCOUNT=I_ACCEPT_THE_RISK on the server);
-- the server refuses to queue an order unless the bridge's last account report says demo (or real was unlocked
-  on both sides);
+- a REAL account trades only when BOTH sides allow it: the server runs EXECUTION_MODE=MT5_LIVE and the bridge was
+  started with --live (typed confirmation). Otherwise the bridge stops at start, and the server refuses to queue
+  an order, whenever MT5 is logged into a real account;
+- daily loss stop: no new trade once the MT5 account's equity is execution.live_daily_loss_percent (default 3 %)
+  below its first value of the UTC day (closing trades always goes through);
 - lots above execution.max_live_lots (default 0.01) are refused here and again by the bridge (--max-lots);
 - every opening order carries a protective stop loss in MT5 (twice the basket loss limit), so a position is
   protected even if this server or the bridge stops;
@@ -30,7 +33,6 @@ The robot's account on the dashboard stays its own ledger (fills at MT5's prices
 
 from __future__ import annotations
 
-import os
 import threading
 import time
 from datetime import datetime, timezone
@@ -43,11 +45,6 @@ from app.market.providers.base import Tick
 
 ORDER_TTL = 30.0            # seconds an order may wait for the bridge to collect it
 ACCOUNT_TTL = 60.0          # an account report older than this does not count
-REAL_UNLOCK = "I_ACCEPT_THE_RISK"
-
-
-def real_account_unlocked() -> bool:
-    return os.getenv("SPARKZ_ALLOW_REAL_ACCOUNT", "") == REAL_UNLOCK
 
 
 class OrderBook:
@@ -62,6 +59,7 @@ class OrderBook:
     def reset(self) -> None:
         with self.lock:
             self.enabled = False
+            self.mode = "SIMULATION"
             self.orders: dict[int, dict] = {}          # id -> order (state QUEUED / SENT)
             self.results: list[dict] = []
             self.account: dict | None = None
@@ -135,26 +133,51 @@ ORDERS = OrderBook()
 
 class MT5BridgeExecutor(ExecutionAdapter):
     simulated = False
-    label = "MT5 DEMO (via the bridge)"
 
     def __init__(self, inst: Instrument, settings: Settings, book: OrderBook | None = None):
         self.inst, self.s = inst, settings
         self.book = book or ORDERS
-        self.book.enabled = True
+        self.mode = settings.execution.mode
+        self.book.enabled, self.book.mode = True, self.mode
+        self.day: str | None = None
+        self.day_start_equity: float | None = None
         self.intents: dict[int, OrderIntent] = {}
         self.rejected: list[tuple[OrderIntent, str]] = []
         self.flat_reports = 0               # consecutive account reports with no SPARKZ position
         self._seen_seq = -1
 
     # ---------------------------------------------------------------- checks
+    def account_type(self) -> str:
+        acc = self.book.account_report()
+        return "?" if acc is None else ("DEMO" if acc.get("demo") else "REAL")
+
+    def _daily(self, acc: dict) -> dict:
+        """MT5 equity against its first value of the UTC day (the daily loss stop)."""
+        today = datetime.now(timezone.utc).date().isoformat()
+        eq = float(acc.get("equity") or 0.0)
+        if self.day != today or self.day_start_equity is None:
+            self.day, self.day_start_equity = today, eq
+        start = self.day_start_equity
+        loss = (start - eq) / start * 100 if start > 0 else 0.0
+        return {"day": today, "start_equity": start, "equity": eq, "loss_pct": round(loss, 2),
+                "limit_pct": self.s.execution.live_daily_loss_percent,
+                "stopped": loss >= self.s.execution.live_daily_loss_percent}
+
     def account_problem(self) -> str | None:
         acc = self.book.account_report()
         if acc is None:
             return "no recent account report from the MT5 bridge (is it running with --trade?)"
         if not acc.get("trade_allowed", False):
             return "MT5 does not allow automated trading (press the Algo Trading button in MT5)"
-        if not acc.get("demo", False) and not (acc.get("real_allowed") and real_account_unlocked()):
-            return "MT5 is logged into a REAL account: SPARKZ trades demo accounts only"
+        if not acc.get("demo", False):
+            if self.mode != "MT5_LIVE":
+                return "MT5 is logged into a REAL account but the server runs EXECUTION_MODE=MT5_DEMO (demo only)"
+            if not acc.get("real_allowed"):
+                return "MT5 is logged into a REAL account but the bridge was not started with --live"
+        d = self._daily(acc)
+        if d["stopped"]:
+            return (f"daily loss stop: MT5 equity is {d['loss_pct']:.1f}% below today's start "
+                    f"(limit {d['limit_pct']:g}%); no new trades until 00:00 UTC")
         return None
 
     def protective_distance(self, lots: float) -> float:
@@ -244,5 +267,6 @@ class MT5BridgeExecutor(ExecutionAdapter):
 
     def describe(self) -> dict:
         acc = self.book.account_report()
-        return {"kind": "MT5_DEMO", "label": self.label, "account": acc, "problem": self.account_problem(),
+        return {"kind": self.mode, "account_type": self.account_type(), "account": acc,
+                "problem": self.account_problem(), "daily": self._daily(acc) if acc else None,
                 "max_live_lots": self.s.execution.max_live_lots, "orders": self.book.open_orders()}

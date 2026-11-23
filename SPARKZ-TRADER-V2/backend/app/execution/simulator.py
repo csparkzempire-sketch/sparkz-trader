@@ -3,8 +3,8 @@ Execution adapters.
 
 ExecutionAdapter is the only thing that turns an approved OrderIntent into a
 Fill. SimulationExecutor is the default. The only other adapter is
-MT5BridgeExecutor (mt5_executor.py, EXECUTION_MODE=MT5_DEMO): orders on the
-user's MT5 DEMO account through the bridge. LiveExecutionAdapter (real money)
+MT5BridgeExecutor (mt5_executor.py, EXECUTION_MODE=MT5_DEMO or MT5_LIVE): orders on the
+user's MT5 account (demo, or real with MT5_LIVE) through the bridge. LiveExecutionAdapter (real money)
 exists only to fail loudly if anything ever tries to build one.
 
 SimulationExecutor:

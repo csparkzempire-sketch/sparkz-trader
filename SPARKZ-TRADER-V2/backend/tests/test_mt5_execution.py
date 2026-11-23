@@ -102,9 +102,9 @@ def http(client):
     return post, get
 
 
-def demo_settings(**kw):
+def demo_settings(mode="MT5_DEMO", **kw):
     return load_settings("assistant", env={}, overrides={"market": {"provider": "BRIDGE"},
-                                                         "execution": {"mode": "MT5_DEMO", **kw}})
+                                                         "execution": {"mode": mode, **kw}})
 
 
 def intent(kind=IntentType.OPEN_BASKET, lots=0.01, direction="BUY"):
@@ -217,12 +217,50 @@ def test_real_account_is_refused_on_both_sides(client, book):
         {"kind": "OPEN", "volume": 0.01, "age_seconds": 0})
 
 
-def test_real_account_needs_the_server_unlock_too(client, book, monkeypatch):
-    book.set_account({"demo": False, "real_allowed": True, "trade_allowed": True, "positions": []})
+def test_real_account_needs_mt5_live_on_the_server_and_live_on_the_bridge(client, book):
+    acc = {"demo": False, "real_allowed": True, "trade_allowed": True, "equity": 500.0, "positions": []}
+    book.set_account(acc)
+    assert "MT5_DEMO" in mx.MT5BridgeExecutor(get_instrument("XAUUSD"), demo_settings(), book).account_problem()
+    live = mx.MT5BridgeExecutor(get_instrument("XAUUSD"), demo_settings("MT5_LIVE"), book)
+    assert live.account_problem() is None and live.account_type() == "REAL"
+    book.set_account({**acc, "real_allowed": False})
+    assert "--live" in live.account_problem()
+    book.set_account({**acc, "demo": True, "real_allowed": False})        # MT5_LIVE also trades a demo account
+    assert live.account_problem() is None and live.describe()["kind"] == "MT5_LIVE"
+
+
+def test_real_account_round_trip_with_live_on_both_sides(client, book):
+    post, get = http(client)
+    mt5 = FakeTradingMT5(demo=False)
+    trader = mt.Trader(mt5, "XAUUSDm", "http://x", TOKEN, post, get, allow_real=True, log=lambda m: None)
+    trader.check_account()                                  # no error with --live
+    bridge = mb.Bridge(mt5, "XAUUSDm", "XAUUSD", "http://x", TOKEN, utc_offset=3.0, post=post, log=lambda m: None,
+                       clock=lambda: NOW.timestamp(), sleep=lambda s: None, history=300, trader=trader)
+    bridge.connect()
+    r = Robot(demo_settings("MT5_LIVE"), mode="PAPER")
+    r.last_tick = tick()
+    bridge.step()
+    r.strategy.pending_open = True
+    r._submit([intent()], T, 2650.25)
+    bridge.step()
+    r.poll_executor()
+    assert r.strategy.basket is not None and len(mt5.positions) == 1
+    assert "MT5 (REAL account)" in " ".join(e["message"] for e in r.log.tail(20))
+
+
+def test_daily_loss_stop_blocks_new_trades_but_not_closes(client, book):
+    acc = {"demo": True, "trade_allowed": True, "equity": 1000.0, "positions": []}
+    book.set_account(acc)
     ex = mx.MT5BridgeExecutor(get_instrument("XAUUSD"), demo_settings(), book)
-    assert "REAL" in ex.account_problem()
-    monkeypatch.setenv("SPARKZ_ALLOW_REAL_ACCOUNT", "I_ACCEPT_THE_RISK")
-    assert ex.account_problem() is None
+    assert ex.account_problem() is None                     # 1000 is today's start
+    book.set_account({**acc, "equity": 975.0})
+    assert ex.account_problem() is None                     # -2.5 % < 3 %
+    book.set_account({**acc, "equity": 969.0})
+    assert "daily loss stop" in ex.account_problem()
+    ex.submit(intent(), T)
+    assert book.open_orders() == [] and ex.take_rejections()
+    ex.submit(intent(IntentType.CLOSE_BASKET), T)            # closing still goes through
+    assert [o["kind"] for o in book.open_orders()] == ["CLOSE"]
 
 
 def test_no_bridge_oversized_and_algo_off_orders_are_refused(client, book):

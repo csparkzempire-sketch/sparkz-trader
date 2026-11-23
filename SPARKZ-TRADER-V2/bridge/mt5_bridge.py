@@ -1,7 +1,8 @@
 """
 MT5 -> SPARKZ TRADER V2 price bridge. It reads quotes and candles from your MetaTrader 5 terminal and sends them
 to the V2 server. This file never calls an order function (a test in backend/tests checks it). Only with --trade
-does it load mt5_trader.py, which executes the robot's orders on a DEMO account (see that file).
+does it load mt5_trader.py, which executes the robot's orders in MT5 (demo account; a real account only with
+--live, see that file).
 
 Runs on the Windows computer where MetaTrader 5 is open and logged in (a broker demo account is enough; the
 MetaTrader5 Python package works on Windows only).
@@ -17,10 +18,10 @@ MetaTrader5 Python package works on Windows only).
   --history     closed 1-minute candles sent at start (default 20000, about two weeks) so the robot's
                 indicators are ready at once
   --interval    seconds between quote pushes (default 2)
-  --trade       also execute the robot's orders in MT5 (DEMO account only; the server needs
-                EXECUTION_MODE=MT5_DEMO). --max-lots caps each order (default 0.01).
-  --allow-real-account   lift the demo-only rule (asks you to type a confirmation; the server must also have
-                SPARKZ_ALLOW_REAL_ACCOUNT=I_ACCEPT_THE_RISK). Not recommended.
+  --trade       also execute the robot's orders in MT5 (demo account; the server needs EXECUTION_MODE=MT5_DEMO
+                or MT5_LIVE). --max-lots caps each order (default 0.01).
+  --live        with --trade: also allow a REAL account (asks you to type a confirmation; the server must run
+                EXECUTION_MODE=MT5_LIVE). Real money: every study of this robot lost money after costs.
 
 The server side: MARKET_DATA_PROVIDER=BRIDGE and the same SPARKZ_BRIDGE_TOKEN (see the V2 README).
 """
@@ -181,13 +182,14 @@ def main(argv=None) -> None:
     ap.add_argument("--interval", type=float, default=2.0)
     ap.add_argument("--trade", action="store_true", help="execute the robot's orders (DEMO account only)")
     ap.add_argument("--max-lots", type=float, default=0.01)
-    ap.add_argument("--allow-real-account", action="store_true")
+    ap.add_argument("--live", "--allow-real-account", dest="allow_real_account", action="store_true",
+                    help="with --trade: also allow a REAL account (typed confirmation)")
     a = ap.parse_args(argv)
     if a.allow_real_account and not a.trade:
-        sys.exit("--allow-real-account only makes sense with --trade")
+        sys.exit("--live only makes sense with --trade")
     if a.allow_real_account:
-        print("WARNING: every study of this robot lost money after costs. A REAL account risks real money.")
-        if input("Type I ACCEPT THE RISK to allow a real account: ").strip() != "I ACCEPT THE RISK":
+        print("WARNING: REAL MONEY. Every study of this robot lost money after costs; you can lose what you trade.")
+        if input("Type I ACCEPT THE RISK to allow a real account: ").strip().upper() != "I ACCEPT THE RISK":
             sys.exit("not confirmed: nothing started")
     token = os.getenv("SPARKZ_BRIDGE_TOKEN", "")
     if not token:
