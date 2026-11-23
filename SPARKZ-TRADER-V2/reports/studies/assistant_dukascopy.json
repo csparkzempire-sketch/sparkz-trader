@@ -1,0 +1,178 @@
+{
+ "meta": {
+  "source": "dukascopy",
+  "first_decision": "2025-02-02 23:15:00+00:00",
+  "last_decision": "2025-09-09 23:15:00+00:00",
+  "decisions": 3576,
+  "every_15m_candles": 4,
+  "spread": 0.54,
+  "min_confidence": 0.55,
+  "exits": "assistant's stop, 2R target, 8 h time stop, checked on 1m candles at bid/ask",
+  "calls": 1960
+ },
+ "overall": {
+  "trades": 569,
+  "win_rate_pct": 39.4,
+  "expectancy_r": -0.067,
+  "gross_expectancy_r": 0.027,
+  "avg_cost_r": 0.093,
+  "avg_risk_price": 16.67,
+  "net_usd": -3804.0,
+  "profit_factor": 0.87,
+  "max_drawdown_pct": -52.4,
+  "max_consecutive_losses": 13,
+  "ambiguous_stop_and_target_bars": 0,
+  "exit_reasons": {
+   "STOP": 254,
+   "TIME": 225,
+   "TARGET": 85,
+   "STOP_GAP": 3,
+   "TARGET_GAP": 1,
+   "END_OF_DATA": 1
+  },
+  "by_direction": {
+   "LONG": {
+    "trades": 392,
+    "expectancy_r": -0.036,
+    "net_usd": -1429.0
+   },
+   "SHORT": {
+    "trades": 177,
+    "expectancy_r": -0.134,
+    "net_usd": -2375.0
+   }
+  },
+  "by_session": {
+   "LONDON": {
+    "trades": 290,
+    "expectancy_r": -0.168,
+    "net_usd": -4880.0
+   },
+   "NEW_YORK": {
+    "trades": 279,
+    "expectancy_r": 0.039,
+    "net_usd": 1075.0
+   }
+  },
+  "by_year": {
+   "2025": {
+    "trades": 569,
+    "expectancy_r": -0.067,
+    "net_usd": -3804.0
+   }
+  },
+  "standard_error_r": 0.048,
+  "t_stat": -1.41
+ },
+ "by_band": {
+  "55-65": {
+   "trades": 155,
+   "win_rate_pct": 32.9,
+   "expectancy_r": -0.198,
+   "gross_expectancy_r": -0.084,
+   "net_usd": -3063.0
+  },
+  "65-75": {
+   "trades": 153,
+   "win_rate_pct": 41.8,
+   "expectancy_r": -0.047,
+   "gross_expectancy_r": 0.055,
+   "net_usd": -720.0
+  },
+  "75-85": {
+   "trades": 105,
+   "win_rate_pct": 46.7,
+   "expectancy_r": 0.064,
+   "gross_expectancy_r": 0.151,
+   "net_usd": 671.0
+  },
+  "85+": {
+   "trades": 156,
+   "win_rate_pct": 38.5,
+   "expectancy_r": -0.044,
+   "gross_expectancy_r": 0.025,
+   "net_usd": -693.0
+  }
+ },
+ "by_strategy": {
+  "liquidity_sweep": {
+   "trades": 45,
+   "win_rate_pct": 33.3,
+   "expectancy_r": -0.191,
+   "gross_expectancy_r": -0.083,
+   "net_usd": -860.0
+  },
+  "market_structure": {
+   "trades": 1,
+   "win_rate_pct": 0.0,
+   "expectancy_r": -1.006,
+   "gross_expectancy_r": -0.931,
+   "net_usd": -101.0
+  },
+  "range_trading": {
+   "trades": 1,
+   "win_rate_pct": 0.0,
+   "expectancy_r": -1.019,
+   "gross_expectancy_r": -0.776,
+   "net_usd": -102.0
+  },
+  "sr_flip": {
+   "trades": 7,
+   "win_rate_pct": 57.1,
+   "expectancy_r": 0.473,
+   "gross_expectancy_r": 0.587,
+   "net_usd": 331.0
+  },
+  "supply_demand": {
+   "trades": 8,
+   "win_rate_pct": 50.0,
+   "expectancy_r": 0.355,
+   "gross_expectancy_r": 0.448,
+   "net_usd": 284.0
+  },
+  "support_resistance": {
+   "trades": 268,
+   "win_rate_pct": 32.8,
+   "expectancy_r": -0.13,
+   "gross_expectancy_r": 0.011,
+   "net_usd": -3495.0
+  },
+  "trend_following": {
+   "trades": 237,
+   "win_rate_pct": 47.7,
+   "expectancy_r": 0.014,
+   "gross_expectancy_r": 0.048,
+   "net_usd": 340.0
+  },
+  "trendline_break": {
+   "trades": 2,
+   "win_rate_pct": 0.0,
+   "expectancy_r": -1.012,
+   "gross_expectancy_r": -0.86,
+   "net_usd": -202.0
+  }
+ },
+ "by_quarter": {
+  "2025Q1": {
+   "trades": 158,
+   "win_rate_pct": 43.0,
+   "expectancy_r": -0.03,
+   "gross_expectancy_r": 0.083,
+   "net_usd": -468.0
+  },
+  "2025Q2": {
+   "trades": 228,
+   "win_rate_pct": 36.8,
+   "expectancy_r": -0.088,
+   "gross_expectancy_r": -0.022,
+   "net_usd": -2001.0
+  },
+  "2025Q3": {
+   "trades": 183,
+   "win_rate_pct": 39.3,
+   "expectancy_r": -0.073,
+   "gross_expectancy_r": 0.038,
+   "net_usd": -1335.0
+  }
+ }
+}

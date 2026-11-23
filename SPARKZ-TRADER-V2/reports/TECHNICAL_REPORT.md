@@ -691,3 +691,34 @@ $80. Targets 1.5, 2 or 3R; same costs; chosen on 2024, judged on 2025-01 → 202
 that survives costs: scalps (1m/5m) lose clearly, with or without a learned filter, and the 15m/1h versions are
 indistinguishable from zero. Larger timeframes remove the cost problem but leave too few trades to show an
 edge in this period.
+
+## 17. The market assistant on real history
+
+`python -m app.assistant.study --source dukascopy --spread 0.54` replays the assistant (nine detectors, six
+timeframes, live settings: min confidence 55 %, execution timeframe 15m) over Dukascopy XAUUSD 1m candles from
+2 Feb to 9 Sep 2025 (215 trading days, 244,695 candles; the first 30 days warm up the indicators). Every timeframe
+sees only candles closed at the decision time. A decision every hour (3,576 decisions, 1,960 BUY/SELL calls);
+calls are traded one at a time at the next 1m open with the assistant's stop, a 2R target and an 8 hour time stop,
+at bid/ask with a 0.54 spread. Nothing was tuned on this data. Results: `reports/studies/assistant_dukascopy.json`.
+
+| | trades | win % | net R / trade | gross R / trade | net USD (0.01-lot basis) |
+|---|---|---|---|---|---|
+| all | 569 | 39.4 | −0.067 | +0.027 | −3,804 |
+| confidence 55–65 % | 155 | 32.9 | −0.198 | −0.084 | −3,063 |
+| confidence 65–75 % | 153 | 41.8 | −0.047 | +0.055 | −720 |
+| confidence 75–85 % | 105 | 46.7 | +0.064 | +0.151 | +671 |
+| confidence 85 %+ | 156 | 38.5 | −0.044 | +0.025 | −693 |
+| trend following | 237 | 47.7 | +0.014 | +0.048 | +340 |
+| support/resistance | 268 | 32.8 | −0.130 | +0.011 | −3,495 |
+| liquidity sweep | 45 | 33.3 | −0.191 | −0.083 | −860 |
+
+t-statistic of the net mean −1.41 (standard error 0.048 R); profit factor 0.87; every quarter negative net
+(Q1 −0.030, Q2 −0.088, Q3 −0.073 R). New York session +0.039 R, London −0.168 R. Other strategies gave fewer than
+10 trades each.
+
+Reading: before costs the calls are a coin toss (+0.027 R, well inside noise); the spread (0.093 R per trade on an
+average 16.7 USD stop) turns that into a loss. Confidence does not rank the calls monotonically (85 %+ is worse
+than 75–85 %), so the 75–85 % band and the New York result are most likely noise after this many cuts and should not
+be used as filters without fresh data. Like the earlier studies, this finds no edge: the assistant is a structured
+description of the market, not a forecast, and it should stay in paper trading. Limits: 8 months of one market regime
+(a strong 2025 gold uptrend, which explains the long bias, 392 of 569 trades), one exit rule.
