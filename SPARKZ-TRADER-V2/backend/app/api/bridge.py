@@ -1,4 +1,5 @@
-"""MT5 bridge endpoints: the bridge script pushes quotes here (market data only)."""
+"""MT5 bridge endpoints: the bridge script pushes quotes here; with EXECUTION_MODE=MT5_DEMO it also collects the
+robot's orders and reports MT5's results (see app/execution/mt5_executor.py)."""
 
 from __future__ import annotations
 
@@ -9,6 +10,7 @@ from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Header, HTTPException
 from pydantic import BaseModel, Field, field_validator, model_validator
 
+from app.execution.mt5_executor import ORDERS
 from app.market.providers.base import Tick
 from app.market.providers.bridge_provider import STORE
 
@@ -60,12 +62,51 @@ class BarIn(BaseModel):
         return self
 
 
+class PositionIn(BaseModel):
+    ticket: int
+    side: str
+    volume: float = Field(ge=0)
+    price_open: float = Field(ge=0)
+    sl: float = 0.0
+    profit: float = 0.0
+
+
+class AccountIn(BaseModel):
+    """The MT5 account as the trading bridge sees it (never the login or password)."""
+    demo: bool
+    real_allowed: bool = False
+    trade_allowed: bool = False
+    currency: str = Field(default="", max_length=8)
+    balance: float = 0.0
+    equity: float = 0.0
+    margin_free: float = 0.0
+    leverage: int = 0
+    positions: list[PositionIn] = Field(default_factory=list, max_length=200)    # SPARKZ positions only
+
+
+class ResultIn(BaseModel):
+    id: int
+    status: str = Field(pattern="^(FILLED|REJECTED)$")
+    price: float | None = Field(default=None, gt=0)
+    volume: float | None = Field(default=None, ge=0)
+    time: datetime | None = None
+    commission: float = 0.0
+    tickets: list[int] = Field(default_factory=list, max_length=200)
+    message: str = Field(default="", max_length=300)
+
+    @field_validator("time")
+    @classmethod
+    def _t(cls, v: datetime | None) -> datetime | None:
+        return None if v is None else _utc(v)
+
+
 class PushIn(BaseModel):
     symbol: str = Field(min_length=3, max_length=16)
     broker_symbol: str = Field(min_length=1, max_length=32)
     tick: TickIn | None = None
     bars_1m: list[BarIn] = Field(default_factory=list, max_length=5000)
     bars_htf: dict[str, list[BarIn]] = Field(default_factory=dict)      # "1h" / "4h" / "1d" closed candles
+    account: AccountIn | None = None                                    # only from a bridge run with --trade
 
     @field_validator("bars_htf")
     @classmethod
@@ -98,7 +139,27 @@ def push(body: PushIn, x_bridge_token: str | None = Header(default=None)):
     tick = Tick(body.symbol.upper(), body.tick.time, body.tick.bid, body.tick.ask) if body.tick else None
     bars = [b.model_dump() for b in body.bars_1m]
     htf = {tf: [b.model_dump() for b in v] for tf, v in body.bars_htf.items()}
+    if body.account is not None:
+        ORDERS.set_account(body.account.model_dump())
     return STORE.push(body.symbol.upper(), body.broker_symbol, tick, bars, htf)
+
+
+@router.get("/orders")
+def orders(x_bridge_token: str | None = Header(default=None)):
+    """Orders for the trading bridge to execute in MT5 (each is handed out once)."""
+    _authorise(x_bridge_token)
+    return {"execution": "MT5_DEMO" if ORDERS.enabled else "SIMULATION",
+            "orders": ORDERS.fetch() if ORDERS.enabled else []}
+
+
+@router.post("/orders/result")
+def order_result(body: ResultIn, x_bridge_token: str | None = Header(default=None)):
+    _authorise(x_bridge_token)
+    r = body.model_dump()
+    r["time"] = body.time.isoformat() if body.time else None
+    if not ORDERS.report(r):
+        raise HTTPException(404, f"no order {body.id} waiting for a result")
+    return {"ok": True}
 
 
 @router.get("/spread")
@@ -111,4 +172,5 @@ def spread():
 
 @router.get("/status")
 def status():
-    return {"enabled": bool(os.getenv("SPARKZ_BRIDGE_TOKEN")), **STORE.status()}
+    return {"enabled": bool(os.getenv("SPARKZ_BRIDGE_TOKEN")), "execution": "MT5_DEMO" if ORDERS.enabled else
+            "SIMULATION", "account": ORDERS.account_report(), **STORE.status()}

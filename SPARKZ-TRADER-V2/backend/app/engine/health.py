@@ -60,7 +60,7 @@ def build_health(robot, provider_info=None, market_open: bool | None = None, las
         },
         "strategy": {"name": robot.strategy.name, "status": robot.status, "running": loop_running and not robot.stopped,
                      "emergency_stop": robot.emergency, "halted": robot.halted, "bars_processed": robot.bar},
-        "executor": {"kind": "SIMULATION", "live_trading_enabled": False,
+        "executor": {"kind": "MT5_DEMO" if getattr(robot, "live", False) else "SIMULATION", "live_trading_enabled": False,
                      "pending_orders": len(robot.executor.pending())},
         "database": {"connected": db_ok, "write_errors": db.errors if db else None,
                      "last_error": db.last_error if db else None},

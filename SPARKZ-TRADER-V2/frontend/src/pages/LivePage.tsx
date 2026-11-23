@@ -1,6 +1,6 @@
 import { EquityChart, PriceChart } from "../charts/Charts";
 import { label, money, num, pct, price, signedMoney, tone, when } from "../components/format";
-import { Direction, Empty, KeyValues, Page, PageHeader, Panel, Regime, StatCard, StatGrid, Table } from "../components/ui";
+import { Direction, Empty, ErrorBox, KeyValues, Page, PageHeader, Panel, Regime, StatCard, StatGrid, Table } from "../components/ui";
 import { Dict } from "../services/api";
 import { Decision, useAssistant } from "./AssistantPage";
 
@@ -152,16 +152,41 @@ function AssistantSummary() {
   );
 }
 
+/** Shown only when orders go to MT5 (EXECUTION_MODE=MT5_DEMO): the broker account as the bridge reports it. */
+function Mt5Execution({ x }: { x: Dict }) {
+  const a = x.account;
+  return (
+    <Panel title="MT5 execution · DEMO account" right={<span className="text-xs text-accent-down font-semibold">orders are sent to MT5</span>}>
+      <ErrorBox error={x.problem ? `Orders are refused right now: ${x.problem}` : null} />
+      {a ? (
+        <div className="grid gap-3">
+          <StatGrid cols={4}>
+            <StatCard label="MT5 account" value={a.demo ? "DEMO" : "REAL"} tone={a.demo ? "neutral" : "down"} hint={a.currency} />
+            <StatCard label="MT5 balance" value={money(a.balance)} />
+            <StatCard label="MT5 equity" value={money(a.equity)} hint={`free margin ${money(a.margin_free)}`} />
+            <StatCard label="SPARKZ positions" value={String((a.positions ?? []).length)} hint={`max ${x.max_live_lots} lots per order`} />
+          </StatGrid>
+          <Table head={["Ticket", "Side", "Lots", "Open price", "Protective stop", "Profit"]} align={["l", "l", "r", "r", "r", "r"]}
+            rows={(a.positions ?? []).map((p: Dict) => [p.ticket, <Direction d={p.side} />, p.volume, price(p.price_open), price(p.sl), signedMoney(p.profit)])}
+            empty="No SPARKZ position open in MT5." />
+        </div>
+      ) : <Empty>Waiting for the bridge's account report (run the bridge with --trade).</Empty>}
+      <p className="text-[11px] text-base-muted mt-3">Every study of this robot lost money after costs. STOP ROBOT blocks new orders; positions stay open in MT5 with their protective stop, and can be closed from the dashboard or in MT5.</p>
+    </Panel>
+  );
+}
+
 export default function LivePage({ d }: { d: Dict | null }) {
   if (!d) return <Page><PageHeader title="Live" /><Empty>Connecting to the robot…</Empty></Page>;
   return (
     <>
-      <PageHeader title="Live" subtitle={`${d.market?.symbol ?? ""} ${d.preset} · paper trading on ${d.provider?.name ?? "?"}. Every order is simulated.`} />
+      <PageHeader title="Live" subtitle={`${d.market?.symbol ?? ""} ${d.preset} · ${d.execution?.kind === "MT5_DEMO" ? `orders go to your MT5 DEMO account via ${d.provider?.name ?? "the bridge"}.` : `paper trading on ${d.provider?.name ?? "?"}. Every order is simulated.`}`} />
       <Page>
         <div className="grid xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] gap-5">
           <Market d={d} />
           <Robot d={d} />
         </div>
+        {d.execution?.kind === "MT5_DEMO" && <Mt5Execution x={d.execution} />}
         <AssistantSummary />
         <Panel title="Price"><PriceChart candles={d.candles ?? []} basket={d.basket} live={d.market?.mid} /></Panel>
         <Basket d={d} />

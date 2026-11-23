@@ -2,9 +2,10 @@
 Execution adapters.
 
 ExecutionAdapter is the only thing that turns an approved OrderIntent into a
-Fill. V2 ships exactly one working adapter, SimulationExecutor. There is no
-live adapter: LiveExecutionAdapter exists only to fail loudly if anything ever
-tries to build one.
+Fill. SimulationExecutor is the default. The only other adapter is
+MT5BridgeExecutor (mt5_executor.py, EXECUTION_MODE=MT5_DEMO): orders on the
+user's MT5 DEMO account through the bridge. LiveExecutionAdapter (real money)
+exists only to fail loudly if anything ever tries to build one.
 
 SimulationExecutor:
 - queues each intent with a due time = submission time + execution.delay_ms;

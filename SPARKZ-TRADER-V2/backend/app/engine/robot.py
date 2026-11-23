@@ -72,7 +72,13 @@ class Robot:
         self.strategy = AdaptiveGridBasketStrategy(settings)
         self.account = PaperAccount(settings.risk.initial_capital)
         self.risk = RiskManager(settings, self.inst, self.account.dd)
-        self.executor = SimulationExecutor(self.inst, settings.execution)
+        if mode == "PAPER" and settings.execution.mode == "MT5_DEMO":
+            from app.execution.mt5_executor import MT5BridgeExecutor
+            self.executor = MT5BridgeExecutor(self.inst, settings)
+        else:
+            self.executor = SimulationExecutor(self.inst, settings.execution)
+        self.live = not getattr(self.executor, "simulated", True)
+        self._broker_warned = False
         self.ledger = TradeLedger(keep=keep_fills)
         self.log = log or EventLog()
         self.log_analysis = log_analysis
@@ -151,11 +157,44 @@ class Robot:
             if it.type == IntentType.ADD_POSITION:
                 self.log.add(when, "GRID_CHECK", f"Grid conditions checked: additional {it.direction} permitted "
                              f"({it.reason})", {"intent": it.to_dict()})
-            self.log.add(when, "ORDER_INTENT", f"{it.type.value} {it.direction} {it.lots:g} lots sent to the "
-                         "simulated executor", {"intent": it.to_dict()})
+            self.log.add(when, "ORDER_INTENT", f"{it.type.value} {it.direction} {it.lots:g} lots sent to "
+                         + ("MT5 (DEMO account) via the bridge" if self.live else "the simulated executor"),
+                         {"intent": it.to_dict()})
             self.executor.submit(it, when, it.trigger_price if it.trigger_price is not None else price)
             n += 1
         return n
+
+    def _process(self, tick: Tick) -> list[Fill]:
+        """Fills that became due; orders refused on the way (live execution) free the strategy to decide again."""
+        fills = self.executor.process(tick)
+        take = getattr(self.executor, "take_rejections", None)
+        for it, why in (take() if take else []):
+            self.strategy.on_cancel()
+            self.log.add(tick.time, "ORDER_REJECTED", f"{it.type.value} {it.direction} {it.lots:g} lots NOT executed: "
+                         f"{why}", {"intent": it.to_dict()})
+        return fills
+
+    def poll_executor(self) -> None:
+        """Live execution: collect fills that arrived without a new tick, and notice a basket MT5 already closed
+        (its protective stop, or closed by hand in MT5)."""
+        if not self.live or self.last_tick is None:
+            return
+        tick = self.last_tick
+        self._apply(self._process(tick))
+        b, st = self.strategy.basket, self.strategy
+        flat = self.executor.broker_flat()
+        if b is not None and not (st.pending_close or st.pending_add) and flat:
+            it = st.close_intent("BROKER_CLOSED", tick.time, "MT5 shows no SPARKZ position (protective stop or "
+                                 "closed in MT5)")
+            if it is not None:
+                self.log.add(tick.time, "BROKER_CLOSED", f"{b.uid}: MT5 has no open SPARKZ position any more; the "
+                             "basket is booked as closed at the current price")
+                self._apply([self.executor.close_fill(it, tick)])
+        elif b is None and flat is False and not st.pending_open and not self._broker_warned:
+            self._broker_warned = True
+            self.log.add(tick.time, "WARNING", "MT5 holds SPARKZ positions the robot is not managing (opened before "
+                         "a restart?). Manage or close them in MT5.")
+        self._derive_status(tick.time)
 
     def _apply(self, fills: list[Fill]) -> None:
         for f in fills:
@@ -207,11 +246,11 @@ class Robot:
         if st is None:
             return
         prev = self.last_mid if self.last_mid is not None else tick.mid
-        self._apply(self.executor.process(tick))          # orders that became due
+        self._apply(self._process(tick))          # orders that became due
         self._mark(tick.time)
         if not self.halted and self.risk.check_account(self.account.equity) == "CLOSE_AND_HALT":
             self._halt(tick.time)
-            self._apply(self.executor.process(tick))
+            self._apply(self._process(tick))
         if self.stopped:
             self.last_mid = tick.mid
             self._derive_status(tick.time)
@@ -226,7 +265,7 @@ class Robot:
                 # refused (an add, never a close): the strategy has recorded the refusal, so asking
                 # again evaluates the rest of the path, e.g. a loss limit beyond the refused add
                 continue
-            fills = self.executor.process(tick)
+            fills = self._process(tick)
             if not fills:
                 break           # delayed execution: fills arrive on a later tick
             self._apply(fills)
@@ -276,7 +315,7 @@ class Robot:
         self.log.add(when, "MANUAL_CLOSE", f"User asked to close {it.basket_id}")
         self.executor.submit(it, when)
         if self.last_tick is not None:
-            self._apply(self.executor.process(self.last_tick))
+            self._apply(self._process(self.last_tick))
         self._derive_status(when)
         return True
 
@@ -299,6 +338,7 @@ class Robot:
         d = self.strategy.last_decision
         return {
             "mode": self.mode, "environment": self.s.environment.value, "live_trading_enabled": False,
+            "execution": self.executor.describe() if self.live else {"kind": "SIMULATION"},
             "strategy": self.strategy.name, "video_style_mode": self.s.video_style_mode, "preset": self.s.name,
             "status": self.status, "emergency_stop": self.emergency, "halted": self.halted,
             "data_ok": self.data_ok, "data_reason": self.data_reason, "bar": self.bar,

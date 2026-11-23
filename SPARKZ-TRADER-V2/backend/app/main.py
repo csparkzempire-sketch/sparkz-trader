@@ -4,8 +4,9 @@ SPARKZ TRADER V2 API.
   uvicorn app.main:app --port 8000          (from backend/)
 
 Starts the paper runner with the configured provider (MARKET_DATA_PROVIDER,
-default MOCK) and serves the dashboard API plus a live WebSocket. Everything
-is simulated: there is no order route to any broker.
+default MOCK) and serves the dashboard API plus a live WebSocket. Orders are
+simulated, unless EXECUTION_MODE=MT5_DEMO sends them to the user's MT5 demo
+account through the bridge (app/execution/mt5_executor.py).
 """
 
 from __future__ import annotations
