@@ -1,7 +1,8 @@
 import { EquityChart, PriceChart } from "../charts/Charts";
 import { label, money, num, pct, price, signedMoney, tone, when } from "../components/format";
 import { Direction, Empty, ErrorBox, KeyValues, Page, PageHeader, Panel, Regime, StatCard, StatGrid, Table } from "../components/ui";
-import { Dict } from "../services/api";
+import { useEffect, useState } from "react";
+import { Dict, get } from "../services/api";
 import { Decision, useAssistant } from "./AssistantPage";
 
 const STATUS_TONE: Record<string, string> = {
@@ -152,6 +153,37 @@ function AssistantSummary() {
   );
 }
 
+/** Demo/live results against the history study (GET /api/execution/report), refreshed every minute. */
+function ExecutionReport() {
+  const [r, setR] = useState<Dict | null>(null);
+  useEffect(() => {
+    const load = () => get("/api/execution/report").then(setR).catch(() => {});
+    load(); const t = setInterval(load, 60_000); return () => clearInterval(t);
+  }, []);
+  if (!r) return null;
+  const res = r.results ?? {}, ex = r.execution, ref = r.history_reference;
+  return (
+    <Panel title="Results vs. the backtests">
+      <p className="text-sm mb-3">{r.verdict}</p>
+      <div className="grid md:grid-cols-2 gap-x-8 gap-y-4">
+        <KeyValues items={[
+          ["Closed baskets", res.baskets],
+          ["Win rate", res.win_rate_pct == null ? "—" : `${num(res.win_rate_pct, 1)}%`],
+          ["Average result", res.avg_r == null ? "—" : `${num(res.avg_r, 3)} R (1 R = ${money(res.r_unit_usd)})`],
+          ["Net", signedMoney(res.net_usd)],
+          ["History study", ref ? `${num(ref.win_rate_pct, 1)}% wins, ${num(ref.expectancy_r, 3)} R per trade (${ref.trades} trades, spread ${ref.spread_assumed})` : "—"],
+        ]} />
+        {ex && <KeyValues items={[
+          ["MT5 fills", ex.fills],
+          ["Slippage vs. quote (median / worst)", ex.slippage?.count ? `${num(ex.slippage.median, 3)} / ${num(ex.slippage.max, 3)}` : "—"],
+          ["Spread when ordering (median)", ex.spread_at_order?.count ? num(ex.spread_at_order.median, 3) : "—"],
+          ["Decision to fill (median)", ex.delay_seconds?.count ? `${num(ex.delay_seconds.median, 1)} s` : "—"],
+        ]} />}
+      </div>
+    </Panel>
+  );
+}
+
 /** Shown only when orders go to MT5 (EXECUTION_MODE=MT5_DEMO / MT5_LIVE): the broker account as the bridge reports it. */
 function Mt5Execution({ x }: { x: Dict }) {
   const a = x.account;
@@ -191,6 +223,7 @@ export default function LivePage({ d }: { d: Dict | null }) {
           <Robot d={d} />
         </div>
         {d.execution?.kind?.startsWith("MT5") && <Mt5Execution x={d.execution} />}
+        {d.execution?.kind?.startsWith("MT5") && <ExecutionReport />}
         <AssistantSummary />
         <Panel title="Price"><PriceChart candles={d.candles ?? []} basket={d.basket} live={d.market?.mid} /></Panel>
         <Basket d={d} />

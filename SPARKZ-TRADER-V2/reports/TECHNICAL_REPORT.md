@@ -722,3 +722,45 @@ than 75–85 %), so the 75–85 % band and the New York result are most likely n
 be used as filters without fresh data. Like the earlier studies, this finds no edge: the assistant is a structured
 description of the market, not a forecast, and it should stay in paper trading. Limits: 8 months of one market regime
 (a strong 2025 gold uptrend, which explains the long bias, 392 of 569 trades), one exit rule.
+
+## 18. A pre-registered search for a strategy that survives the spread
+
+`python -m app.research.edge_search` (`app/research/edge_search.py`) runs a fixed list of 17 strategies plus
+buy-and-hold on Dukascopy XAUUSD 1h candles from Jan 2008 to Oct 2026 (113,437 candles, downloaded from the
+monthly hourly files with `dukascopy.download_1h`). The protocol was written before any result was seen:
+
+- periods: development 2008–2018 (every strategy), validation 2019–2022 (only development passes), holdout
+  2023–2026 (only validation passes, looked at once);
+- pass rule: net Sharpe ≥ 0.5, alpha t-stat ≥ 2 (alpha = return not explained by holding gold, from a
+  regression of daily returns on gold's), and ≥ 30 trades;
+- costs: half the 0.54 spread plus 0.10 slippage per unit at every change of position;
+- families: Donchian channel breakouts (20/55/100 days, plus a long-only 55), EMA crosses (10/50, 20/100,
+  50/200), time-series momentum (21/63/126/252 days), RSI-2 daily mean reversion, walk-forward
+  hour-of-day seasonality (t ≥ 2 and t ≥ 3), and session breakouts (London, New York, Asia range).
+
+**Result: no strategy passed development, so none reached validation or the holdout.** Best development
+Sharpe after costs: EMA 50/200 at 0.20 (alpha t 0.78, 10 trades); buy-and-hold was 0.27.
+
+Over the whole 2008–2026 period (reference only, not a test), in USD at 0.01 lot:
+
+| | net | gross | Sharpe | alpha t | positive years |
+|---|---|---|---|---|---|
+| buy and hold | +3,042 | +3,042 | 0.48 | — | 13/19 |
+| EMA 20/100 | +2,643 | +2,688 | 0.26 | 0.79 | 11/19 |
+| momentum 126 days | +2,598 | +2,709 | 0.30 | 1.03 | 10/19 |
+| Donchian 55 long-only | +2,465 | +2,488 | 0.39 | 0.50 | 12/19 |
+| hour-of-day seasonality (t ≥ 2) | −11,130 | +2,824 | −5.9 | −29.3 | 1/19 |
+| London breakout | −2,959 | +573 | −0.79 | −3.7 | 4/19 |
+| Asia range → London breakout | −1,359 | +1,771 | −0.66 | −3.1 | 3/19 |
+
+Reading:
+
+- The slow trend and momentum strategies make money over 2008–2026, but less than holding gold. Their alpha is
+  indistinguishable from zero: they earn by being long gold during a long bull market, not by timing it.
+- The intraday patterns (hour of day, session breakouts) are real before costs. Seasonality earns +2,824 gross
+  over about 10,000 trades, roughly 0.28 per trade. But a round trip costs about 0.74 at a 0.54 spread, so the
+  spread turns them into large losses. They would need a total cost below about 0.25 per round trip, which is
+  not realistic for retail gold.
+- Together with sections 9–17: in every test of this project, the gold strategies that trade often lose to the
+  spread, and the ones that trade rarely do not beat holding gold. Nothing found here is a tradable edge.
+  Results: `reports/studies/edge_search.json`.

@@ -341,3 +341,27 @@ def test_trader_never_executes_an_order_twice(client, book):
     trader.step()
     trader.step()
     assert len(mt5.sent) == 1
+
+
+def test_execution_report_measures_slippage_and_compares_with_history(client, book):
+    from app.engine.live_report import build
+    mt5, trader, bridge = setup(client)
+    r = Robot(demo_settings(), mode="PAPER")
+    r.last_tick = tick()
+    r.executor.last_quote = Tick("XAUUSD", T, 2650.00, 2650.30)          # quote when the robot decided
+    bridge.step()
+    r.strategy.pending_open = True
+    r._submit([intent()], T, 2650.15)
+    bridge.step()                                                        # MT5 fills at its ask 2650.40
+    r.poll_executor()
+    rep = build(r)
+    e = rep["execution"]
+    assert e["fills"] == 1 and e["slippage"]["mean"] == pytest.approx(0.10)       # 0.10 worse than quoted
+    assert e["spread_at_order"]["median"] == pytest.approx(0.30)
+    assert rep["results"]["baskets"] == 0 and "at least 30" in rep["verdict"]
+    r.close_basket_manually()
+    bridge.step()
+    r.poll_executor()
+    rep = build(r)
+    assert rep["results"]["baskets"] == 1 and rep["results"]["r_unit_usd"] == 15
+    assert rep["execution"]["fills"] == 2

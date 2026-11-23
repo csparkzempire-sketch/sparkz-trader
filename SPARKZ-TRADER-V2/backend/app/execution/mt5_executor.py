@@ -143,6 +143,9 @@ class MT5BridgeExecutor(ExecutionAdapter):
         self.day_start_equity: float | None = None
         self.intents: dict[int, OrderIntent] = {}
         self.rejected: list[tuple[OrderIntent, str]] = []
+        self.last_quote: Tick | None = None  # the robot's latest quote (set by the robot on every tick)
+        self.quotes: dict[int, dict] = {}    # order id -> quote and time when the order was made
+        self.executions: list[dict] = []     # execution quality of every fill: slippage, delay
         self.flat_reports = 0               # consecutive account reports with no SPARKZ position
         self._seen_seq = -1
 
@@ -197,6 +200,8 @@ class MT5BridgeExecutor(ExecutionAdapter):
         side = intent.direction if intent.type != IntentType.CLOSE_BASKET else (
             "SELL" if intent.direction == "BUY" else "BUY")
         self.intents[intent.id] = intent
+        q = self.last_quote
+        self.quotes[intent.id] = {"time": now, "bid": q.bid if q else None, "ask": q.ask if q else None}
         self.book.add({"id": intent.id, "kind": "CLOSE" if intent.type == IntentType.CLOSE_BASKET else "OPEN",
                        "side": side, "volume": round(intent.lots, 2), "basket_id": intent.basket_id,
                        "reason": intent.reason[:60],
@@ -239,9 +244,19 @@ class MT5BridgeExecutor(ExecutionAdapter):
             t = datetime.fromisoformat(r["time"]) if r.get("time") else tick.time
             if t.tzinfo is None:
                 t = t.replace(tzinfo=timezone.utc)
+            q = self.quotes.pop(r["id"], {})
+            side = it.direction if it.type != IntentType.CLOSE_BASKET else ("SELL" if it.direction == "BUY" else "BUY")
+            expected = q.get("ask") if side == "BUY" else q.get("bid")
+            slip = None if expected is None else round((price - expected) if side == "BUY" else (expected - price), 6)
+            ref_mid = (q["bid"] + q["ask"]) / 2 if q.get("bid") is not None else tick.mid
+            self.executions.append({"id": it.id, "type": it.type.value, "side": side, "time": t.isoformat(),
+                                    "quoted": expected, "filled": price, "slippage": slip,
+                                    "spread_at_order": None if q.get("bid") is None else round(q["ask"] - q["bid"], 6),
+                                    "delay_seconds": round((t - q["time"]).total_seconds(), 1) if q.get("time") else None})
+            self.executions = self.executions[-1000:]
             fills.append(Fill(it.id, it.type, it.symbol, it.direction, float(r.get("volume") or it.lots), price,
-                              tick.mid, tick.spread, 0.0, abs(float(r.get("commission") or 0.0)), t, it.basket_id,
-                              it.reason, it.close_reason))
+                              ref_mid, tick.spread, slip or 0.0, abs(float(r.get("commission") or 0.0)), t,
+                              it.basket_id, it.reason, it.close_reason))
             self.flat_reports = 0
         return fills
 
