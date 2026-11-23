@@ -71,7 +71,7 @@ class PaperRunner:
         now = datetime.now(timezone.utc)
         self.robot.log.add(now, "STARTED", f"Paper trading started: {self.s.market.symbol} {self.s.market.timeframe}, "
                            f"data from {self.info.name}{' (delayed)' if self.info.delayed else ''}. "
-                           + ("ORDERS GO TO YOUR MT5 DEMO ACCOUNT through the bridge." if self.robot.live
+                           + (f"ORDERS GO TO YOUR MT5 ACCOUNT through the bridge ({self.s.execution.mode})." if self.robot.live
                             else "PAPER ACCOUNT: all orders are simulated."), {"provider": self.info.name,
                                                                          "notes": self.info.notes})
         self._load_history()

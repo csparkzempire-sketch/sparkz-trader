@@ -170,34 +170,41 @@ next to the 0.54 the backtests assume. Rerun a study with your figure, e.g.
 are blocked until they return. The server rejects pushes without the secret, malformed prices, and times in
 the future (the usual sign of a wrong `--utc-offset`).
 
-### Orders on an MT5 DEMO account (opt-in)
+### Orders on your MT5 account: demo or real (opt-in)
 
-By default every order is simulated. With `EXECUTION_MODE=MT5_DEMO` the paper loop sends the robot's approved
-orders to your own MetaTrader 5 terminal through the bridge, which executes them **on a demo account only**:
+By default every order is simulated. With `EXECUTION_MODE=MT5_DEMO` or `MT5_LIVE` the paper loop sends the robot's
+approved orders to your own MetaTrader 5 terminal through the bridge (`--trade`):
+
+| | server | bridge | trades |
+|---|---|---|---|
+| simulation (default) | `EXECUTION_MODE=SIMULATION` | without `--trade` | nothing in MT5 |
+| demo account | `EXECUTION_MODE=MT5_DEMO` | `--trade` | demo only; refuses a real account |
+| real account | `EXECUTION_MODE=MT5_LIVE` | `--trade --live` (type `I ACCEPT THE RISK`) | real or demo |
 
 ```
 # server (window 1)
 $env:MARKET_DATA_PROVIDER = "BRIDGE"; $env:EXECUTION_MODE = "MT5_DEMO"; $env:SPARKZ_PRESET = "assistant"
 $env:SPARKZ_BRIDGE_TOKEN = "<secret>"
 python -m uvicorn app.main:app --port 8010
-# bridge (window 2, MT5 open and logged into a DEMO account, Algo Trading button ON)
+# bridge (window 2, MT5 open and logged in, Algo Trading button ON)
 $env:SPARKZ_BRIDGE_TOKEN = "<secret>"
 python bridge\mt5_bridge.py --symbol XAUUSDm --server http://127.0.0.1:8010 --trade
 ```
 
-- The bridge stops at start if MT5 is on a real account, and re-checks before every order; the server also
-  refuses to queue an order unless the bridge's latest account report says demo.
+- A real account trades only when both sides allow it; otherwise the bridge stops at start and the server refuses
+  to queue orders. Both re-check the account before every order.
 - Each order is at most `MAX_LIVE_LOTS` (default 0.01, hard ceiling 0.1) on the server and `--max-lots` on the
   bridge. Each opening order carries a protective stop loss in MT5 at twice the basket loss limit.
+- Daily loss stop: no new trade once the MT5 equity is `LIVE_DAILY_LOSS_PERCENT` (default 3 %) below its first
+  value of the UTC day (as first seen by the server that day); closing trades always goes through.
 - Orders not collected within 30 s are dropped, never sent late; an order id is never executed twice.
 - SPARKZ positions carry their own magic number; positions you open by hand are never touched.
 - If MT5 closes the position (protective stop, or you close it in MT5), the robot books the basket as closed
   (`BROKER_CLOSED`).
 - STOP ROBOT blocks new orders and cancels uncollected ones; open positions stay in MT5 with their stop.
-- The Live page shows the MT5 account (demo/real, balance, equity, SPARKZ positions) next to the robot's ledger.
-- A real account needs `--allow-real-account` (with a typed confirmation) on the bridge **and**
-  `SPARKZ_ALLOW_REAL_ACCOUNT=I_ACCEPT_THE_RISK` on the server. Every study in `reports/` lost money after costs;
-  this is not recommended.
+- The Live page shows the MT5 account (DEMO/REAL, balance, equity, today's change against the daily stop, SPARKZ
+  positions) next to the robot's ledger.
+- Every study in `reports/` lost money after costs. Run demo first, and real money only with money you can lose.
 
 ### Long fine-grained history from OANDA (read-only)
 

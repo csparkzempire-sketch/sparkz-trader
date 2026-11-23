@@ -1,4 +1,4 @@
-"""MT5 bridge endpoints: the bridge script pushes quotes here; with EXECUTION_MODE=MT5_DEMO it also collects the
+"""MT5 bridge endpoints: the bridge script pushes quotes here; with EXECUTION_MODE=MT5_DEMO / MT5_LIVE it also collects the
 robot's orders and reports MT5's results (see app/execution/mt5_executor.py)."""
 
 from __future__ import annotations
@@ -148,7 +148,7 @@ def push(body: PushIn, x_bridge_token: str | None = Header(default=None)):
 def orders(x_bridge_token: str | None = Header(default=None)):
     """Orders for the trading bridge to execute in MT5 (each is handed out once)."""
     _authorise(x_bridge_token)
-    return {"execution": "MT5_DEMO" if ORDERS.enabled else "SIMULATION",
+    return {"execution": ORDERS.mode if ORDERS.enabled else "SIMULATION",
             "orders": ORDERS.fetch() if ORDERS.enabled else []}
 
 
@@ -172,5 +172,5 @@ def spread():
 
 @router.get("/status")
 def status():
-    return {"enabled": bool(os.getenv("SPARKZ_BRIDGE_TOKEN")), "execution": "MT5_DEMO" if ORDERS.enabled else
+    return {"enabled": bool(os.getenv("SPARKZ_BRIDGE_TOKEN")), "execution": ORDERS.mode if ORDERS.enabled else
             "SIMULATION", "account": ORDERS.account_report(), **STORE.status()}

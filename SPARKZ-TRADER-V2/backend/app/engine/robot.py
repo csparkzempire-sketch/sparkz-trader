@@ -72,7 +72,7 @@ class Robot:
         self.strategy = AdaptiveGridBasketStrategy(settings)
         self.account = PaperAccount(settings.risk.initial_capital)
         self.risk = RiskManager(settings, self.inst, self.account.dd)
-        if mode == "PAPER" and settings.execution.mode == "MT5_DEMO":
+        if mode == "PAPER" and settings.execution.mode in ("MT5_DEMO", "MT5_LIVE"):
             from app.execution.mt5_executor import MT5BridgeExecutor
             self.executor = MT5BridgeExecutor(self.inst, settings)
         else:
@@ -158,7 +158,8 @@ class Robot:
                 self.log.add(when, "GRID_CHECK", f"Grid conditions checked: additional {it.direction} permitted "
                              f"({it.reason})", {"intent": it.to_dict()})
             self.log.add(when, "ORDER_INTENT", f"{it.type.value} {it.direction} {it.lots:g} lots sent to "
-                         + ("MT5 (DEMO account) via the bridge" if self.live else "the simulated executor"),
+                         + (f"MT5 ({self.executor.account_type()} account) via the bridge" if self.live
+                            else "the simulated executor"),
                          {"intent": it.to_dict()})
             self.executor.submit(it, when, it.trigger_price if it.trigger_price is not None else price)
             n += 1

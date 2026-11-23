@@ -1,13 +1,14 @@
 """
-MT5 order execution for SPARKZ TRADER V2: DEMO ACCOUNTS ONLY unless deliberately unlocked.
+MT5 order execution for SPARKZ TRADER V2: a DEMO account, or a REAL account when deliberately allowed.
 
-Loaded by mt5_bridge.py only when it runs with --trade. The server must run with EXECUTION_MODE=MT5_DEMO (and
-MARKET_DATA_PROVIDER=BRIDGE); without it the server hands out no orders.
+Loaded by mt5_bridge.py only when it runs with --trade. The server must run with EXECUTION_MODE=MT5_DEMO (demo
+only) or MT5_LIVE (real allowed too), and MARKET_DATA_PROVIDER=BRIDGE; otherwise it hands out no orders.
+A real account also needs the bridge's --live (typed confirmation at start).
 
 Every couple of seconds the bridge:
   1. reports the MT5 account (demo or real, balance, equity, free margin, SPARKZ positions; never the login);
   2. collects the robot's orders (GET /api/bridge/orders) and, for each one,
-       - refuses it if MT5 is not on a DEMO account (unless --allow-real-account was confirmed at start),
+       - refuses it if MT5 is not on a DEMO account (unless --live was confirmed at start),
          if algo trading is off in MT5, if it is older than --max-age seconds, or above --max-lots;
        - opens at market with a protective stop loss, or closes every SPARKZ position (magic number) of the
          symbol;
@@ -60,8 +61,8 @@ class Trader:
         if info is None:
             raise RuntimeError(f"cannot read the MT5 account: {self.mt5.last_error()}")
         if not self.is_demo(info) and not self.allow_real:
-            raise RuntimeError("MT5 is logged into a REAL (or contest) account. SPARKZ trades DEMO accounts only: "
-                               "log MT5 into a demo account, or run the bridge without --trade")
+            raise RuntimeError("MT5 is logged into a REAL (or contest) account. Without --live the bridge trades "
+                               "DEMO accounts only: log MT5 into a demo account, or add --live to trade real money")
         term = self.mt5.terminal_info()
         if term is not None and not term.trade_allowed:
             self.log("WARNING: algo trading is OFF in MT5 (the Algo Trading button): orders will be refused")
