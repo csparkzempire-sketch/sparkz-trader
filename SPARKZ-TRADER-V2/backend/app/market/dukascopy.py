@@ -10,6 +10,9 @@ Two ways in, both giving 1-minute MID candles plus the bid/ask spread of each mi
   import     the CSV files the Dukascopy website exports ("Historical Data Feed": one file for BID, one
              for ASK, 1-minute interval)
 
+  hourly     one file per MONTH and side: <SYMBOL>/<YYYY>/<MM, 0-based>/<BID|ASK>_candles_hour_1.bi5 (seconds
+             into the month), so years of 1h candles take a few hundred requests (download_1h)
+
 Minutes where neither side traded ("flat" filler candles with zero volume, e.g. weekends) are dropped.
 Read-only market data: nothing here can reach an account or an order.
 """
@@ -104,6 +107,11 @@ def _fetch_day(client, symbol: str, side: str, day: pd.Timestamp, throttle: _Thr
     pause of up to two minutes."""
     url = f"{FEED}/{symbol.upper()}/{day.year}/{day.month - 1:02d}/{day.day:02d}/{side}_candles_min_1.bi5"
     cached = cache_dir / symbol.upper() / f"{day:%Y-%m-%d}_{side}.bi5" if cache_dir else None
+    return _fetch(client, url, cached, f"{symbol} {side} {day:%Y-%m-%d}", throttle, retries)
+
+
+def _fetch(client, url: str, cached: Path | None, what: str, throttle: _Throttle | None = None,
+           retries: int = 15) -> bytes:
     if cached and cached.exists():
         return cached.read_bytes()
     for attempt in range(retries + 1):
@@ -122,7 +130,7 @@ def _fetch_day(client, symbol: str, side: str, day: pd.Timestamp, throttle: _Thr
                     cached.write_bytes(content)
                 return content
             if attempt == retries:
-                raise ProviderError(f"Dukascopy returned HTTP {r.status_code} for {symbol} {side} {day:%Y-%m-%d}")
+                raise ProviderError(f"Dukascopy returned HTTP {r.status_code} for {what}")
         time.sleep(min(120, 5 * 2 ** attempt))
     return b""
 
@@ -158,6 +166,40 @@ def download_1m(symbol: str, start, end=None, client=None, workers: int = 1, pau
     df = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(columns=COLUMNS)
     sp = pd.concat(spreads, ignore_index=True) if spreads else pd.Series(dtype=float)
     return df, {"days_requested": len(days), "days_with_data": len(frames), "candles": len(df), **spread_stats(sp)}
+
+
+def download_1h(symbol: str, start, end=None, client=None, pause: float = 1.5, cache_dir: Path | None = None,
+                progress=None) -> tuple[pd.DataFrame, dict]:
+    """1h mid candles from monthly files, for every month from `start` to `end` (default: the current month;
+    the current month's file is never cached, it is still growing)."""
+    factor = _factor(symbol)
+    start = pd.Timestamp(start).tz_localize(None).to_period("M")
+    now = pd.Timestamp(datetime.now(timezone.utc)).tz_localize(None).to_period("M")
+    end = min(pd.Timestamp(end).tz_localize(None).to_period("M"), now) if end else now
+    if client is None:
+        import httpx
+
+        client = httpx.Client(timeout=30.0)
+    throttle = _Throttle(pause) if pause else None
+    frames, spreads = [], []
+    months = list(pd.period_range(start, end, freq="M"))
+    for i, m in enumerate(months, 1):
+        base = pd.Timestamp(m.start_time, tz="UTC")
+        sides = []
+        for side in ("BID", "ASK"):
+            url = f"{FEED}/{symbol.upper()}/{m.year}/{m.month - 1:02d}/{side}_candles_hour_1.bi5"
+            cached = (cache_dir / symbol.upper() / "hour" / f"{m}_{side}.bi5") if cache_dir and m < now else None
+            sides.append(decode_day(_fetch(client, url, cached, f"{symbol} {side} {m} hourly", throttle), base, factor))
+        if len(sides[0]) and len(sides[1]):
+            df, sp = combine(sides[0], sides[1], symbol)
+            frames.append(df)
+            spreads.append(sp)
+        if progress:
+            progress(i, m)
+    df = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(columns=COLUMNS)
+    df = df[df["timestamp"] < pd.Timestamp(datetime.now(timezone.utc)).floor("h")]      # closed hours only
+    sp = pd.concat(spreads, ignore_index=True) if spreads else pd.Series(dtype=float)
+    return df.reset_index(drop=True), {"months": len(months), "candles": len(df), **spread_stats(sp)}
 
 
 def read_export(file: str | Path) -> pd.DataFrame:
