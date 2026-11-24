@@ -764,3 +764,25 @@ Reading:
 - Together with sections 9–17: in every test of this project, the gold strategies that trade often lose to the
   spread, and the ones that trade rarely do not beat holding gold. Nothing found here is a tradable edge.
   Results: `reports/studies/edge_search.json`.
+
+## 19. The same search on EURUSD and GBPUSD
+
+`python -m app.research.edge_search --symbol EURUSD` (and `GBPUSD`) runs the same 17 strategies, periods and pass
+rule as section 18 on Dukascopy 1h candles from January 2008 to October 2026. Costs are typical retail figures:
+EURUSD spread 1.2 pips with 0.2 slippage, GBPUSD 1.5 pips with 0.3. Results are in
+`reports/studies/edge_search_eurusd.json` and `edge_search_gbpusd.json`. USDJPY was not downloaded: the data feed
+throttled requests until the download hit its time limit.
+
+**No strategy passed in either market.**
+
+- GBPUSD RSI-2 mean reversion was the only one in either market to pass development: Sharpe 0.61, alpha t 2.01,
+  150 trades, +541 USD at 0.01 lot. It then failed validation (2019–2022): Sharpe −0.37, −96 USD. With 17
+  strategies tried, one pass at t ≈ 2 is what chance alone predicts, and this is the case the three-period
+  protocol is designed to catch.
+- Best full-period results (reference only, not a test): EURUSD 126-day momentum +546 USD over 19 years
+  (alpha t 0.88; holding EURUSD lost 342); GBPUSD EMA 20/100 +413 USD (alpha t 0.54; holding GBPUSD lost 646).
+  These are small amounts, indistinguishable from chance.
+- The intraday patterns repeat the gold picture: positive before costs and large losses after them. EURUSD
+  hour-of-day seasonality made +1,389 gross and lost 2,794 net; its break-even spread is about 0.13 pips.
+
+Across gold, EURUSD and GBPUSD: nothing in this search is a tradable edge for a retail account.
