@@ -173,6 +173,24 @@ next to the 0.54 the backtests assume. Rerun a study with your figure, e.g.
 are blocked until they return. The server rejects pushes without the secret, malformed prices, and times in
 the future (the usual sign of a wrong `--utc-offset`).
 
+### Chart page: candles with the strategy labels
+
+The dashboard's **Chart** page draws live candles (5m, 15m, 1h, 4h, 1d) with what the assistant's detectors see:
+BOS / CHoCH with the broken level, swing points (HH / HL / LH / LL), liquidity sweeps, each strategy's setups
+(arrows; by default only the top 3 strategies of the current ranking), support / resistance levels, fresh supply /
+demand zones and trendlines. It also shows the assistant's decision for that timeframe with its plan: entry,
+stop loss, take profit, and how often the same setup reached its target first on this chart before. Labels use
+closed candles only; they read past and present prices and are not predictions.
+
+The robot's market is always there. For more markets, add `--watch` to the bridge with your broker's names:
+
+```
+python bridge\mt5_bridge.py --symbol XAUUSDm --server http://127.0.0.1:8010 --trade --watch EURUSDm,GBPUSDm,USDJPYm
+```
+
+`--watch` sends market data only (`POST /api/bridge/watch`); the robot still trades only `--symbol`.
+`GET /api/chart?symbol=EURUSD&tf=1h` returns the same data as JSON.
+
 ### Orders on your MT5 account: demo or real (opt-in)
 
 By default every order is simulated. With `EXECUTION_MODE=MT5_DEMO` or `MT5_LIVE` the paper loop sends the robot's

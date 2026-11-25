@@ -22,7 +22,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from app.api import account, assistant, backtest, baskets, bridge, execution, market, strategy, system
+from app.api import account, assistant, backtest, baskets, bridge, chart, execution, market, strategy, system
 from app.api.state import STATE
 from app.config import load_env_file
 from app.utils.logging import setup as log_setup
@@ -61,7 +61,7 @@ app.add_middleware(BaseHTTPMiddleware, dispatch=_dashboard_guard)       # inside
 app.add_middleware(CORSMiddleware, allow_origins=os.getenv("CORS_ORIGINS", "http://localhost:5173").split(","),
                    allow_methods=["*"], allow_headers=["*"])
 for r in (market.router, strategy.router, baskets.router, account.router, backtest.router, system.router,
-          bridge.router, assistant.router, execution.router):
+          bridge.router, assistant.router, execution.router, chart.router):
     app.include_router(r)
 
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ErrorBox } from "./components/ui";
 import AssistantPage from "./pages/AssistantPage";
+import ChartPage from "./pages/ChartPage";
 import EventsPage from "./pages/EventsPage";
 import LivePage, { StatusWord } from "./pages/LivePage";
 import ResearchPage, { Kind } from "./pages/ResearchPage";
@@ -8,7 +9,7 @@ import SystemPage from "./pages/SystemPage";
 import { useLive } from "./hooks/useLive";
 import { post } from "./services/api";
 
-const NAV: [string, string][] = [["live", "Live"], ["assistant", "Assistant"], ["events", "Event log"], ["run", "Backtest"], ["stress", "Stress tests"],
+const NAV: [string, string][] = [["live", "Live"], ["chart", "Chart"], ["assistant", "Assistant"], ["events", "Event log"], ["run", "Backtest"], ["stress", "Stress tests"],
   ["walk-forward", "Walk-forward"], ["lab", "Parameter lab"], ["system", "System"]];
 
 function StopButton({ stopped, onDone }: { stopped: boolean; onDone: (e: string | null) => void }) {
@@ -62,6 +63,7 @@ export default function App() {
         </div>
         {err && <div className="px-4 md:px-6 pt-3"><ErrorBox error={err} /></div>}
         {page === "live" && <LivePage d={data} />}
+        {page === "chart" && <ChartPage />}
         {page === "assistant" && <AssistantPage />}
         {page === "events" && <EventsPage live={data} />}
         {(["run", "stress", "walk-forward", "lab"] as Kind[]).includes(page as Kind) && <ResearchPage key={page} kind={page as Kind} />}

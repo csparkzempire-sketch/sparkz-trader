@@ -20,6 +20,8 @@ MetaTrader5 Python package works on Windows only).
   --interval    seconds between quote pushes (default 2)
   --trade       also execute the robot's orders in MT5 (demo account; the server needs EXECUTION_MODE=MT5_DEMO
                 or MT5_LIVE). --max-lots caps each order (default 0.01).
+  --watch       more markets for the dashboard's Chart page, as your broker names them, e.g.
+                --watch EURUSDm,GBPUSDm,USDJPYm (the traded symbol is always included). Market data only.
   --live        with --trade: also allow a REAL account (asks you to type a confirmation; the server must run
                 EXECUTION_MODE=MT5_LIVE). Real money: every study of this robot lost money after costs.
 
@@ -40,6 +42,10 @@ from datetime import datetime, timedelta, timezone
 CHUNK = 2000
 HTF = {"1h": ("TIMEFRAME_H1", 2000), "4h": ("TIMEFRAME_H4", 1000), "1d": ("TIMEFRAME_D1", 600)}
 HTF_EVERY = 15 * 60          # seconds between higher-timeframe refreshes
+WATCH_TF = {"5m": ("TIMEFRAME_M5", 2000), "15m": ("TIMEFRAME_M15", 1500), "1h": ("TIMEFRAME_H1", 1500),
+            "4h": ("TIMEFRAME_H4", 1000), "1d": ("TIMEFRAME_D1", 600)}
+WATCH_EVERY = 20             # seconds between chart updates (the latest candles of each watched market)
+WATCH_UPDATE = 3             # candles per timeframe in an update (the forming one and the last closed ones)
 
 
 def detect_offset_hours(server_epoch: float, utc_epoch: float, tolerance: float = 120.0) -> float | None:
@@ -85,7 +91,7 @@ def http_post(url: str, token: str, payload: dict) -> dict:
 class Bridge:
     def __init__(self, mt5, symbol: str, as_symbol: str, server: str, token: str, utc_offset: float | None = None,
                  history: int = 20000, interval: float = 2.0, post=http_post, clock=time.time, sleep=time.sleep,
-                 log=print, trader=None):
+                 log=print, trader=None, watch: list[str] | None = None):
         self.mt5, self.symbol, self.as_symbol = mt5, symbol, as_symbol.upper()
         self.url = server.rstrip("/") + "/api/bridge/push"
         self.token, self.offset, self.history, self.interval = token, utc_offset, history, interval
@@ -94,6 +100,10 @@ class Bridge:
         self.point: float | None = None
         self.htf_sent: float | None = None
         self.trader = trader                 # mt5_trader.Trader when run with --trade
+        self.watch = list(dict.fromkeys([symbol] + [w for w in (watch or []) if w]))   # chart markets
+        self.watch_url = server.rstrip("/") + "/api/bridge/watch"
+        self.watch_sent: dict[str, bool] = {}            # symbol -> full history sent
+        self.watch_at: float | None = None
 
     def connect(self) -> None:
         if not self.mt5.initialize():
@@ -141,7 +151,42 @@ class Bridge:
             self.post(self.url, self.token, {"symbol": self.as_symbol, "broker_symbol": self.symbol,
                                              "tick": None, "bars_1m": [], "bars_htf": htf})
 
+    def send_watch(self) -> None:
+        """Chart data for each watched market: the full history once, then the latest candles. A market the
+        terminal does not have is reported once and dropped; nothing here stops the price feed."""
+        self.watch_at = self.clock()
+        for sym in list(self.watch):
+            try:
+                if sym not in self.watch_sent:
+                    if not self.mt5.symbol_select(sym, True):
+                        self.log(f"--watch: {sym!r} not in this terminal (check the broker's name), skipped")
+                        self.watch.remove(sym)
+                        continue
+                full = not self.watch_sent.get(sym)
+                bars = {}
+                for tf, (const, count) in WATCH_TF.items():
+                    code = getattr(self.mt5, const, None)
+                    rates = self.mt5.copy_rates_from_pos(sym, code, 0, count if full else WATCH_UPDATE) \
+                        if code is not None else None
+                    if rates is not None and len(rates):
+                        rows = bars_payload(rates, self.offset)
+                        rows[-1]["forming"] = True               # position 0: the candle still open
+                        bars[tf] = rows
+                tick = self.mt5.symbol_info_tick(sym)
+                info = self.mt5.symbol_info(sym)
+                body = {"broker_symbol": sym, "bars": bars,
+                        "tick": tick_payload(tick, self.offset) if tick and tick.bid > 0 and tick.ask >= tick.bid else None,
+                        "digits": int(info.digits) if info is not None and hasattr(info, "digits") else None}
+                self.post(self.watch_url, self.token, body)
+                if full:
+                    self.log(f"chart: sent {sym} ({', '.join(f'{tf} {len(v)}' for tf, v in bars.items())})")
+                self.watch_sent[sym] = True
+            except Exception as e:
+                self.log(f"chart update for {sym} failed: {e}")
+
     def step(self) -> dict | None:
+        if self.watch and (self.watch_at is None or self.clock() - self.watch_at >= WATCH_EVERY):
+            self.send_watch()
         if self.htf_sent is not None and self.clock() - self.htf_sent >= HTF_EVERY:
             self.send_higher_timeframes()
         tick = self.mt5.symbol_info_tick(self.symbol)
@@ -180,6 +225,7 @@ def main(argv=None) -> None:
     ap.add_argument("--utc-offset", type=float, default=None)
     ap.add_argument("--history", type=int, default=20000)
     ap.add_argument("--interval", type=float, default=2.0)
+    ap.add_argument("--watch", default="", help="more markets for the Chart page, e.g. EURUSDm,GBPUSDm,USDJPYm")
     ap.add_argument("--trade", action="store_true", help="execute the robot's orders (DEMO account only)")
     ap.add_argument("--max-lots", type=float, default=0.01)
     ap.add_argument("--live", "--allow-real-account", dest="allow_real_account", action="store_true",
@@ -205,7 +251,7 @@ def main(argv=None) -> None:
             trader = Trader(mt5, a.symbol, a.server, token, http_post, allow_real=a.allow_real_account,
                             max_lots=a.max_lots)
         Bridge(mt5, a.symbol, a.as_symbol, a.server, token, a.utc_offset, a.history, a.interval,
-               trader=trader).run()
+               trader=trader, watch=[w.strip() for w in a.watch.split(",") if w.strip()]).run()
     except KeyboardInterrupt:
         pass
     finally:

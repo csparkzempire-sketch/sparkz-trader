@@ -95,3 +95,35 @@ def test_dashboard_password_protects_the_api_but_not_the_bridge(monkeypatch):
     assert c.get("/api/bridge/status").status_code == 200              # the bridge has its own token
     monkeypatch.delenv("SPARKZ_DASHBOARD_PASSWORD")
     assert m.dashboard_key_ok(None)                                    # on your own PC: no password
+
+
+def test_chart_endpoint_robot_market_and_watched_market(client):
+    from app.assistant.context import resample
+    from app.market.providers.mock_provider import generate_candles
+    from app.market.watch import WATCH
+    s = client.get("/api/chart/symbols").json()
+    assert s["robot_symbol"] == s["symbols"][0] and "1d" in s["timeframes"]
+    d = client.get(f"/api/chart?symbol={s['robot_symbol']}&tf=15m&bars=120").json()
+    if not d.get("error"):
+        for k in ("candles", "structure", "swings", "sweeps", "signals", "levels", "zones", "trendlines", "analysis"):
+            assert k in d, k
+        times = [c["time"] for c in d["candles"]]
+        assert times == sorted(times) and len(times) <= 121
+    assert client.get("/api/chart?symbol=EURUSD&tf=1h").status_code == 404
+    m5 = generate_candles("EURUSD", "5m", 12 * 24 * 120, "normal", seed=2)
+    bars = {tf: [{"time": r.timestamp.isoformat(), "open": r.open, "high": r.high, "low": r.low, "close": r.close}
+                 for r in (m5 if tf == "5m" else resample(m5, tf)).tail(800).itertuples()] for tf in ("5m", "1h", "4h", "1d")}
+    for rows in bars.values():
+        rows[-1]["forming"] = True
+    WATCH.push("EURUSDm", {"time": bars["5m"][-1]["time"], "bid": 1.1, "ask": 1.10012}, bars, 5)
+    try:
+        assert "EURUSD" in client.get("/api/chart/symbols").json()["symbols"]
+        d = client.get("/api/chart?symbol=EURUSD&tf=1h&bars=200").json()
+        assert not d.get("error") and d["digits"] == 5 and d["candles"][-1]["time"] == \
+            int(__import__("pandas").Timestamp(bars["1h"][-1]["time"]).timestamp())          # the forming candle is drawn
+        assert d["spread"] == pytest.approx(0.00012) and d["analysis"].get("action") in ("BUY", "SELL", "WAIT")
+        for sig in d["signals"]:
+            assert sig["action"] in ("BUY", "SELL") and (sig["entry"] - sig["stop"]) * (1 if sig["action"] == "BUY" else -1) > 0
+        assert client.get("/api/chart?symbol=EURUSD&tf=2h").status_code == 422
+    finally:
+        WATCH.reset()
