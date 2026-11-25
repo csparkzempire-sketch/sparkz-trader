@@ -786,3 +786,43 @@ throttled requests until the download hit its time limit.
   hour-of-day seasonality made +1,389 gross and lost 2,794 net; its break-even spread is about 0.13 pips.
 
 Across gold, EURUSD and GBPUSD: nothing in this search is a tradable edge for a retail account.
+
+## 20. Lot-escalation robots: the "trend pyramid" from a social-media video, and "flip and increase"
+
+`python -m app.research.lot_escalation` (`app/research/lot_escalation.py`) simulates both robots on Dukascopy
+XAUUSD 1m candles from 1 January to 9 September 2025, on a real account model:
+
+- costs: the broker's measured 0.24 spread plus 0.05 slippage per fill;
+- account: 1:2000 leverage, a new trade is refused when free margin would go negative, and the broker stops the
+  account out when equity reaches 0 (negative balance protection);
+- trend filter: a cycle starts on a 15-minute boundary in the direction of the 4h EMA20/50 and the 1h close
+  against its EMA50, using closed candles only;
+- within each 1-minute candle the adverse extreme is processed first;
+- two tests per robot and starting balance: one run over the whole period, and a fresh account started every
+  7 days and run for 30 days (32 starts).
+
+The video (TikTok, "$5 too 24$ Millions") shows a gold buy of 0.02 lot, then 0.35 at +5.3, then 0.55 at +14.8,
+with a target about +40, on an Exness XAUUSDm account.
+
+| robot | lots | result over 8 months | fresh 30-day accounts blown |
+|---|---|---|---|
+| video pyramid (0.02 per $5, then ×17.5, ×27.5; no stop) | as in the video | blown in the first cycle at $5, $100, $1k, $10k | 100 % |
+| video pyramid with a $5 stop that trails | as in the video | blown in the first cycle | 100 % |
+| pyramid, equal adds every $5, $10 stop that trails | 0.01 per $100 | $1k blown on 9 Apr; $10k blown on 1 May | 22 % ($1k), median −77 % |
+| same pyramid, small lots | 0.01 per $1,000 | $1k → $1,195; $10k → $9,200; 19 % of cycles win | 0 %; median +0.9 % ($1k) / −2.8 % ($10k); worst −34 % |
+| flip ×2 every $3, $1 target, up to 8 or 12 flips | 0.01 per $100 | 94–96 % of cycles win; every account blown within days | 100 % |
+| flip ×1.5 every $5, $2 target, up to 6 flips | 0.01 per $100 | $100 blown on 9 Feb; $1k blown on 8 Jan | 84–100 % |
+| flip ×2 every $3, small lots | 0.01 per $1,000 | 98 % of cycles win; $1k and $10k blown in January | 100 % |
+| flip ×2 every $10, $3 target, up to 6 flips, small lots | 0.01 per $1,000 | 98 % of cycles win; blown on 10 January | 41–47 %; the others median +19 % |
+
+Reading:
+
+- At the video's sizing, gold's ordinary $2–5 pullbacks wipe the account on the first trade. The clip shows a move
+  that happened to go the right way.
+- With small lots, the pyramid is ordinary trend following. It stays alive but makes about nothing (+19 % at
+  $1k, −8 % at $10k over a strong gold bull market), and a month can still lose a third of the account.
+- The flip robots win 94–98 % of their cycles and are still wiped out. One choppy stretch takes 6–8 flips, the
+  lots grow to 64–128 times the start, and that single cycle loses more than all the small wins made. This is
+  how they look perfect on video for days or weeks.
+- Neither robot is fit for a real account. The simulator is research only; it is not connected to the robot or
+  the MT5 bridge. Results: `reports/studies/lot_escalation.json`.
