@@ -1050,6 +1050,506 @@
      "profitable_months_pct": 53.1
     }
    }
+  },
+  "compound_scalps_risk2": {
+   "settings": {
+    "name": "compound_scalps_risk2",
+    "target": 25.0,
+    "stop": 10.0,
+    "step": 1.0,
+    "slots": 7,
+    "sizing": "risk",
+    "risk_pct": 2.0,
+    "margin_use": 0.5,
+    "kind": "compound"
+   },
+   "$5": {
+    "full": {
+     "start": "2025-01-01 23:00:00+00:00",
+     "end": "2025-09-09 23:59:00+00:00",
+     "start_balance": 5.0,
+     "final_balance": 0.0,
+     "blown": true,
+     "blown_at": "2025-01-02 04:06:00+00:00",
+     "return_pct": -100.0,
+     "cycles": 1,
+     "cycle_win_pct": 0.0,
+     "avg_win_usd": null,
+     "worst_cycle_usd": -5.0,
+     "max_lots_open": 0.03,
+     "max_drawdown_pct": 84.4,
+     "target_reached_pct": null,
+     "break_even_target_pct": 29.5,
+     "scalps": 0
+    },
+    "rolling_30d": {
+     "runs": 32,
+     "blown_within_30_days_pct": 100.0,
+     "median_30d_return_pct": -100.0,
+     "best_30d_return_pct": -100.0,
+     "worst_30d_return_pct": -100.0,
+     "profitable_months_pct": 0.0
+    }
+   },
+   "$100": {
+    "full": {
+     "start": "2025-01-01 23:00:00+00:00",
+     "end": "2025-09-09 23:59:00+00:00",
+     "start_balance": 100.0,
+     "final_balance": 0.0,
+     "blown": true,
+     "blown_at": "2025-01-06 04:52:00+00:00",
+     "return_pct": -100.0,
+     "cycles": 4,
+     "cycle_win_pct": 25.0,
+     "avg_win_usd": 129.78,
+     "worst_cycle_usd": -81.9,
+     "max_lots_open": 0.07,
+     "max_drawdown_pct": 96.1,
+     "target_reached_pct": 33.3,
+     "break_even_target_pct": 29.5,
+     "scalps": 168
+    },
+    "rolling_30d": {
+     "runs": 32,
+     "blown_within_30_days_pct": 96.9,
+     "median_30d_return_pct": -100.0,
+     "best_30d_return_pct": 148.3,
+     "worst_30d_return_pct": -100.0,
+     "profitable_months_pct": 3.1
+    }
+   },
+   "$1000": {
+    "full": {
+     "start": "2025-01-01 23:00:00+00:00",
+     "end": "2025-09-09 23:59:00+00:00",
+     "start_balance": 1000.0,
+     "final_balance": 0.0,
+     "blown": true,
+     "blown_at": "2025-03-11 08:13:00+00:00",
+     "return_pct": -100.0,
+     "cycles": 76,
+     "cycle_win_pct": 32.9,
+     "avg_win_usd": 130.35,
+     "worst_cycle_usd": -103.32,
+     "max_lots_open": 0.07,
+     "max_drawdown_pct": 99.5,
+     "target_reached_pct": 33.3,
+     "break_even_target_pct": 29.5,
+     "scalps": 4935
+    },
+    "rolling_30d": {
+     "runs": 32,
+     "blown_within_30_days_pct": 59.4,
+     "median_30d_return_pct": -100.0,
+     "best_30d_return_pct": 20.5,
+     "worst_30d_return_pct": -100.0,
+     "profitable_months_pct": 9.4
+    }
+   },
+   "$10000": {
+    "full": {
+     "start": "2025-01-01 23:00:00+00:00",
+     "end": "2025-09-09 23:59:00+00:00",
+     "start_balance": 10000.0,
+     "final_balance": 0.0,
+     "blown": true,
+     "blown_at": "2025-07-18 01:37:00+00:00",
+     "return_pct": -100.0,
+     "cycles": 400,
+     "cycle_win_pct": 28.2,
+     "avg_win_usd": 141.2,
+     "worst_cycle_usd": -159.04,
+     "max_lots_open": 0.14,
+     "max_drawdown_pct": 100.0,
+     "target_reached_pct": 28.3,
+     "break_even_target_pct": 29.5,
+     "scalps": 24157
+    },
+    "rolling_30d": {
+     "runs": 32,
+     "blown_within_30_days_pct": 0.0,
+     "median_30d_return_pct": -13.1,
+     "best_30d_return_pct": 4.1,
+     "worst_30d_return_pct": -42.2,
+     "profitable_months_pct": 12.5
+    }
+   }
+  },
+  "compound_scalps_risk10": {
+   "settings": {
+    "name": "compound_scalps_risk10",
+    "target": 25.0,
+    "stop": 10.0,
+    "step": 1.0,
+    "slots": 7,
+    "sizing": "risk",
+    "risk_pct": 10.0,
+    "margin_use": 0.5,
+    "kind": "compound"
+   },
+   "$5": {
+    "full": {
+     "start": "2025-01-01 23:00:00+00:00",
+     "end": "2025-09-09 23:59:00+00:00",
+     "start_balance": 5.0,
+     "final_balance": 0.0,
+     "blown": true,
+     "blown_at": "2025-01-02 04:06:00+00:00",
+     "return_pct": -100.0,
+     "cycles": 1,
+     "cycle_win_pct": 0.0,
+     "avg_win_usd": null,
+     "worst_cycle_usd": -5.0,
+     "max_lots_open": 0.03,
+     "max_drawdown_pct": 84.4,
+     "target_reached_pct": null,
+     "break_even_target_pct": 29.5,
+     "scalps": 0
+    },
+    "rolling_30d": {
+     "runs": 32,
+     "blown_within_30_days_pct": 100.0,
+     "median_30d_return_pct": -100.0,
+     "best_30d_return_pct": -100.0,
+     "worst_30d_return_pct": -100.0,
+     "profitable_months_pct": 0.0
+    }
+   },
+   "$100": {
+    "full": {
+     "start": "2025-01-01 23:00:00+00:00",
+     "end": "2025-09-09 23:59:00+00:00",
+     "start_balance": 100.0,
+     "final_balance": 0.0,
+     "blown": true,
+     "blown_at": "2025-01-06 04:52:00+00:00",
+     "return_pct": -100.0,
+     "cycles": 4,
+     "cycle_win_pct": 25.0,
+     "avg_win_usd": 129.78,
+     "worst_cycle_usd": -81.9,
+     "max_lots_open": 0.07,
+     "max_drawdown_pct": 96.1,
+     "target_reached_pct": 33.3,
+     "break_even_target_pct": 29.5,
+     "scalps": 168
+    },
+    "rolling_30d": {
+     "runs": 32,
+     "blown_within_30_days_pct": 96.9,
+     "median_30d_return_pct": -100.0,
+     "best_30d_return_pct": 148.3,
+     "worst_30d_return_pct": -100.0,
+     "profitable_months_pct": 3.1
+    }
+   },
+   "$1000": {
+    "full": {
+     "start": "2025-01-01 23:00:00+00:00",
+     "end": "2025-09-09 23:59:00+00:00",
+     "start_balance": 1000.0,
+     "final_balance": 0.0,
+     "blown": true,
+     "blown_at": "2025-03-11 08:16:00+00:00",
+     "return_pct": -100.0,
+     "cycles": 76,
+     "cycle_win_pct": 32.9,
+     "avg_win_usd": 130.35,
+     "worst_cycle_usd": -103.32,
+     "max_lots_open": 0.14,
+     "max_drawdown_pct": 99.9,
+     "target_reached_pct": 33.3,
+     "break_even_target_pct": 29.5,
+     "scalps": 4935
+    },
+    "rolling_30d": {
+     "runs": 32,
+     "blown_within_30_days_pct": 62.5,
+     "median_30d_return_pct": -100.0,
+     "best_30d_return_pct": 20.5,
+     "worst_30d_return_pct": -100.0,
+     "profitable_months_pct": 9.4
+    }
+   },
+   "$10000": {
+    "full": {
+     "start": "2025-01-01 23:00:00+00:00",
+     "end": "2025-09-09 23:59:00+00:00",
+     "start_balance": 10000.0,
+     "final_balance": 0.0,
+     "blown": true,
+     "blown_at": "2025-05-01 22:17:00+00:00",
+     "return_pct": -100.0,
+     "cycles": 217,
+     "cycle_win_pct": 33.2,
+     "avg_win_usd": 351.07,
+     "worst_cycle_usd": -868.56,
+     "max_lots_open": 1.05,
+     "max_drawdown_pct": 100.0,
+     "target_reached_pct": 33.3,
+     "break_even_target_pct": 29.5,
+     "scalps": 14000
+    },
+    "rolling_30d": {
+     "runs": 32,
+     "blown_within_30_days_pct": 0.0,
+     "median_30d_return_pct": -66.5,
+     "best_30d_return_pct": 6.3,
+     "worst_30d_return_pct": -96.7,
+     "profitable_months_pct": 6.2
+    }
+   }
+  },
+  "compound_scalps_video_margin": {
+   "settings": {
+    "name": "compound_scalps_video_margin",
+    "target": 25.0,
+    "stop": 10.0,
+    "step": 1.0,
+    "slots": 7,
+    "sizing": "margin",
+    "risk_pct": 2.0,
+    "margin_use": 0.5,
+    "kind": "compound"
+   },
+   "$5": {
+    "full": {
+     "start": "2025-01-01 23:00:00+00:00",
+     "end": "2025-09-09 23:59:00+00:00",
+     "start_balance": 5.0,
+     "final_balance": 0.0,
+     "blown": true,
+     "blown_at": "2025-01-02 04:06:00+00:00",
+     "return_pct": -100.0,
+     "cycles": 1,
+     "cycle_win_pct": 0.0,
+     "avg_win_usd": null,
+     "worst_cycle_usd": -5.0,
+     "max_lots_open": 0.03,
+     "max_drawdown_pct": 84.4,
+     "target_reached_pct": null,
+     "break_even_target_pct": 29.5,
+     "scalps": 0
+    },
+    "rolling_30d": {
+     "runs": 32,
+     "blown_within_30_days_pct": 100.0,
+     "median_30d_return_pct": -100.0,
+     "best_30d_return_pct": -100.0,
+     "worst_30d_return_pct": -100.0,
+     "profitable_months_pct": 0.0
+    }
+   },
+   "$100": {
+    "full": {
+     "start": "2025-01-01 23:00:00+00:00",
+     "end": "2025-09-09 23:59:00+00:00",
+     "start_balance": 100.0,
+     "final_balance": 0.0,
+     "blown": true,
+     "blown_at": "2025-01-02 04:45:00+00:00",
+     "return_pct": -100.0,
+     "cycles": 1,
+     "cycle_win_pct": 0.0,
+     "avg_win_usd": null,
+     "worst_cycle_usd": -100.0,
+     "max_lots_open": 0.35,
+     "max_drawdown_pct": 62.4,
+     "target_reached_pct": null,
+     "break_even_target_pct": 29.5,
+     "scalps": 0
+    },
+    "rolling_30d": {
+     "runs": 32,
+     "blown_within_30_days_pct": 100.0,
+     "median_30d_return_pct": -100.0,
+     "best_30d_return_pct": -100.0,
+     "worst_30d_return_pct": -100.0,
+     "profitable_months_pct": 0.0
+    }
+   },
+   "$1000": {
+    "full": {
+     "start": "2025-01-01 23:00:00+00:00",
+     "end": "2025-09-09 23:59:00+00:00",
+     "start_balance": 1000.0,
+     "final_balance": 0.0,
+     "blown": true,
+     "blown_at": "2025-01-02 04:45:00+00:00",
+     "return_pct": -100.0,
+     "cycles": 1,
+     "cycle_win_pct": 0.0,
+     "avg_win_usd": null,
+     "worst_cycle_usd": -1000.0,
+     "max_lots_open": 3.78,
+     "max_drawdown_pct": 67.4,
+     "target_reached_pct": null,
+     "break_even_target_pct": 29.5,
+     "scalps": 0
+    },
+    "rolling_30d": {
+     "runs": 32,
+     "blown_within_30_days_pct": 100.0,
+     "median_30d_return_pct": -100.0,
+     "best_30d_return_pct": -100.0,
+     "worst_30d_return_pct": -100.0,
+     "profitable_months_pct": 0.0
+    }
+   },
+   "$10000": {
+    "full": {
+     "start": "2025-01-01 23:00:00+00:00",
+     "end": "2025-09-09 23:59:00+00:00",
+     "start_balance": 10000.0,
+     "final_balance": 0.0,
+     "blown": true,
+     "blown_at": "2025-01-02 04:45:00+00:00",
+     "return_pct": -100.0,
+     "cycles": 1,
+     "cycle_win_pct": 0.0,
+     "avg_win_usd": null,
+     "worst_cycle_usd": -10000.0,
+     "max_lots_open": 37.94,
+     "max_drawdown_pct": 67.6,
+     "target_reached_pct": null,
+     "break_even_target_pct": 29.5,
+     "scalps": 0
+    },
+    "rolling_30d": {
+     "runs": 32,
+     "blown_within_30_days_pct": 100.0,
+     "median_30d_return_pct": -100.0,
+     "best_30d_return_pct": -100.0,
+     "worst_30d_return_pct": -100.0,
+     "profitable_months_pct": 0.0
+    }
+   }
+  },
+  "hold_to_target_risk2": {
+   "settings": {
+    "name": "hold_to_target_risk2",
+    "target": 25.0,
+    "stop": 10.0,
+    "step": null,
+    "slots": 7,
+    "sizing": "risk",
+    "risk_pct": 2.0,
+    "margin_use": 0.5,
+    "kind": "compound"
+   },
+   "$5": {
+    "full": {
+     "start": "2025-01-01 23:00:00+00:00",
+     "end": "2025-09-09 23:59:00+00:00",
+     "start_balance": 5.0,
+     "final_balance": 0.0,
+     "blown": true,
+     "blown_at": "2025-01-02 04:06:00+00:00",
+     "return_pct": -100.0,
+     "cycles": 1,
+     "cycle_win_pct": 0.0,
+     "avg_win_usd": null,
+     "worst_cycle_usd": -5.0,
+     "max_lots_open": 0.03,
+     "max_drawdown_pct": 84.4,
+     "target_reached_pct": null,
+     "break_even_target_pct": 29.5,
+     "scalps": 0
+    },
+    "rolling_30d": {
+     "runs": 32,
+     "blown_within_30_days_pct": 100.0,
+     "median_30d_return_pct": -100.0,
+     "best_30d_return_pct": -100.0,
+     "worst_30d_return_pct": -100.0,
+     "profitable_months_pct": 0.0
+    }
+   },
+   "$100": {
+    "full": {
+     "start": "2025-01-01 23:00:00+00:00",
+     "end": "2025-09-09 23:59:00+00:00",
+     "start_balance": 100.0,
+     "final_balance": 0.0,
+     "blown": true,
+     "blown_at": "2025-01-06 13:35:00+00:00",
+     "return_pct": -100.0,
+     "cycles": 5,
+     "cycle_win_pct": 20.0,
+     "avg_win_usd": 172.62,
+     "worst_cycle_usd": -72.38,
+     "max_lots_open": 0.07,
+     "max_drawdown_pct": 99.2,
+     "target_reached_pct": 25.0,
+     "break_even_target_pct": 29.5,
+     "scalps": 0
+    },
+    "rolling_30d": {
+     "runs": 32,
+     "blown_within_30_days_pct": 84.4,
+     "median_30d_return_pct": -100.0,
+     "best_30d_return_pct": 1148.7,
+     "worst_30d_return_pct": -100.0,
+     "profitable_months_pct": 15.6
+    }
+   },
+   "$1000": {
+    "full": {
+     "start": "2025-01-01 23:00:00+00:00",
+     "end": "2025-09-09 23:59:00+00:00",
+     "start_balance": 1000.0,
+     "final_balance": 0.0,
+     "blown": true,
+     "blown_at": "2025-06-23 13:45:00+00:00",
+     "return_pct": -100.0,
+     "cycles": 360,
+     "cycle_win_pct": 28.3,
+     "avg_win_usd": 172.62,
+     "worst_cycle_usd": -72.38,
+     "max_lots_open": 0.07,
+     "max_drawdown_pct": 99.6,
+     "target_reached_pct": 28.4,
+     "break_even_target_pct": 29.5,
+     "scalps": 0
+    },
+    "rolling_30d": {
+     "runs": 32,
+     "blown_within_30_days_pct": 28.1,
+     "median_30d_return_pct": -15.6,
+     "best_30d_return_pct": 162.1,
+     "worst_30d_return_pct": -100.0,
+     "profitable_months_pct": 46.9
+    }
+   },
+   "$10000": {
+    "full": {
+     "start": "2025-01-01 23:00:00+00:00",
+     "end": "2025-09-09 23:59:00+00:00",
+     "start_balance": 10000.0,
+     "final_balance": 8758.83,
+     "blown": false,
+     "blown_at": null,
+     "return_pct": -12.4,
+     "cycles": 481,
+     "cycle_win_pct": 29.7,
+     "avg_win_usd": 458.71,
+     "worst_cycle_usd": -434.28,
+     "max_lots_open": 0.42,
+     "max_drawdown_pct": 71.1,
+     "target_reached_pct": 29.7,
+     "break_even_target_pct": 29.5,
+     "scalps": 0
+    },
+    "rolling_30d": {
+     "runs": 32,
+     "blown_within_30_days_pct": 0.0,
+     "median_30d_return_pct": -3.1,
+     "best_30d_return_pct": 35.4,
+     "worst_30d_return_pct": -36.8,
+     "profitable_months_pct": 43.8
+    }
+   }
   }
  }
 }

@@ -63,3 +63,15 @@ def test_flips_never_lose_more_than_the_account():
     v = le.Flip("f", lot_per_100=0.2, mult=2.0, flip=3.0, target_usd=1.0, max_flips=8)
     r = sim(v, [3000, 2996, 3003, 2995, 3005, 2993], balance=20.0, leverage=2000.0)
     assert r["final_balance"] >= 0 and r["worst_cycle_usd"] >= -20.0 and r["final_balance"] < 20
+
+
+def test_compound_stop_loses_about_the_risk_and_target_wins():
+    v = le.Compound("c", target=25.0, stop=10.0, step=1.0, slots=7, sizing="risk", risk_pct=2.0)
+    r = sim(v, [3000, 2985], balance=10000.0)                      # straight to the stop
+    assert r["cycles"] == 1 and -210 <= r["worst_cycle_usd"] <= -100     # at most 2 % of 10,000 (lots rounded down)
+    w = sim(v, [3000, 3030], balance=10000.0)                      # straight to the target
+    assert w["target_reached_pct"] == 100 and w["final_balance"] > 10000
+    hold = le.Compound("h", target=25.0, stop=10.0, step=None, slots=7, sizing="risk", risk_pct=2.0)
+    chop = [3000] + [3004, 2998] * 6 + [2985]                      # scalps pay out in the chop, then the stop
+    a, b = sim(v, chop, balance=10000.0), sim(hold, chop, balance=10000.0)
+    assert a["scalps"] > 0 and b["scalps"] == 0

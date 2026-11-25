@@ -77,6 +77,26 @@ class Flip:
     kind: str = "flip"
 
 
+@dataclass
+class Compound:
+    """Compounding scalps toward a target (the user's reading of the video): read the trend, set a target and a
+    stop, then keep `slots` identical positions open in that direction; each takes profit after `step` dollars
+    and is reopened at once with lots recomputed from the new balance; the campaign ends when price reaches the
+    target (everything closed in profit) or the stop (everything closed at a loss). `step=None`: no scalping, the
+    positions are simply held to the target or the stop (the control).
+    Sizing: "risk" = total lots chosen so that the stop loses `risk_pct` of the balance; "margin" = total lots
+    using `margin_use` of what the margin allows (the video's margin level of 116-300 %)."""
+    name: str
+    target: float
+    stop: float
+    step: float | None
+    slots: int = 7
+    sizing: str = "risk"
+    risk_pct: float = 2.0
+    margin_use: float = 0.5
+    kind: str = "compound"
+
+
 VARIANTS = [
     Pyramid("pyramid_video", lot_per_100=0.40, adds=[(5.3, 17.5), (14.8, 27.5)], target=40.0),
     Pyramid("pyramid_video_with_stops", lot_per_100=0.40, adds=[(5.3, 17.5), (14.8, 27.5)], target=40.0,
@@ -93,6 +113,11 @@ VARIANTS = [
     Flip("flip_double_small_lots", lot_per_100=0.001, mult=2.0, flip=3.0, target_usd=1.0, max_flips=8),
     # flips $3 apart are small next to 2025 gold's moves; a wider zone with a bigger target, still small lots
     Flip("flip_wide_small_lots", lot_per_100=0.001, mult=2.0, flip=10.0, target_usd=3.0, max_flips=6),
+    # compounding scalps toward a target: the user's description of the video
+    Compound("compound_scalps_risk2", target=25.0, stop=10.0, step=1.0, sizing="risk", risk_pct=2.0),
+    Compound("compound_scalps_risk10", target=25.0, stop=10.0, step=1.0, sizing="risk", risk_pct=10.0),
+    Compound("compound_scalps_video_margin", target=25.0, stop=10.0, step=1.0, sizing="margin", margin_use=0.5),
+    Compound("hold_to_target_risk2", target=25.0, stop=10.0, step=None, sizing="risk", risk_pct=2.0),
 ]
 
 
@@ -158,8 +183,102 @@ def base_lot(balance: float, per_100: float) -> float:
     return max(0.01, math.floor(balance / 100 * per_100 * 100 + 1e-9) / 100)
 
 
+def compound_lots(v, acc: "Account", mid: float, entry_to_stop: float) -> float:
+    """Lots per slot for a Compound campaign, from the current balance."""
+    if v.sizing == "risk":
+        per_lot_loss = (entry_to_stop + acc.spread + 2 * acc.slip) * CONTRACT      # USD lost per lot at the stop
+        total = acc.balance * v.risk_pct / 100 / max(per_lot_loss, 1e-9)
+    else:
+        total = v.margin_use * acc.balance * acc.leverage / (CONTRACT * mid)
+    return max(0.01, math.floor(total / v.slots * 100 + 1e-9) / 100)
+
+
+def run_compound(v, t, o, h, lo, c, tr, start_balance, spread, slip, leverage, i0=0, i1=None) -> dict:
+    i1 = len(c) if i1 is None else i1
+    acc = Account(start_balance, spread, slip, leverage)
+    campaigns: list[float] = []
+    hits = stops = 0
+    scalps = 0
+    eq_peak, max_dd = start_balance, 0.0
+    camp = None
+    for i in range(i0, i1):
+        mid_o, hi, low, close = o[i], h[i], lo[i], c[i]
+        if camp is None and t[i].minute % 15 == 0 and tr[i] != 0:
+            d = int(tr[i])
+            lot = compound_lots(v, acc, mid_o, v.stop)
+            if acc.balance <= 0 or not acc.can_open(lot, mid_o):
+                acc.blown_at = str(t[i])
+                break
+            camp = {"d": d, "tgt": mid_o + d * v.target, "stop": mid_o - d * v.stop, "start": acc.balance}
+            for _ in range(v.slots):
+                if acc.can_open(lot, mid_o):
+                    acc.open(d, lot, mid_o)
+        if camp is None:
+            continue
+        d = camp["d"]
+        adverse, favour = (low, hi) if d == 1 else (hi, low)
+        if acc.stopped_out(adverse) and (adverse - camp["stop"]) * d > 0 or (
+                acc.stopped_out(camp["stop"]) and (adverse - camp["stop"]) * d <= 0):
+            acc.close_all(adverse)
+            acc.balance = 0.0
+            campaigns.append(-camp["start"])
+            acc.blown_at = str(t[i])
+            break
+        if (adverse - camp["stop"]) * d <= 0:                       # the stop: everything closed
+            acc.close_all(camp["stop"])
+            campaigns.append(acc.balance - camp["start"])
+            stops += 1
+            camp = None
+            continue
+        if (favour - camp["tgt"]) * d >= 0:                         # the target: everything closed
+            # scalps on the way up first (they were reached before the target)
+            if v.step is not None:
+                scalps += sum(int(abs(camp["tgt"] - p[2]) // v.step) for p in acc.pos)
+            acc.close_all(camp["tgt"])
+            campaigns.append(acc.balance - camp["start"])
+            hits += 1
+            camp = None
+            continue
+        if v.step is not None:                                      # scalp take-profits, reopened at once
+            changed = True
+            while changed:
+                changed = False
+                for p in list(acc.pos):
+                    pd_, lots, entry = p
+                    tp_mid = entry + pd_ * v.step + pd_ * (spread / 2 + slip)
+                    if (favour - tp_mid) * pd_ >= 0 and (camp["tgt"] - tp_mid) * pd_ > 0:
+                        acc.balance += v.step * lots * CONTRACT
+                        acc.pos.remove(p)
+                        scalps += 1
+                        new = compound_lots(v, acc, tp_mid, abs(tp_mid - camp["stop"]))
+                        if acc.can_open(new, tp_mid):
+                            acc.open(pd_, new, tp_mid)
+                        changed = True
+        eq = acc.balance + acc.open_pnl(close)
+        eq_peak = max(eq_peak, eq)
+        if eq_peak > 0:
+            max_dd = max(max_dd, (eq_peak - eq) / eq_peak)
+    else:
+        if acc.pos:
+            acc.close_all(c[i1 - 1])
+    cy = np.asarray(campaigns)
+    n = hits + stops
+    cost = spread + 2 * slip
+    return {"start": str(t[i0]), "end": str(t[min(i1, len(t)) - 1]), "start_balance": start_balance,
+            "final_balance": round(acc.balance, 2), "blown": acc.blown_at is not None, "blown_at": acc.blown_at,
+            "return_pct": round(100 * (acc.balance / start_balance - 1), 1), "cycles": int(len(cy)),
+            "cycle_win_pct": round(100 * float((cy > 0).mean()), 1) if len(cy) else None,
+            "avg_win_usd": round(float(cy[cy > 0].mean()), 2) if (cy > 0).any() else None,
+            "worst_cycle_usd": round(float(cy.min()), 2) if len(cy) else None,
+            "max_lots_open": round(acc.max_lots, 2), "max_drawdown_pct": round(100 * max_dd, 1),
+            "target_reached_pct": round(100 * hits / n, 1) if n else None,
+            "break_even_target_pct": round(100 * (v.stop + cost) / (v.target + v.stop), 1), "scalps": scalps}
+
+
 def run(v, t, o, h, lo, c, tr, start_balance: float, spread: float, slip: float, leverage: float,
         i0: int = 0, i1: int | None = None) -> dict:
+    if v.kind == "compound":
+        return run_compound(v, t, o, h, lo, c, tr, start_balance, spread, slip, leverage, i0, i1)
     i1 = len(c) if i1 is None else i1
     acc = Account(start_balance, spread, slip, leverage)
     cycles: list[float] = []
