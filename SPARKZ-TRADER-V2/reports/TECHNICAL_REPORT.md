@@ -765,15 +765,15 @@ Reading:
   spread, and the ones that trade rarely do not beat holding gold. Nothing found here is a tradable edge.
   Results: `reports/studies/edge_search.json`.
 
-## 19. The same search on EURUSD and GBPUSD
+## 19. The same search on EURUSD, GBPUSD and USDJPY
 
 `python -m app.research.edge_search --symbol EURUSD` (and `GBPUSD`) runs the same 17 strategies, periods and pass
 rule as section 18 on Dukascopy 1h candles from January 2008 to October 2026. Costs are typical retail figures:
 EURUSD spread 1.2 pips with 0.2 slippage, GBPUSD 1.5 pips with 0.3. Results are in
-`reports/studies/edge_search_eurusd.json` and `edge_search_gbpusd.json`. USDJPY was not downloaded: the data feed
-throttled requests until the download hit its time limit.
+`reports/studies/edge_search_eurusd.json` and `edge_search_gbpusd.json`. USDJPY (spread 1.5 pips, slippage 0.3) is
+in `edge_search_usdjpy.json`.
 
-**No strategy passed in either market.**
+**No strategy passed in any of the three markets.**
 
 - GBPUSD RSI-2 mean reversion was the only one in either market to pass development: Sharpe 0.61, alpha t 2.01,
   150 trades, +541 USD at 0.01 lot. It then failed validation (2019–2022): Sharpe −0.37, −96 USD. With 17
@@ -784,8 +784,11 @@ throttled requests until the download hit its time limit.
   These are small amounts, indistinguishable from chance.
 - The intraday patterns repeat the gold picture: positive before costs and large losses after them. EURUSD
   hour-of-day seasonality made +1,389 gross and lost 2,794 net; its break-even spread is about 0.13 pips.
+- USDJPY: no strategy reached the development bar; the best was 63-day momentum (dev Sharpe 0.28, alpha t 1.05).
+  Full period (reference only): 63-day momentum +629 USD at 0.01 lot over 19 years (alpha t 1.53), while simply
+  holding USDJPY made +440. Hour-of-day seasonality made +383 gross and lost 2,257 net.
 
-Across gold, EURUSD and GBPUSD: nothing in this search is a tradable edge for a retail account.
+Across gold, EURUSD, GBPUSD and USDJPY: nothing in this search is a tradable edge for a retail account.
 
 ## 20. Lot-escalation robots: the "trend pyramid" from a social-media video, and "flip and increase"
 
@@ -904,3 +907,28 @@ The honest next step is a forward test: `config/presets/assistant_daily.yaml` ru
 chart on the MT5 demo, reading 1h, 4h and 1d candles as in this study. It sets a 60 USD loss limit at 0.01 lot,
 near the study's typical stop, and a 2× ATR target. At about 27 trades a year, it needs a year or more of
 forward trades before the result means anything.
+
+## 22. Following the highest-ranked strategy instead of the vote
+
+The assistant ranks its nine strategies by **fit %** (how well current conditions suit each one). Decision rule
+`TOP_STRATEGY` (`ASSISTANT_DECISION=TOP_STRATEGY`, `app/assistant/engine.py`) trades the setup of the
+highest-ranked strategy among the top N that has one near the execution timeframe, unless the higher timeframes
+point the other way; the vote's confidence no longer decides. Same study as section 21 (daily chart, 1h/4h/1d
+candles, 2008–2026, spread 0.24, the plan's stop, 2R target, 480 h time stop):
+
+| rule | trades | win % | net R per trade | t | net USD (0.01 lot) | worst drawdown | positive years |
+|---|---|---|---|---|---|---|---|
+| VOTE (section 21, the default) | 488 | 45.5 | +0.130 | 2.38 | +6,359 | −8.4 % | 14 / 19 |
+| TOP_STRATEGY, top 1 | 148 | 46.6 | +0.162 | 1.60 | +2,392 | −6.3 % | 13 / 18 |
+| TOP_STRATEGY, top 3 | 403 | 43.7 | +0.087 | 1.45 | +3,501 | −14.3 % | 10 / 18 |
+
+Results: `reports/studies/assistant_dukascopy_1d_top1.json` and `_top3.json`.
+
+- Top 1 earns a little more per trade but trades a third as often (about 8 a year), so it made less in total
+  and its evidence is weaker (t 1.6, below the 2 usually asked for). Top 3 is worse than the vote on every line.
+- The difference between top 1 and the vote (+0.03 R) is far smaller than the uncertainty of either.
+- In both, the trades where the vote was unsure (55–65 % confidence) lost money (−0.13 R for top 1); the high-
+  confidence trades carried the result. Following one strategy without the others' agreement adds weak trades.
+
+The vote stays the default; `TOP_STRATEGY` is available for a side-by-side demo test and is not recommended
+over the vote on this evidence.

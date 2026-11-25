@@ -158,3 +158,39 @@ def test_daily_robot_reads_1h_and_above_only():
     fr = gather_frames(BridgeProvider("XAUUSD", "1d", store=store), "1d")
     assert "1m" not in fr and "15m" not in fr and "1h" in fr
     assert "1m" in gather_frames(BridgeProvider("XAUUSD", "15m", store=store), "15m")
+
+
+def test_top_strategy_rule_follows_the_highest_ranked_setup():
+    frames = frames_from_1m()
+    for top in (1, 3, 9):
+        rep = Assistant(decision="TOP_STRATEGY", top_strategies=top).analyze(frames, 0.54, "15m")
+        ranking = list(rep["strategy_fit_pct"])
+        assert rep["decision_rule"] == f"TOP_STRATEGY (top {top})"
+        if rep["action"] in ("BUY", "SELL"):
+            p = rep["plan"]
+            assert p["strategy"] in ranking[:top]
+            assert p["direction"] == (1 if rep["action"] == "BUY" else -1)
+            assert (p["entry"] - p["stop"]) * p["direction"] > 0
+            assert f"ranked #{ranking.index(p['strategy']) + 1}" in rep["reasons"][0]
+        else:
+            assert rep["reasons"]
+
+
+def test_top_strategy_rule_ignores_lower_ranked_setups():
+    eng = Assistant(decision="TOP_STRATEGY", top_strategies=1)
+    sig = STRATEGIES[1].name
+    class S:                                       # a setup from the #2 strategy only
+        strategy, tf, direction = sig, "15m", 1
+    ranking = [STRATEGIES[0].name, sig]
+    action, _, near, why = eng._top_strategy(ranking, {ranking[0]: 60.0, sig: 40.0}, [(1.0, S, 0)], 15, "15m", 0)
+    assert action == "WAIT" and not near and "top-ranked" in why[0]
+    eng.top_strategies = 2
+    assert eng._top_strategy(ranking, {ranking[0]: 60.0, sig: 40.0}, [(1.0, S, 0)], 15, "15m", 0)[0] == "BUY"
+    assert eng._top_strategy(ranking, {ranking[0]: 60.0, sig: 40.0}, [(1.0, S, 0)], 15, "15m", -1)[0] == "WAIT"
+
+
+def test_decision_rule_from_settings():
+    s = load_settings(env={"ASSISTANT_DECISION": "TOP_STRATEGY", "ASSISTANT_TOP_STRATEGIES": "3"})
+    assert s.assistant.decision == "TOP_STRATEGY" and s.assistant.top_strategies == 3
+    with pytest.raises(ValueError):
+        Assistant(decision="BEST_GUESS")

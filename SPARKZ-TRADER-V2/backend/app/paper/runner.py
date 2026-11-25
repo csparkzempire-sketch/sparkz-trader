@@ -59,7 +59,8 @@ class PaperRunner:
         self._stop = False
         self.listeners: list[Callable[[dict], None]] = []
         self.lock = threading.RLock()      # the loop thread, the API and the WebSocket share the robot
-        self.assistant = LiveAssistant(settings.assistant.min_confidence, settings.assistant.refresh_seconds, wall)
+        self.assistant = LiveAssistant(settings.assistant.min_confidence, settings.assistant.refresh_seconds, wall,
+                                       settings.assistant.decision, settings.assistant.top_strategies)
         self._assistant_until: pd.Timestamp | None = None
         mode = settings.execution.mode
         self.alerts = Alerts.from_env(f"SPARKZ [{'PAPER' if mode == 'SIMULATION' else mode.replace('MT5_', 'MT5 ')}]"

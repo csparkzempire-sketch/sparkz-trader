@@ -51,8 +51,9 @@ def gather_frames(provider, base_tf: str, base: pd.DataFrame | None = None,
 
 
 class LiveAssistant:
-    def __init__(self, min_confidence: float, refresh_seconds: float = 30.0, wall=time.time):
-        self.engine = Assistant(min_confidence)
+    def __init__(self, min_confidence: float, refresh_seconds: float = 30.0, wall=time.time,
+                 decision: str = "VOTE", top_strategies: int = 1):
+        self.engine = Assistant(min_confidence, decision=decision, top_strategies=top_strategies)
         self.refresh_seconds, self.wall = refresh_seconds, wall
         self.report: dict | None = None
         self.updated: float | None = None

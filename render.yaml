@@ -15,7 +15,7 @@ services:
       - key: EXECUTION_MODE
         value: MT5_DEMO
       - key: SPARKZ_PRESET
-        value: assistant
+        value: assistant_daily
       - key: SPARKZ_BRIDGE_TOKEN
         sync: false
       - key: SPARKZ_DASHBOARD_PASSWORD

@@ -113,6 +113,9 @@ have closed); tests check this by removing later candles. For the latest candles
 - **decision** BUY / SELL / WAIT with a **confidence**: active setups vote, weighted by strength, timeframe,
   fit and agreement with the bias. BUY or SELL needs `ASSISTANT_MIN_CONFIDENCE` (default 55%), a setup near
   the robot's timeframe to time the entry, and no opposing bias; otherwise WAIT with the reasons;
+  with `ASSISTANT_DECISION=TOP_STRATEGY` the robot instead follows the **highest-ranked strategy** (by fit %)
+  among the top `ASSISTANT_TOP_STRATEGIES` (default 1) that has a setup near the robot's timeframe, unless the
+  bias points the other way (history results: technical report, section 22);
 - **trade plan**: entry, stop, target of the strongest agreeing setup;
 - **how long it usually takes**: the same detector's earlier setups on the same timeframe, measured on candles
   before now: how often the target came first, the average result after the spread, and the minutes to target
