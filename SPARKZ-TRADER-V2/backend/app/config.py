@@ -212,6 +212,10 @@ class ExecutionCfg(BaseModel):
     max_live_lots: float = Field(default=0.01, gt=0, le=0.1)     # hard cap per order sent to MT5
     # no new MT5 trade once the MT5 account's equity is this % below its first value of the UTC day
     live_daily_loss_percent: float = Field(default=3.0, gt=0, le=20)
+    # MT5 sync: the robot's account starts from the MT5 balance (first account report, before any trade), and
+    # SPARKZ positions found open in MT5 while the robot holds none (after a restart) are taken over and managed
+    sync_mt5_balance: bool = True
+    adopt_mt5_positions: bool = True
     # Backtest only: order of a candle's high and low while a basket is open (unknown from OHLC).
     # FAVOURABLE_FIRST is the default because ADVERSE_FIRST lets a grid buy the dip and take the
     # rebound inside one candle, which flatters grids (see the backtest engine docstring).
@@ -311,6 +315,8 @@ ENV_KEYS: dict[str, tuple[str, ...]] = {
     "EXECUTION_MODE": ("execution", "mode"),
     "MAX_LIVE_LOTS": ("execution", "max_live_lots"),
     "LIVE_DAILY_LOSS_PERCENT": ("execution", "live_daily_loss_percent"),
+    "SYNC_MT5_BALANCE": ("execution", "sync_mt5_balance"),
+    "ADOPT_MT5_POSITIONS": ("execution", "adopt_mt5_positions"),
     "SPREAD_MULTIPLIER": ("execution", "spread_multiplier"),
     "SLIPPAGE": ("execution", "slippage"),
     "SLIPPAGE_MULTIPLIER": ("execution", "slippage_multiplier"),

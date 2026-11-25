@@ -1,0 +1,12 @@
+# Assistant on the DAILY chart: the slowest assistant, the only version whose history study came out positive
+# after costs (reports, section 21: 2008-2026, 488 trades, +0.13 R per trade at a 0.24 spread, t = 2.38; not yet
+# proven, see the report). One position at most, decided once a day when the daily candle closes (22:00 UTC with
+# an Exness-style feed), a loss limit near the study's typical stop and a target near 2 R. Paper / MT5 demo only.
+name: assistant_daily
+market: {symbol: XAUUSD, timeframe: 1d, history_bars: 600}
+entry: {mode: ASSISTANT}
+grid: {mode: NONE}
+sizing: {mode: FIXED, base_lot: 0.01}
+target: {mode: ATR_TARGET, atr_multiplier: 2.0}
+risk: {max_positions: 1, max_basket_loss_usd: 60, max_basket_loss_percent: 6.0}
+assistant: {gate_entries: true, min_confidence: 0.55}

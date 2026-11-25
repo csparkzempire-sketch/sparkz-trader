@@ -148,6 +148,7 @@ class MT5BridgeExecutor(ExecutionAdapter):
         self.executions: list[dict] = []     # execution quality of every fill: slippage, delay
         self.flat_reports = 0               # consecutive account reports with no SPARKZ position
         self._seen_seq = -1
+        self.fill_seq = 0                    # account report number when the last fill arrived
 
     # ---------------------------------------------------------------- checks
     def account_type(self) -> str:
@@ -258,7 +259,12 @@ class MT5BridgeExecutor(ExecutionAdapter):
                               ref_mid, tick.spread, slip or 0.0, abs(float(r.get("commission") or 0.0)), t,
                               it.basket_id, it.reason, it.close_reason))
             self.flat_reports = 0
+            self.fill_seq = self.book.account_seq
         return fills
+
+    def settled(self) -> bool:
+        """Two account reports have arrived since the last fill: MT5's position list reflects the robot's trades."""
+        return self.book.account_seq >= self.fill_seq + 2
 
     def broker_flat(self) -> bool | None:
         """False: MT5 holds SPARKZ positions. True: two consecutive fresh account reports showed none. None: not

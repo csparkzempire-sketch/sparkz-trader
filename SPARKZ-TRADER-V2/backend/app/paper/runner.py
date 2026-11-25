@@ -36,6 +36,7 @@ from app.database.repository import Repository
 from app.engine.health import build_health
 from app.engine.robot import Robot
 from app.market.providers.base import MarketDataProvider, ProviderError
+from app.utils.alerts import Alerts
 
 
 class PaperRunner:
@@ -60,6 +61,11 @@ class PaperRunner:
         self.lock = threading.RLock()      # the loop thread, the API and the WebSocket share the robot
         self.assistant = LiveAssistant(settings.assistant.min_confidence, settings.assistant.refresh_seconds, wall)
         self._assistant_until: pd.Timestamp | None = None
+        mode = settings.execution.mode
+        self.alerts = Alerts.from_env(f"SPARKZ [{'PAPER' if mode == 'SIMULATION' else mode.replace('MT5_', 'MT5 ')}]"
+                                      f" {settings.market.symbol}")
+        if self.alerts is not None:
+            self.robot.log.listeners.append(self.alerts.on_event)
         if settings.assistant.gate_entries or settings.entry.mode == EntryMode.ASSISTANT:
             self.robot.strategy.assistant_fn = self._assistant_for_decision
 

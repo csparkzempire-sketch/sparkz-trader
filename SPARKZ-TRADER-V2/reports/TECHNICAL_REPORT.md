@@ -863,3 +863,44 @@ Reading:
   losses come. This is why $1,000 accounts are blown even at "2 %".
 - At the video's margin use (margin level near 200 %), one ordinary pullback of a few dollars stops the
   account out, as in sections 20's other video variants.
+
+## 21. The market assistant on slower timeframes, 2008–2026
+
+`python -m app.assistant.study --base-tf 1h --execution-tf 4h|1d` replays the unchanged assistant over Dukascopy
+1h candles from 2008 to 2026, with candles 1h, 4h and 1d built from them and the first year used as warm-up.
+Setup:
+
+- the broker's measured 0.24 spread plus 0.05 slippage;
+- the assistant's own stop and a 2R target, with a time stop of 5 days (4h) or 20 days (daily);
+- exits checked on 1h candles, the stop first when a candle touches both;
+- swap is not charged.
+
+Nothing was tuned: the assistant, its 55 % confidence threshold and the exits are those of sections 16–17.
+Results: `reports/studies/assistant_dukascopy_4h.json` and `assistant_dukascopy_1d.json`.
+
+| execution timeframe | trades | win % | net R / trade | gross R / trade | t | years positive | longs / shorts (R) |
+|---|---|---|---|---|---|---|---|
+| 15m (section 17, 2025, 0.24 spread) | 569 | 40.8 | −0.037 | +0.015 | −0.76 | — | — |
+| 4h | 2,663 | 38.4 | +0.006 | +0.051 | 0.24 | 10/19 | +0.042 / −0.039 |
+| 1d | 488 | 45.5 | **+0.130** | +0.144 | **2.38** | 14/19 | +0.203 / +0.045 |
+
+Reading:
+
+- Costs shrink with the timeframe: about 0.05 R per trade on 15m, 0.045 R on 4h, and 0.014 R on the daily
+  chart (average risk 55 price units).
+- 4h is break-even. Its longs make what its shorts lose, the pattern of riding gold's rise rather than timing
+  it.
+- The daily assistant is the first result in this project that is positive after costs with t above 2:
+  - 14 of 19 years are positive, the profit factor is 1.28, and it made +6,359 USD at 0.01 lot;
+  - its shorts are slightly positive in a market that rose about 4×.
+- It is not proven:
+  - three timeframes were tried, so t = 2.38 is only just past a multiple-testing bar of about 2.4;
+  - most of the profit is on the long side of a long bull market;
+  - the confidence bands are not ordered (55–65 % did best);
+  - there is no untouched holdout, because the decision to study slower timeframes came after the 15m and 4h
+    results.
+
+The honest next step is a forward test: `config/presets/assistant_daily.yaml` runs the assistant on the daily
+chart on the MT5 demo, reading 1h, 4h and 1d candles as in this study. It sets a 60 USD loss limit at 0.01 lot,
+near the study's typical stop, and a 2× ATR target. At about 27 trades a year, it needs a year or more of
+forward trades before the result means anything.

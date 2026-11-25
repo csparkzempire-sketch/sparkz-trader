@@ -1,0 +1,881 @@
+{
+ "meta": {
+  "source": "dukascopy",
+  "first_decision": "2008-12-31 00:00:00+00:00",
+  "last_decision": "2026-10-31 00:00:00+00:00",
+  "decisions": 5554,
+  "base_tf": "1h",
+  "execution_tf": "1d",
+  "every_execution_candles": 1,
+  "spread": 0.24,
+  "min_confidence": 0.55,
+  "exits": "assistant's stop, 2R target, 480 h time stop, checked on 1h candles at bid/ask",
+  "calls": 3162
+ },
+ "overall": {
+  "trades": 488,
+  "win_rate_pct": 45.5,
+  "expectancy_r": 0.13,
+  "gross_expectancy_r": 0.144,
+  "avg_cost_r": 0.013,
+  "avg_risk_price": 54.7,
+  "net_usd": 6359.0,
+  "profit_factor": 1.28,
+  "max_drawdown_pct": -8.4,
+  "max_consecutive_losses": 7,
+  "ambiguous_stop_and_target_bars": 0,
+  "exit_reasons": {
+   "STOP": 200,
+   "TIME": 177,
+   "TARGET": 107,
+   "STOP_GAP": 2,
+   "TARGET_GAP": 1,
+   "END_OF_DATA": 1
+  },
+  "by_direction": {
+   "LONG": {
+    "trades": 264,
+    "expectancy_r": 0.203,
+    "net_usd": 5356.0
+   },
+   "SHORT": {
+    "trades": 224,
+    "expectancy_r": 0.045,
+    "net_usd": 1002.0
+   }
+  },
+  "by_session": {
+   "LONDON": {
+    "trades": 405,
+    "expectancy_r": 0.147,
+    "net_usd": 5963.0
+   },
+   "NEW_YORK": {
+    "trades": 83,
+    "expectancy_r": 0.048,
+    "net_usd": 396.0
+   }
+  },
+  "by_year": {
+   "2008": {
+    "trades": 1,
+    "expectancy_r": -1.002,
+    "net_usd": -100.0
+   },
+   "2009": {
+    "trades": 26,
+    "expectancy_r": 0.213,
+    "net_usd": 555.0
+   },
+   "2010": {
+    "trades": 18,
+    "expectancy_r": 0.25,
+    "net_usd": 449.0
+   },
+   "2011": {
+    "trades": 23,
+    "expectancy_r": 0.4,
+    "net_usd": 921.0
+   },
+   "2012": {
+    "trades": 33,
+    "expectancy_r": -0.097,
+    "net_usd": -319.0
+   },
+   "2013": {
+    "trades": 29,
+    "expectancy_r": 0.139,
+    "net_usd": 403.0
+   },
+   "2014": {
+    "trades": 38,
+    "expectancy_r": -0.098,
+    "net_usd": -373.0
+   },
+   "2015": {
+    "trades": 28,
+    "expectancy_r": 0.251,
+    "net_usd": 703.0
+   },
+   "2016": {
+    "trades": 24,
+    "expectancy_r": 0.354,
+    "net_usd": 850.0
+   },
+   "2017": {
+    "trades": 36,
+    "expectancy_r": 0.278,
+    "net_usd": 1002.0
+   },
+   "2018": {
+    "trades": 27,
+    "expectancy_r": -0.164,
+    "net_usd": -442.0
+   },
+   "2019": {
+    "trades": 25,
+    "expectancy_r": 0.122,
+    "net_usd": 305.0
+   },
+   "2020": {
+    "trades": 20,
+    "expectancy_r": -0.039,
+    "net_usd": -77.0
+   },
+   "2021": {
+    "trades": 35,
+    "expectancy_r": 0.092,
+    "net_usd": 321.0
+   },
+   "2022": {
+    "trades": 28,
+    "expectancy_r": 0.294,
+    "net_usd": 822.0
+   },
+   "2023": {
+    "trades": 30,
+    "expectancy_r": 0.038,
+    "net_usd": 113.0
+   },
+   "2024": {
+    "trades": 25,
+    "expectancy_r": 0.047,
+    "net_usd": 118.0
+   },
+   "2025": {
+    "trades": 20,
+    "expectancy_r": 0.305,
+    "net_usd": 609.0
+   },
+   "2026": {
+    "trades": 22,
+    "expectancy_r": 0.227,
+    "net_usd": 500.0
+   }
+  },
+  "standard_error_r": 0.055,
+  "t_stat": 2.38
+ },
+ "by_band": {
+  "55-65": {
+   "trades": 59,
+   "win_rate_pct": 47.5,
+   "expectancy_r": 0.269,
+   "gross_expectancy_r": 0.284,
+   "net_usd": 1587.0
+  },
+  "65-75": {
+   "trades": 70,
+   "win_rate_pct": 42.9,
+   "expectancy_r": 0.143,
+   "gross_expectancy_r": 0.158,
+   "net_usd": 1003.0
+  },
+  "75-85": {
+   "trades": 92,
+   "win_rate_pct": 43.5,
+   "expectancy_r": 0.087,
+   "gross_expectancy_r": 0.101,
+   "net_usd": 798.0
+  },
+  "85+": {
+   "trades": 267,
+   "win_rate_pct": 46.4,
+   "expectancy_r": 0.111,
+   "gross_expectancy_r": 0.123,
+   "net_usd": 2971.0
+  }
+ },
+ "by_strategy": {
+  "liquidity_sweep": {
+   "trades": 20,
+   "win_rate_pct": 20.0,
+   "expectancy_r": -0.405,
+   "gross_expectancy_r": -0.391,
+   "net_usd": -811.0
+  },
+  "market_structure": {
+   "trades": 80,
+   "win_rate_pct": 41.2,
+   "expectancy_r": 0.009,
+   "gross_expectancy_r": 0.015,
+   "net_usd": 71.0
+  },
+  "sr_flip": {
+   "trades": 5,
+   "win_rate_pct": 60.0,
+   "expectancy_r": 0.54,
+   "gross_expectancy_r": 0.557,
+   "net_usd": 270.0
+  },
+  "support_resistance": {
+   "trades": 277,
+   "win_rate_pct": 45.5,
+   "expectancy_r": 0.191,
+   "gross_expectancy_r": 0.209,
+   "net_usd": 5304.0
+  },
+  "trend_following": {
+   "trades": 95,
+   "win_rate_pct": 53.7,
+   "expectancy_r": 0.138,
+   "gross_expectancy_r": 0.143,
+   "net_usd": 1308.0
+  },
+  "trendline_break": {
+   "trades": 11,
+   "win_rate_pct": 45.5,
+   "expectancy_r": 0.197,
+   "gross_expectancy_r": 0.205,
+   "net_usd": 217.0
+  }
+ },
+ "by_quarter": {
+  "2008Q4": {
+   "trades": 1,
+   "win_rate_pct": 0.0,
+   "expectancy_r": -1.002,
+   "gross_expectancy_r": -0.987,
+   "net_usd": -100.0
+  },
+  "2009Q1": {
+   "trades": 6,
+   "win_rate_pct": 50.0,
+   "expectancy_r": 0.377,
+   "gross_expectancy_r": 0.387,
+   "net_usd": 226.0
+  },
+  "2009Q2": {
+   "trades": 10,
+   "win_rate_pct": 40.0,
+   "expectancy_r": -0.166,
+   "gross_expectancy_r": -0.148,
+   "net_usd": -166.0
+  },
+  "2009Q3": {
+   "trades": 6,
+   "win_rate_pct": 66.7,
+   "expectancy_r": 0.786,
+   "gross_expectancy_r": 0.805,
+   "net_usd": 472.0
+  },
+  "2009Q4": {
+   "trades": 4,
+   "win_rate_pct": 50.0,
+   "expectancy_r": 0.057,
+   "gross_expectancy_r": 0.062,
+   "net_usd": 23.0
+  },
+  "2010Q1": {
+   "trades": 4,
+   "win_rate_pct": 75.0,
+   "expectancy_r": 0.106,
+   "gross_expectancy_r": 0.114,
+   "net_usd": 42.0
+  },
+  "2010Q2": {
+   "trades": 4,
+   "win_rate_pct": 100.0,
+   "expectancy_r": 0.914,
+   "gross_expectancy_r": 0.923,
+   "net_usd": 365.0
+  },
+  "2010Q3": {
+   "trades": 6,
+   "win_rate_pct": 66.7,
+   "expectancy_r": 0.207,
+   "gross_expectancy_r": 0.218,
+   "net_usd": 124.0
+  },
+  "2010Q4": {
+   "trades": 4,
+   "win_rate_pct": 75.0,
+   "expectancy_r": -0.207,
+   "gross_expectancy_r": -0.199,
+   "net_usd": -83.0
+  },
+  "2011Q1": {
+   "trades": 6,
+   "win_rate_pct": 66.7,
+   "expectancy_r": 0.205,
+   "gross_expectancy_r": 0.214,
+   "net_usd": 123.0
+  },
+  "2011Q2": {
+   "trades": 4,
+   "win_rate_pct": 50.0,
+   "expectancy_r": 0.144,
+   "gross_expectancy_r": 0.149,
+   "net_usd": 58.0
+  },
+  "2011Q3": {
+   "trades": 5,
+   "win_rate_pct": 80.0,
+   "expectancy_r": 0.778,
+   "gross_expectancy_r": 0.781,
+   "net_usd": 389.0
+  },
+  "2011Q4": {
+   "trades": 8,
+   "win_rate_pct": 50.0,
+   "expectancy_r": 0.439,
+   "gross_expectancy_r": 0.444,
+   "net_usd": 351.0
+  },
+  "2012Q1": {
+   "trades": 7,
+   "win_rate_pct": 28.6,
+   "expectancy_r": -0.359,
+   "gross_expectancy_r": -0.35,
+   "net_usd": -251.0
+  },
+  "2012Q2": {
+   "trades": 8,
+   "win_rate_pct": 37.5,
+   "expectancy_r": -0.242,
+   "gross_expectancy_r": -0.231,
+   "net_usd": -194.0
+  },
+  "2012Q3": {
+   "trades": 10,
+   "win_rate_pct": 40.0,
+   "expectancy_r": 0.078,
+   "gross_expectancy_r": 0.094,
+   "net_usd": 78.0
+  },
+  "2012Q4": {
+   "trades": 8,
+   "win_rate_pct": 37.5,
+   "expectancy_r": 0.06,
+   "gross_expectancy_r": 0.071,
+   "net_usd": 48.0
+  },
+  "2013Q1": {
+   "trades": 12,
+   "win_rate_pct": 16.7,
+   "expectancy_r": -0.441,
+   "gross_expectancy_r": -0.422,
+   "net_usd": -530.0
+  },
+  "2013Q2": {
+   "trades": 6,
+   "win_rate_pct": 66.7,
+   "expectancy_r": 0.747,
+   "gross_expectancy_r": 0.752,
+   "net_usd": 448.0
+  },
+  "2013Q3": {
+   "trades": 4,
+   "win_rate_pct": 100.0,
+   "expectancy_r": 0.937,
+   "gross_expectancy_r": 0.945,
+   "net_usd": 375.0
+  },
+  "2013Q4": {
+   "trades": 7,
+   "win_rate_pct": 42.9,
+   "expectancy_r": 0.157,
+   "gross_expectancy_r": 0.168,
+   "net_usd": 110.0
+  },
+  "2014Q1": {
+   "trades": 12,
+   "win_rate_pct": 25.0,
+   "expectancy_r": -0.252,
+   "gross_expectancy_r": -0.232,
+   "net_usd": -303.0
+  },
+  "2014Q2": {
+   "trades": 7,
+   "win_rate_pct": 42.9,
+   "expectancy_r": 0.013,
+   "gross_expectancy_r": 0.041,
+   "net_usd": 9.0
+  },
+  "2014Q3": {
+   "trades": 11,
+   "win_rate_pct": 36.4,
+   "expectancy_r": -0.004,
+   "gross_expectancy_r": 0.022,
+   "net_usd": -4.0
+  },
+  "2014Q4": {
+   "trades": 8,
+   "win_rate_pct": 25.0,
+   "expectancy_r": -0.094,
+   "gross_expectancy_r": -0.081,
+   "net_usd": -75.0
+  },
+  "2015Q1": {
+   "trades": 6,
+   "win_rate_pct": 50.0,
+   "expectancy_r": 0.588,
+   "gross_expectancy_r": 0.601,
+   "net_usd": 353.0
+  },
+  "2015Q2": {
+   "trades": 9,
+   "win_rate_pct": 22.2,
+   "expectancy_r": -0.559,
+   "gross_expectancy_r": -0.539,
+   "net_usd": -503.0
+  },
+  "2015Q3": {
+   "trades": 7,
+   "win_rate_pct": 71.4,
+   "expectancy_r": 0.69,
+   "gross_expectancy_r": 0.701,
+   "net_usd": 483.0
+  },
+  "2015Q4": {
+   "trades": 6,
+   "win_rate_pct": 66.7,
+   "expectancy_r": 0.618,
+   "gross_expectancy_r": 0.631,
+   "net_usd": 371.0
+  },
+  "2016Q1": {
+   "trades": 7,
+   "win_rate_pct": 28.6,
+   "expectancy_r": 0.171,
+   "gross_expectancy_r": 0.182,
+   "net_usd": 120.0
+  },
+  "2016Q2": {
+   "trades": 4,
+   "win_rate_pct": 50.0,
+   "expectancy_r": 0.531,
+   "gross_expectancy_r": 0.538,
+   "net_usd": 212.0
+  },
+  "2016Q3": {
+   "trades": 7,
+   "win_rate_pct": 42.9,
+   "expectancy_r": -0.153,
+   "gross_expectancy_r": -0.139,
+   "net_usd": -107.0
+  },
+  "2016Q4": {
+   "trades": 6,
+   "win_rate_pct": 100.0,
+   "expectancy_r": 1.042,
+   "gross_expectancy_r": 1.051,
+   "net_usd": 625.0
+  },
+  "2017Q1": {
+   "trades": 8,
+   "win_rate_pct": 50.0,
+   "expectancy_r": 0.302,
+   "gross_expectancy_r": 0.323,
+   "net_usd": 242.0
+  },
+  "2017Q2": {
+   "trades": 9,
+   "win_rate_pct": 55.6,
+   "expectancy_r": 0.596,
+   "gross_expectancy_r": 0.625,
+   "net_usd": 536.0
+  },
+  "2017Q3": {
+   "trades": 8,
+   "win_rate_pct": 25.0,
+   "expectancy_r": -0.009,
+   "gross_expectancy_r": 0.011,
+   "net_usd": -7.0
+  },
+  "2017Q4": {
+   "trades": 11,
+   "win_rate_pct": 45.5,
+   "expectancy_r": 0.21,
+   "gross_expectancy_r": 0.238,
+   "net_usd": 231.0
+  },
+  "2018Q1": {
+   "trades": 8,
+   "win_rate_pct": 25.0,
+   "expectancy_r": -0.59,
+   "gross_expectancy_r": -0.572,
+   "net_usd": -472.0
+  },
+  "2018Q2": {
+   "trades": 9,
+   "win_rate_pct": 33.3,
+   "expectancy_r": -0.369,
+   "gross_expectancy_r": -0.336,
+   "net_usd": -333.0
+  },
+  "2018Q3": {
+   "trades": 4,
+   "win_rate_pct": 100.0,
+   "expectancy_r": 0.603,
+   "gross_expectancy_r": 0.615,
+   "net_usd": 241.0
+  },
+  "2018Q4": {
+   "trades": 6,
+   "win_rate_pct": 50.0,
+   "expectancy_r": 0.202,
+   "gross_expectancy_r": 0.223,
+   "net_usd": 121.0
+  },
+  "2019Q1": {
+   "trades": 8,
+   "win_rate_pct": 25.0,
+   "expectancy_r": -0.437,
+   "gross_expectancy_r": -0.414,
+   "net_usd": -350.0
+  },
+  "2019Q2": {
+   "trades": 7,
+   "win_rate_pct": 57.1,
+   "expectancy_r": 0.336,
+   "gross_expectancy_r": 0.359,
+   "net_usd": 235.0
+  },
+  "2019Q3": {
+   "trades": 4,
+   "win_rate_pct": 50.0,
+   "expectancy_r": 0.019,
+   "gross_expectancy_r": 0.026,
+   "net_usd": 7.0
+  },
+  "2019Q4": {
+   "trades": 6,
+   "win_rate_pct": 66.7,
+   "expectancy_r": 0.687,
+   "gross_expectancy_r": 0.705,
+   "net_usd": 412.0
+  },
+  "2020Q1": {
+   "trades": 5,
+   "win_rate_pct": 40.0,
+   "expectancy_r": 0.122,
+   "gross_expectancy_r": 0.126,
+   "net_usd": 61.0
+  },
+  "2020Q2": {
+   "trades": 5,
+   "win_rate_pct": 60.0,
+   "expectancy_r": 0.033,
+   "gross_expectancy_r": 0.037,
+   "net_usd": 16.0
+  },
+  "2020Q3": {
+   "trades": 5,
+   "win_rate_pct": 20.0,
+   "expectancy_r": 0.055,
+   "gross_expectancy_r": 0.06,
+   "net_usd": 28.0
+  },
+  "2020Q4": {
+   "trades": 5,
+   "win_rate_pct": 20.0,
+   "expectancy_r": -0.365,
+   "gross_expectancy_r": -0.359,
+   "net_usd": -182.0
+  },
+  "2021Q1": {
+   "trades": 11,
+   "win_rate_pct": 36.4,
+   "expectancy_r": 0.13,
+   "gross_expectancy_r": 0.142,
+   "net_usd": 144.0
+  },
+  "2021Q2": {
+   "trades": 5,
+   "win_rate_pct": 80.0,
+   "expectancy_r": 0.656,
+   "gross_expectancy_r": 0.664,
+   "net_usd": 328.0
+  },
+  "2021Q3": {
+   "trades": 11,
+   "win_rate_pct": 27.3,
+   "expectancy_r": -0.39,
+   "gross_expectancy_r": -0.373,
+   "net_usd": -429.0
+  },
+  "2021Q4": {
+   "trades": 8,
+   "win_rate_pct": 37.5,
+   "expectancy_r": 0.347,
+   "gross_expectancy_r": 0.361,
+   "net_usd": 278.0
+  },
+  "2022Q1": {
+   "trades": 7,
+   "win_rate_pct": 57.1,
+   "expectancy_r": 0.761,
+   "gross_expectancy_r": 0.771,
+   "net_usd": 533.0
+  },
+  "2022Q2": {
+   "trades": 9,
+   "win_rate_pct": 44.4,
+   "expectancy_r": 0.062,
+   "gross_expectancy_r": 0.073,
+   "net_usd": 55.0
+  },
+  "2022Q3": {
+   "trades": 4,
+   "win_rate_pct": 100.0,
+   "expectancy_r": 0.452,
+   "gross_expectancy_r": 0.459,
+   "net_usd": 181.0
+  },
+  "2022Q4": {
+   "trades": 8,
+   "win_rate_pct": 37.5,
+   "expectancy_r": 0.067,
+   "gross_expectancy_r": 0.078,
+   "net_usd": 53.0
+  },
+  "2023Q1": {
+   "trades": 9,
+   "win_rate_pct": 44.4,
+   "expectancy_r": 0.189,
+   "gross_expectancy_r": 0.199,
+   "net_usd": 170.0
+  },
+  "2023Q2": {
+   "trades": 6,
+   "win_rate_pct": 16.7,
+   "expectancy_r": -0.664,
+   "gross_expectancy_r": -0.655,
+   "net_usd": -399.0
+  },
+  "2023Q3": {
+   "trades": 7,
+   "win_rate_pct": 28.6,
+   "expectancy_r": 0.048,
+   "gross_expectancy_r": 0.065,
+   "net_usd": 34.0
+  },
+  "2023Q4": {
+   "trades": 8,
+   "win_rate_pct": 37.5,
+   "expectancy_r": 0.384,
+   "gross_expectancy_r": 0.399,
+   "net_usd": 307.0
+  },
+  "2024Q1": {
+   "trades": 7,
+   "win_rate_pct": 42.9,
+   "expectancy_r": 0.246,
+   "gross_expectancy_r": 0.254,
+   "net_usd": 172.0
+  },
+  "2024Q2": {
+   "trades": 5,
+   "win_rate_pct": 0.0,
+   "expectancy_r": -0.591,
+   "gross_expectancy_r": -0.586,
+   "net_usd": -295.0
+  },
+  "2024Q3": {
+   "trades": 8,
+   "win_rate_pct": 50.0,
+   "expectancy_r": 0.571,
+   "gross_expectancy_r": 0.579,
+   "net_usd": 457.0
+  },
+  "2024Q4": {
+   "trades": 5,
+   "win_rate_pct": 20.0,
+   "expectancy_r": -0.43,
+   "gross_expectancy_r": -0.427,
+   "net_usd": -215.0
+  },
+  "2025Q1": {
+   "trades": 5,
+   "win_rate_pct": 80.0,
+   "expectancy_r": 1.055,
+   "gross_expectancy_r": 1.06,
+   "net_usd": 527.0
+  },
+  "2025Q2": {
+   "trades": 5,
+   "win_rate_pct": 20.0,
+   "expectancy_r": -0.546,
+   "gross_expectancy_r": -0.544,
+   "net_usd": -273.0
+  },
+  "2025Q3": {
+   "trades": 6,
+   "win_rate_pct": 50.0,
+   "expectancy_r": 0.427,
+   "gross_expectancy_r": 0.431,
+   "net_usd": 256.0
+  },
+  "2025Q4": {
+   "trades": 4,
+   "win_rate_pct": 75.0,
+   "expectancy_r": 0.246,
+   "gross_expectancy_r": 0.248,
+   "net_usd": 99.0
+  },
+  "2026Q1": {
+   "trades": 5,
+   "win_rate_pct": 60.0,
+   "expectancy_r": 0.649,
+   "gross_expectancy_r": 0.65,
+   "net_usd": 325.0
+  },
+  "2026Q2": {
+   "trades": 6,
+   "win_rate_pct": 66.7,
+   "expectancy_r": 0.276,
+   "gross_expectancy_r": 0.278,
+   "net_usd": 165.0
+  },
+  "2026Q3": {
+   "trades": 9,
+   "win_rate_pct": 44.4,
+   "expectancy_r": -0.009,
+   "gross_expectancy_r": -0.005,
+   "net_usd": -8.0
+  },
+  "2026Q4": {
+   "trades": 2,
+   "win_rate_pct": 50.0,
+   "expectancy_r": 0.088,
+   "gross_expectancy_r": 0.091,
+   "net_usd": 18.0
+  }
+ },
+ "by_year": {
+  "2008": {
+   "trades": 1,
+   "win_rate_pct": 0.0,
+   "expectancy_r": -1.002,
+   "gross_expectancy_r": -0.987,
+   "net_usd": -100.0
+  },
+  "2009": {
+   "trades": 26,
+   "win_rate_pct": 50.0,
+   "expectancy_r": 0.213,
+   "gross_expectancy_r": 0.228,
+   "net_usd": 555.0
+  },
+  "2010": {
+   "trades": 18,
+   "win_rate_pct": 77.8,
+   "expectancy_r": 0.25,
+   "gross_expectancy_r": 0.259,
+   "net_usd": 449.0
+  },
+  "2011": {
+   "trades": 23,
+   "win_rate_pct": 60.9,
+   "expectancy_r": 0.4,
+   "gross_expectancy_r": 0.406,
+   "net_usd": 921.0
+  },
+  "2012": {
+   "trades": 33,
+   "win_rate_pct": 36.4,
+   "expectancy_r": -0.097,
+   "gross_expectancy_r": -0.085,
+   "net_usd": -319.0
+  },
+  "2013": {
+   "trades": 29,
+   "win_rate_pct": 44.8,
+   "expectancy_r": 0.139,
+   "gross_expectancy_r": 0.152,
+   "net_usd": 403.0
+  },
+  "2014": {
+   "trades": 38,
+   "win_rate_pct": 31.6,
+   "expectancy_r": -0.098,
+   "gross_expectancy_r": -0.077,
+   "net_usd": -373.0
+  },
+  "2015": {
+   "trades": 28,
+   "win_rate_pct": 50.0,
+   "expectancy_r": 0.251,
+   "gross_expectancy_r": 0.266,
+   "net_usd": 703.0
+  },
+  "2016": {
+   "trades": 24,
+   "win_rate_pct": 54.2,
+   "expectancy_r": 0.354,
+   "gross_expectancy_r": 0.365,
+   "net_usd": 850.0
+  },
+  "2017": {
+   "trades": 36,
+   "win_rate_pct": 44.4,
+   "expectancy_r": 0.278,
+   "gross_expectancy_r": 0.303,
+   "net_usd": 1002.0
+  },
+  "2018": {
+   "trades": 27,
+   "win_rate_pct": 44.4,
+   "expectancy_r": -0.164,
+   "gross_expectancy_r": -0.141,
+   "net_usd": -442.0
+  },
+  "2019": {
+   "trades": 25,
+   "win_rate_pct": 48.0,
+   "expectancy_r": 0.122,
+   "gross_expectancy_r": 0.141,
+   "net_usd": 305.0
+  },
+  "2020": {
+   "trades": 20,
+   "win_rate_pct": 35.0,
+   "expectancy_r": -0.039,
+   "gross_expectancy_r": -0.034,
+   "net_usd": -77.0
+  },
+  "2021": {
+   "trades": 35,
+   "win_rate_pct": 40.0,
+   "expectancy_r": 0.092,
+   "gross_expectancy_r": 0.104,
+   "net_usd": 321.0
+  },
+  "2022": {
+   "trades": 28,
+   "win_rate_pct": 53.6,
+   "expectancy_r": 0.294,
+   "gross_expectancy_r": 0.304,
+   "net_usd": 822.0
+  },
+  "2023": {
+   "trades": 30,
+   "win_rate_pct": 33.3,
+   "expectancy_r": 0.038,
+   "gross_expectancy_r": 0.05,
+   "net_usd": 113.0
+  },
+  "2024": {
+   "trades": 25,
+   "win_rate_pct": 32.0,
+   "expectancy_r": 0.047,
+   "gross_expectancy_r": 0.054,
+   "net_usd": 118.0
+  },
+  "2025": {
+   "trades": 20,
+   "win_rate_pct": 55.0,
+   "expectancy_r": 0.305,
+   "gross_expectancy_r": 0.308,
+   "net_usd": 609.0
+  },
+  "2026": {
+   "trades": 22,
+   "win_rate_pct": 54.5,
+   "expectancy_r": 0.227,
+   "gross_expectancy_r": 0.23,
+   "net_usd": 500.0
+  }
+ }
+}

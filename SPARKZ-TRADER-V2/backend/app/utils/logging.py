@@ -15,11 +15,20 @@ def secret_values() -> list[str]:
 
 class RedactSecrets(logging.Filter):
     def filter(self, record: logging.LogRecord) -> bool:
-        msg = record.getMessage()
-        for s in secret_values():
-            if s in msg:
-                msg = msg.replace(s, "***")
-        record.msg, record.args = msg, None
+        secrets = [s for s in secret_values() if s in record.getMessage()]
+        if not secrets:
+            return True                       # untouched: formatters such as uvicorn's read record.args
+
+        def clean(v):
+            if isinstance(v, str):
+                for s in secrets:
+                    v = v.replace(s, "***")
+            return v
+        record.msg = clean(record.msg)
+        if isinstance(record.args, tuple):
+            record.args = tuple(clean(v) for v in record.args)
+        elif isinstance(record.args, dict):
+            record.args = {k: clean(v) for k, v in record.args.items()}
         return True
 
 
