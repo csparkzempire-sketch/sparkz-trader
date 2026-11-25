@@ -71,12 +71,14 @@ def main(argv=None) -> None:
     ap.add_argument("--execution-tf", default="15m", choices=["15m", "1h", "4h", "1d"])
     ap.add_argument("--max-hold-hours", type=float, default=8.0)
     ap.add_argument("--max-risk", type=float, default=80.0)
+    ap.add_argument("--decision", default="VOTE", choices=["VOTE", "TOP_STRATEGY"])
+    ap.add_argument("--top", type=int, default=1, help="TOP_STRATEGY: how many of the top-ranked strategies to consider")
     a = ap.parse_args(argv)
     t0 = time.time()
     m1 = load_history("XAUUSD", a.base_tf, a.source).reset_index(drop=True)
     ctx = contexts(m1, a.base_tf)
     print(f"contexts built ({time.time() - t0:.0f}s): " + ", ".join(f"{tf} {len(c)}" for tf, c in ctx.items()), flush=True)
-    eng = Assistant(a.min_confidence)
+    eng = Assistant(a.min_confidence, decision=a.decision, top_strategies=a.top)
     ex = a.execution_tf
     c15 = ctx[ex]
     warm = pd.Timedelta(days=30 if a.base_tf == "1m" else 365)
@@ -102,6 +104,7 @@ def main(argv=None) -> None:
                     "last_decision": str(times.iloc[-1]) if len(times) else None, "decisions": int(len(times)),
                     "base_tf": a.base_tf, "execution_tf": ex, "every_execution_candles": a.every,
                     "spread": a.spread, "min_confidence": a.min_confidence,
+                    "decision": a.decision if a.decision == "VOTE" else f"TOP_STRATEGY top {a.top}",
                     "exits": f"assistant's stop, 2R target, {a.max_hold_hours:g} h time stop, checked on "
                              f"{a.base_tf} candles at bid/ask",
                     "calls": int(len(sig))},
@@ -120,7 +123,8 @@ def main(argv=None) -> None:
         out["overall"]["standard_error_r"] = round(se, 3)
         out["overall"]["t_stat"] = round(float(tr["r"].mean()) / se, 2) if se > 0 else None
     (REPORTS_DIR / "studies").mkdir(parents=True, exist_ok=True)
-    name = f"assistant_{a.source}" + ("" if a.base_tf == "1m" else f"_{ex}")
+    name = f"assistant_{a.source}" + ("" if a.base_tf == "1m" else f"_{ex}") + \
+        ("" if a.decision == "VOTE" else f"_top{a.top}")
     (REPORTS_DIR / "studies" / f"{name}.json").write_text(json.dumps(out, indent=1, default=str))
     o = out["overall"]
     print(f"{o.get('trades', 0)} trades, win {o.get('win_rate_pct')}%, {o.get('expectancy_r')}R net "

@@ -907,3 +907,28 @@ The honest next step is a forward test: `config/presets/assistant_daily.yaml` ru
 chart on the MT5 demo, reading 1h, 4h and 1d candles as in this study. It sets a 60 USD loss limit at 0.01 lot,
 near the study's typical stop, and a 2× ATR target. At about 27 trades a year, it needs a year or more of
 forward trades before the result means anything.
+
+## 22. Following the highest-ranked strategy instead of the vote
+
+The assistant ranks its nine strategies by **fit %** (how well current conditions suit each one). Decision rule
+`TOP_STRATEGY` (`ASSISTANT_DECISION=TOP_STRATEGY`, `app/assistant/engine.py`) trades the setup of the
+highest-ranked strategy among the top N that has one near the execution timeframe, unless the higher timeframes
+point the other way; the vote's confidence no longer decides. Same study as section 21 (daily chart, 1h/4h/1d
+candles, 2008–2026, spread 0.24, the plan's stop, 2R target, 480 h time stop):
+
+| rule | trades | win % | net R per trade | t | net USD (0.01 lot) | worst drawdown | positive years |
+|---|---|---|---|---|---|---|---|
+| VOTE (section 21, the default) | 488 | 45.5 | +0.130 | 2.38 | +6,359 | −8.4 % | 14 / 19 |
+| TOP_STRATEGY, top 1 | 148 | 46.6 | +0.162 | 1.60 | +2,392 | −6.3 % | 13 / 18 |
+| TOP_STRATEGY, top 3 | 403 | 43.7 | +0.087 | 1.45 | +3,501 | −14.3 % | 10 / 18 |
+
+Results: `reports/studies/assistant_dukascopy_1d_top1.json` and `_top3.json`.
+
+- Top 1 earns a little more per trade but trades a third as often (about 8 a year), so it made less in total
+  and its evidence is weaker (t 1.6, below the 2 usually asked for). Top 3 is worse than the vote on every line.
+- The difference between top 1 and the vote (+0.03 R) is far smaller than the uncertainty of either.
+- In both, the trades where the vote was unsure (55–65 % confidence) lost money (−0.13 R for top 1); the high-
+  confidence trades carried the result. Following one strategy without the others' agreement adds weak trades.
+
+The vote stays the default; `TOP_STRATEGY` is available for a side-by-side demo test and is not recommended
+over the vote on this evidence.

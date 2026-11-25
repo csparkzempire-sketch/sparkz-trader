@@ -230,6 +230,10 @@ class AssistantCfg(BaseModel):
     gate_entries: bool = True
     min_confidence: float = Field(default=0.55, ge=0.0, le=1.0)
     refresh_seconds: float = Field(default=30.0, ge=5.0)
+    # VOTE: all strategies vote (the tested rule). TOP_STRATEGY: follow the highest-ranked strategy (by fit %) among
+    # the top `top_strategies` that has a setup; see app/assistant/engine.py
+    decision: Literal["VOTE", "TOP_STRATEGY"] = "VOTE"
+    top_strategies: int = Field(default=1, ge=1, le=9)
 
 
 class Settings(BaseModel):
@@ -325,6 +329,8 @@ ENV_KEYS: dict[str, tuple[str, ...]] = {
     "EXECUTION_DELAY_MS": ("execution", "delay_ms"),
     "ASSISTANT_GATE": ("assistant", "gate_entries"),
     "ASSISTANT_MIN_CONFIDENCE": ("assistant", "min_confidence"),
+    "ASSISTANT_DECISION": ("assistant", "decision"),
+    "ASSISTANT_TOP_STRATEGIES": ("assistant", "top_strategies"),
 }
 
 

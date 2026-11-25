@@ -62,8 +62,12 @@ def resolve(ctx: Context, sig: Signal, k: int, end: int, horizon: int = 120) -> 
 
 
 class Assistant:
-    def __init__(self, min_confidence: float = 0.55, stats_lookback: int = 1500, stats_horizon: int = 120):
+    def __init__(self, min_confidence: float = 0.55, stats_lookback: int = 1500, stats_horizon: int = 120,
+                 decision: str = "VOTE", top_strategies: int = 1):
+        if decision not in ("VOTE", "TOP_STRATEGY"):
+            raise ValueError(f"unknown decision rule {decision!r}")
         self.min_confidence = min_confidence
+        self.decision, self.top_strategies = decision, max(1, int(top_strategies))
         self.stats_lookback, self.stats_horizon = stats_lookback, stats_horizon
         self._stats: dict[tuple, tuple[pd.Timestamp, dict]] = {}
 
@@ -181,7 +185,12 @@ class Assistant:
                 and ex_min / 4 <= TF_MINUTES[s.tf] <= ex_min * 4]
         reasons = []
         action = "WAIT"
-        if not all_sigs:
+        ranking = sorted(fit_pct, key=lambda k: -fit_pct[k])
+        if self.decision == "TOP_STRATEGY":
+            action, direction, near, top_reasons = self._top_strategy(ranking, fit_pct, weighted, ex_min, execution_tf,
+                                                                      bias_dir)
+            reasons.extend(top_reasons)
+        elif not all_sigs:
             reasons.append("no strategy has a setup on any timeframe")
         elif confidence < self.min_confidence:
             reasons.append(f"confidence {100 * confidence:.0f}% below {100 * self.min_confidence:.0f}%"
@@ -203,7 +212,7 @@ class Assistant:
                     reasons.append(f"{best.strategy} on {best.tf}: target first in {hist['hit_rate_pct']}% of "
                                    f"{hist['samples']} past setups, typically {hist['minutes']['typical_p50']} min")
         agree = sorted({s.strategy for _, s, _ in weighted if s.direction == direction})
-        if action != "WAIT":
+        if action != "WAIT" and self.decision == "VOTE":
             reasons.insert(0, f"{len(agree)} strateg{'y' if len(agree) == 1 else 'ies'} agree: {', '.join(agree)}")
         last_tf = tfs[-1] if tfs else None
         return {
@@ -216,5 +225,29 @@ class Assistant:
             "strategy_fit_pct": dict(sorted(fit_pct.items(), key=lambda kv: -kv[1])),
             "plan": plan, "reasons": reasons, "timeframes": per_tf,
             "min_confidence_pct": round(100 * self.min_confidence, 1), "spread": spread,
+            "decision_rule": self.decision if self.decision == "VOTE" else f"TOP_STRATEGY (top {self.top_strategies})",
             "disclaimer": DISCLAIMER,
         }
+
+    def _top_strategy(self, ranking: list[str], fit_pct: dict, weighted: list, ex_min: int, execution_tf: str,
+                      bias_dir: int) -> tuple[str, int, list, list[str]]:
+        """Decision rule TOP_STRATEGY: follow the highest-ranked strategy (by fit %) that has a setup near the
+        execution timeframe, looking only at the top `top_strategies` of the ranking. Its strongest setup gives
+        the direction and the plan; WAIT when none of them has a setup or the higher timeframes point the other
+        way. The vote's confidence is still reported but does not decide."""
+        for rank, name in enumerate(ranking[:self.top_strategies], 1):
+            mine = [(w, s, a) for w, s, a in weighted if s.strategy == name and ex_min / 4 <= TF_MINUTES[s.tf] <= ex_min * 4]
+            if not mine:
+                continue
+            w, best, age = max(mine, key=lambda x: x[0])
+            direction = best.direction
+            side = "buy" if direction == 1 else "sell"
+            near = [(w2, s, a) for w2, s, a in mine if s.direction == direction]
+            if bias_dir and direction != bias_dir:
+                return "WAIT", direction, near, [f"{name} (ranked #{rank}, fit {fit_pct[name]}%) has a {side} setup, "
+                                                 f"but the higher timeframes point the other way"]
+            return ("BUY" if direction == 1 else "SELL"), direction, near, [
+                f"following {name}: ranked #{rank} of {len(ranking)} (fit {fit_pct[name]}%), {side} setup on {best.tf}"]
+        top = ", ".join(f"{n} {fit_pct[n]}%" for n in ranking[:self.top_strategies])
+        return "WAIT", 0, [], [f"no setup near the {execution_tf} timeframe from the top-ranked "
+                               f"strateg{'y' if self.top_strategies == 1 else 'ies'} ({top})"]
