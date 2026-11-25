@@ -146,3 +146,15 @@ def test_history_study_runs_without_lookahead(tmp_path, monkeypatch):
     st.main(["--every", "16", "--start", str(m1["timestamp"].iloc[60 * 24 * 3])])
     out = json.loads((tmp_path / "studies" / "assistant_dukascopy.json").read_text())
     assert out["meta"]["decisions"] > 0 and "overall" in out
+
+
+def test_daily_robot_reads_1h_and_above_only():
+    from app.market.providers.bridge_provider import BridgeProvider, BridgeStore
+    m1 = generate_candles("XAUUSD", "1m", 60 * 24 * 20, "normal", seed=5)
+    store = BridgeStore()
+    store.push("XAUUSD", "XAUUSDm", None, [{"time": t.isoformat(), "open": o, "high": h, "low": l, "close": c}
+                                           for t, o, h, l, c in m1[["timestamp", "open", "high", "low", "close"]]
+                                           .itertuples(index=False)])
+    fr = gather_frames(BridgeProvider("XAUUSD", "1d", store=store), "1d")
+    assert "1m" not in fr and "15m" not in fr and "1h" in fr
+    assert "1m" in gather_frames(BridgeProvider("XAUUSD", "15m", store=store), "15m")

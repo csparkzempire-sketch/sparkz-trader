@@ -23,7 +23,11 @@ def gather_frames(provider, base_tf: str, base: pd.DataFrame | None = None,
     """Closed candles per timeframe. `until`: drop candles that close after this time (a paper runner catching
     up on several closed bars analyses each as of its own close)."""
     frames: dict[str, pd.DataFrame] = {}
+    # 4h / daily robots read 1h and above only, as in their history study (minute candles add noise there)
+    floor = 60 if TF_MINUTES.get(base_tf, 0) >= 240 else 0
     for tf in TF_ORDER:
+        if TF_MINUTES[tf] < floor:
+            continue
         try:
             df = provider.get_candles(tf, FRAME_BARS[tf])
         except Exception:
