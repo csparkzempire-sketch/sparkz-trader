@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { get } from "../services/api";
+import { API_BASE, dashboardKey, get } from "../services/api";
 import { Dict } from "../types/api";
 
 export type Connection = "connecting" | "live" | "polling" | "offline";
@@ -26,8 +26,10 @@ export function useLive(): { data: Dict | null; conn: Connection; lastUpdate: nu
       poll.current = window.setInterval(refresh, 3000);
     };
     try {
-      const proto = location.protocol === "https:" ? "wss" : "ws";
-      ws = new WebSocket(`${proto}://${location.host}/ws/live`);
+      const base = API_BASE ? new URL(API_BASE) : location;
+      const proto = base.protocol === "https:" ? "wss" : "ws";
+      const key = dashboardKey();
+      ws = new WebSocket(`${proto}://${base.host}/ws/live${key ? `?key=${encodeURIComponent(key)}` : ""}`);
       ws.onopen = () => {
         setConn("live");
         if (poll.current) { clearInterval(poll.current); poll.current = null; }

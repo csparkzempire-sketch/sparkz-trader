@@ -82,3 +82,16 @@ def test_assistant_endpoint(client):
     assert set(d) >= {"report", "error", "gate_entries", "drives_entries", "age_seconds"}
     if d["report"]:
         assert d["report"]["action"] in ("BUY", "SELL", "WAIT") and "strategy_fit_pct" in d["report"]
+
+
+def test_dashboard_password_protects_the_api_but_not_the_bridge(monkeypatch):
+    from fastapi.testclient import TestClient
+
+    import app.main as m
+    monkeypatch.setenv("SPARKZ_DASHBOARD_PASSWORD", "open-sesame")
+    c = TestClient(m.app)
+    assert c.get("/api/execution/alerts").status_code == 401
+    assert c.get("/api/execution/alerts", headers={"X-Dashboard-Key": "wrong"}).status_code == 401
+    assert c.get("/api/bridge/status").status_code == 200              # the bridge has its own token
+    monkeypatch.delenv("SPARKZ_DASHBOARD_PASSWORD")
+    assert m.dashboard_key_ok(None)                                    # on your own PC: no password

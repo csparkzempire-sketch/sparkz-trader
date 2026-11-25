@@ -206,6 +206,53 @@ python bridge\mt5_bridge.py --symbol XAUUSDm --server http://127.0.0.1:8010 --tr
   positions) next to the robot's ledger.
 - Every study in `reports/` lost money after costs. Run demo first, and real money only with money you can lose.
 
+### Telegram alerts
+
+Set `TELEGRAM_BOT_TOKEN` (from @BotFather) and `TELEGRAM_CHAT_ID` before starting the server. You then get a
+message for:
+
+- trades opened, added and closed;
+- orders MT5 refused (including the daily loss stop);
+- a basket MT5 closed by itself;
+- emergency stop, halt and resume;
+- the bridge or MT5 going quiet, and coming back;
+- positions taken over from MT5 after a restart.
+
+Repeated messages of the same kind are limited to one every 5 minutes; trades are never limited. To check it:
+`GET /api/execution/alerts`, and `POST /api/execution/alerts/test` sends a test message. Sending never slows
+or stops the robot. `TELEGRAM_ALERTS=POSITION_OPENED,BASKET_CLOSED` narrows what is sent.
+
+### MT5 sync
+
+With `EXECUTION_MODE=MT5_DEMO` or `MT5_LIVE`:
+
+- The robot's account starts from the MT5 balance, read from the bridge's first account report before any trade
+  (`SYNC_MT5_BALANCE=false` turns this off).
+- SPARKZ positions still open in MT5 while the robot holds none, for example after a restart, are taken over as
+  one basket and managed by the robot (`ADOPT_MT5_POSITIONS=false` turns this off). This happens only after two
+  fresh account reports since the robot's last fill, and only when they are all in one direction.
+
+### Running online (always on, open from your phone)
+
+`SPARKZ-TRADER-V2/Dockerfile` builds one web service: the dashboard plus the API. The MT5 bridge on your PC
+then pushes to the online address instead of `127.0.0.1`.
+
+1. Render: New → Blueprint → this repository. It reads `render.yaml`, a Docker web service on the always-on
+   starter plan. In Render's dashboard, set the secret values:
+   - `SPARKZ_BRIDGE_TOKEN`;
+   - `SPARKZ_DASHBOARD_PASSWORD`. Online, every dashboard request needs it: the page asks once and remembers
+     it on that device. The bridge keeps using its own token;
+   - optionally `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`.
+2. Bridge on your PC:
+   `python bridge\mt5_bridge.py --symbol XAUUSDm --server https://<your-service>.onrender.com --trade`.
+3. Optional, the dashboard on Vercel: a NEW Vercel project with root directory `SPARKZ-TRADER-V2/frontend`
+   (`frontend/vercel.json`) and the environment variable `VITE_API_BASE=https://<your-service>.onrender.com`.
+   Add the Vercel address to `CORS_ORIGINS` on Render. The existing Vercel project, which builds the original
+   SPARKZ TRADER from the repository root, is not changed.
+
+The robot's state lives in memory and in SQLite on the service. A redeploy starts a new paper ledger, and with
+MT5 sync it picks up the MT5 balance and any open SPARKZ positions again.
+
 ### Long fine-grained history from OANDA (read-only)
 
 With `OANDA_API_TOKEN` and `OANDA_ACCOUNT_ID` set, and `api-fxpractice.oanda.com` allowed:

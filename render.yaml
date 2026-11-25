@@ -1,0 +1,28 @@
+# Render blueprint for SPARKZ TRADER V2 (New > Blueprint > this repository). One always-on web service serving
+# the dashboard and the API. Values marked sync: false are typed in Render's dashboard, never committed.
+services:
+  - type: web
+    name: sparkz-trader-v2
+    runtime: docker
+    rootDir: SPARKZ-TRADER-V2
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: starter            # always on; the free plan restarts and loses the robot's state
+    healthCheckPath: /api/bridge/status
+    envVars:
+      - key: MARKET_DATA_PROVIDER
+        value: BRIDGE
+      - key: EXECUTION_MODE
+        value: MT5_DEMO
+      - key: SPARKZ_PRESET
+        value: assistant
+      - key: SPARKZ_BRIDGE_TOKEN
+        sync: false
+      - key: SPARKZ_DASHBOARD_PASSWORD
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_CHAT_ID
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false            # e.g. https://<your-vercel-v2-site>.vercel.app if the dashboard is on Vercel
