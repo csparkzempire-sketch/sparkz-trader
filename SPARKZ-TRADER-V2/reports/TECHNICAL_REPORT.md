@@ -826,3 +826,40 @@ Reading:
   how they look perfect on video for days or weeks.
 - Neither robot is fit for a real account. The simulator is research only; it is not connected to the robot or
   the MT5 bridge. Results: `reports/studies/lot_escalation.json`.
+
+### 20.1 Compounding scalps toward a target (the user's reading of the video)
+
+A closer look at the video, at 2 frames a second:
+
+- The first clip grows $1.01 to about $9,178 with 7 identical positions open at a time. Each takes about $0.5–1.4
+  per 0.01 lot. They are sells and buys in turn, all within 4374–4383, and the lots per position rise with the
+  balance (0.01 → 0.03 → 0.09 → 0.50). The margin level reads 116 % at $3,754, about $2 from a stop-out.
+- The second clip is the "$5 to $24 Millions" one. Its final screens show balance $5.00 with equity
+  $24,059,466, dozens of 2-lot buys from about 4326, and a margin of $8.2 million. A later screen shows a
+  $24,839,750 balance under a $39,934.41 title. Those positions imply roughly 9,000+ lots opened from $5,
+  beyond brokers' per-order and per-account limits.
+
+The user described the method as: read the trend and a target, set a stop, keep scalping small profits in that
+direction, reopen at once, and raise the lots as the balance grows, until the target or the stop. Simulated
+with `Compound`: 7 slots, a $25 target, a $10 stop and a $1 scalp, with the same trend filter, costs and
+account model as above. Sizing is 2 % or 10 % of the balance at the stop, or the video's "half the available
+margin". The control holds the same positions to the target or the stop, with no scalping.
+
+| robot | $1,000 | $10,000 | target reached first | needed to break even |
+|---|---|---|---|---|
+| compounding scalps, 2 % risk | blown 11 Mar | blown 18 Jul | 33 % / 28 % | 29.5 % |
+| compounding scalps, 10 % risk | blown 11 Mar | blown 1 May | 33 % | 29.5 % |
+| compounding scalps, video margin | blown on the first campaign | blown on the first campaign | — | — |
+| hold to target (control), 2 % risk | blown 23 Jun | $10,000 → $8,759 | 28 % / 30 % | 29.5 % |
+
+Reading:
+
+- Everything rests on the first step, knowing where price is going. The trend read reaches a $25 target before
+  a $10 stop 28–33 % of the time, about the 29.5 % a coin toss needs at this target and stop.
+- Scalping on the way does not help. The $10,000 account made about 24,000 scalps, and each reopening pays
+  the spread again (0.34 per round trip against a $1 scalp). That turned a small loss (the control, −12 %)
+  into a wiped-out account.
+- With small accounts, 0.01 lot × 7 positions is already more than 2 % risk, so the sizing cannot shrink as
+  losses come. This is why $1,000 accounts are blown even at "2 %".
+- At the video's margin use (margin level near 200 %), one ordinary pullback of a few dollars stops the
+  account out, as in sections 20's other video variants.
