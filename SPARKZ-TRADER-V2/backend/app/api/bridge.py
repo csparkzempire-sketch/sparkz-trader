@@ -13,6 +13,7 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 from app.execution.mt5_executor import ORDERS
 from app.market.providers.base import Tick
 from app.market.providers.bridge_provider import STORE
+from app.market.watch import WATCH, WATCH_TFS
 
 router = APIRouter(prefix="/api/bridge", tags=["bridge"])
 MAX_FUTURE = timedelta(minutes=2)
@@ -119,6 +120,28 @@ class PushIn(BaseModel):
         return v
 
 
+class WatchBarIn(BarIn):
+    forming: bool = False                 # the candle still open in MT5 (drawn, never analysed)
+
+
+class WatchIn(BaseModel):
+    """Candles of a market the chart shows (bridge --watch). Market data only."""
+    broker_symbol: str = Field(min_length=1, max_length=32)
+    digits: int | None = Field(default=None, ge=0, le=8)
+    tick: TickIn | None = None
+    bars: dict[str, list[WatchBarIn]] = Field(default_factory=dict)
+
+    @field_validator("bars")
+    @classmethod
+    def _tfs(cls, v: dict) -> dict:
+        bad = set(v) - set(WATCH_TFS)
+        if bad:
+            raise ValueError(f"timeframes must be {', '.join(WATCH_TFS)}, not {sorted(bad)}")
+        if any(len(x) > 3000 for x in v.values()):
+            raise ValueError("at most 3000 candles per timeframe")
+        return v
+
+
 def _authorise(token: str | None) -> None:
     expected = os.getenv("SPARKZ_BRIDGE_TOKEN", "")
     if not expected:
@@ -142,6 +165,18 @@ def push(body: PushIn, x_bridge_token: str | None = Header(default=None)):
     if body.account is not None:
         ORDERS.set_account(body.account.model_dump())
     return STORE.push(body.symbol.upper(), body.broker_symbol, tick, bars, htf)
+
+
+@router.post("/watch")
+def watch(body: WatchIn, x_bridge_token: str | None = Header(default=None)):
+    _authorise(x_bridge_token)
+    now = datetime.now(timezone.utc)
+    latest = max([b.time for v in body.bars.values() for b in v] + ([body.tick.time] if body.tick else []), default=None)
+    if latest is not None and latest - now > MAX_FUTURE:
+        raise HTTPException(422, "data is ahead of UTC: check the bridge's --utc-offset")
+    tick = {"time": body.tick.time.isoformat(), "bid": body.tick.bid, "ask": body.tick.ask} if body.tick else None
+    return WATCH.push(body.broker_symbol, tick, {tf: [b.model_dump() for b in v] for tf, v in body.bars.items()},
+                      body.digits)
 
 
 @router.get("/orders")

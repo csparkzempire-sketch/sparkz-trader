@@ -53,8 +53,9 @@ class Signal:
         d = asdict(self)
         d["action"] = "BUY" if self.direction == 1 else "SELL"
         d["risk_reward"] = round(self.rr, 2)
-        for k in ("entry", "stop", "target", "strength"):
-            d[k] = round(d[k], 3)
+        for k in ("entry", "stop", "target"):
+            d[k] = round(d[k], 6)              # forex needs 5 decimals
+        d["strength"] = round(d["strength"], 3)
         return d
 
 

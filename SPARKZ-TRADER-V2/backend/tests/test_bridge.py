@@ -14,6 +14,7 @@ from fastapi.testclient import TestClient
 from app.api import bridge as bridge_api
 from app.config import load_settings
 from app.market.providers.bridge_provider import BridgeProvider, BridgeStore
+from app.market.watch import WatchStore, canonical
 from app.paper.runner import PaperRunner
 
 SCRIPT = Path(__file__).resolve().parents[2] / "bridge" / "mt5_bridge.py"
@@ -69,6 +70,7 @@ class FakeMT5:
 def server(monkeypatch):
     store = BridgeStore(clock=lambda: NOW.timestamp())
     monkeypatch.setattr(bridge_api, "STORE", store)
+    monkeypatch.setattr(bridge_api, "WATCH", WatchStore(clock=lambda: NOW.timestamp()))
     monkeypatch.setenv("SPARKZ_BRIDGE_TOKEN", "s3cret-bridge")
     monkeypatch.setattr(bridge_api, "datetime", type("D", (), {"now": staticmethod(lambda tz=None: NOW.to_pydatetime())}))
     app = FastAPI()
@@ -78,7 +80,8 @@ def server(monkeypatch):
 
 def via_client(client):
     def post(url, token, payload):
-        r = client.post("/api/bridge/push", json=payload, headers={"X-Bridge-Token": token})
+        path = "/api/bridge/watch" if url.endswith("/watch") else "/api/bridge/push"
+        r = client.post(path, json=payload, headers={"X-Bridge-Token": token})
         assert r.status_code == 200, r.text
         return r.json()
     return post
@@ -235,3 +238,42 @@ def test_bridge_sends_higher_timeframes_for_the_assistant(server):
     h4 = p.get_candles("4h", 5000)
     assert h4["timestamp"].is_monotonic_increasing and h4["timestamp"].is_unique
     assert len(h4) >= 1000                                       # native candles, then newer ones from 1m
+
+
+class FakeMT5Watch(FakeMT5WithHTF):
+    TIMEFRAME_M5, TIMEFRAME_M15 = 5, 15
+    FREQ = {**FakeMT5WithHTF.FREQ, 5: "5min", 15: "15min"}
+
+    def symbol_select(self, symbol, on):
+        return symbol in ("XAUUSDm", "EURUSDm")
+
+    def symbol_info(self, symbol):
+        return SimpleNamespace(point=0.001 if symbol == "XAUUSDm" else 0.00001, digits=3 if symbol == "XAUUSDm" else 5)
+
+
+def test_bridge_watch_sends_chart_markets_and_skips_unknown_ones(server):
+    client, _ = server
+    logs = []
+    mt5 = FakeMT5Watch(minutes=600)
+    b = mb.Bridge(mt5, "XAUUSDm", "XAUUSD", "http://x", "s3cret-bridge", post=via_client(client),
+                  clock=lambda: NOW.timestamp(), sleep=lambda s: None, log=logs.append, history=600,
+                  watch=["EURUSDm", "NOPE"])
+    b.run(max_steps=2)
+    w = bridge_api.WATCH
+    assert [x["symbol"] for x in w.symbols()] == ["EURUSD", "XAUUSD"]
+    assert any("'NOPE' not in this terminal" in m for m in logs) and "NOPE" not in b.watch
+    assert len(w.frame("EURUSD", "1h")) == 1500 and w.digits("EURUSD") == 5
+    assert len(w.frame("XAUUSD", "1h", closed_only=True)) == 1499               # the forming candle is left out
+    assert (0, 3) not in mt5.calls                                               # second step was within 20 s: no update
+
+
+def test_canonical_symbol_names():
+    assert [canonical(s) for s in ("XAUUSDm", "EURUSD.raw", "usdjpy", "GBPUSD#", "GOLD")] == \
+        ["XAUUSD", "EURUSD", "USDJPY", "GBPUSD", "GOLD"]
+
+
+def test_watch_rejects_unknown_timeframes(server):
+    client, _ = server
+    r = client.post("/api/bridge/watch", json={"broker_symbol": "EURUSDm", "bars": {"2m": []}},
+                    headers={"X-Bridge-Token": "s3cret-bridge"})
+    assert r.status_code == 422
