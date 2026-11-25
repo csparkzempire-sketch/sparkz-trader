@@ -365,3 +365,52 @@ def test_execution_report_measures_slippage_and_compares_with_history(client, bo
     rep = build(r)
     assert rep["results"]["baskets"] == 1 and rep["results"]["r_unit_usd"] == 15
     assert rep["execution"]["fills"] == 2
+
+
+def test_robot_account_starts_from_the_mt5_balance(client, book):
+    mt5, trader, bridge = setup(client)
+    r = Robot(demo_settings(), mode="PAPER")
+    r.last_tick = tick()
+    bridge.step()                                           # the fake MT5 reports a 1,000 USD balance
+    r.poll_executor()
+    assert r.account.balance == 1000.0 and r.account.initial_balance == 1000.0
+    assert any(e["type"] == "ACCOUNT_SYNCED" for e in r.log.tail(10))
+    off = Robot(demo_settings(sync_mt5_balance=False), mode="PAPER")
+    off.last_tick = tick()
+    off.poll_executor()
+    assert off.account.balance == off.s.risk.initial_capital
+
+
+def test_positions_left_open_in_mt5_are_taken_over_after_a_restart(client, book):
+    mt5, trader, bridge = setup(client)
+    for k, px in enumerate((2650.40, 2652.40)):
+        mt5.positions.append(SimpleNamespace(ticket=500 + k, type=0, volume=0.01, price_open=px, sl=2620.0,
+                                             profit=0.0, magic=mt.MAGIC))
+    r = Robot(demo_settings(), mode="PAPER")                # a fresh robot: holds nothing
+    r.last_tick = tick()
+    bridge.step()
+    r.poll_executor()
+    assert r.strategy.basket is None                        # one report is not enough to take over
+    bridge.step()
+    r.poll_executor()
+    b = r.strategy.basket
+    assert b is not None and b.direction == "BUY" and b.n == 2 and b.avg_entry == pytest.approx(2651.40)
+    assert any(e["type"] == "ADOPTED" for e in r.log.tail(10))
+    assert r.close_basket_manually()                        # and it can close them in MT5
+    bridge.step()
+    r.poll_executor()
+    assert mt5.positions == [] and r.strategy.basket is None
+
+
+def test_mixed_direction_positions_are_not_taken_over(client, book):
+    mt5, trader, bridge = setup(client)
+    mt5.positions += [SimpleNamespace(ticket=1, type=0, volume=0.01, price_open=2650.0, sl=0.0, profit=0.0,
+                                      magic=mt.MAGIC),
+                      SimpleNamespace(ticket=2, type=1, volume=0.01, price_open=2651.0, sl=0.0, profit=0.0,
+                                      magic=mt.MAGIC)]
+    r = Robot(demo_settings(), mode="PAPER")
+    r.last_tick = tick()
+    for _ in range(2):
+        bridge.step()
+        r.poll_executor()
+    assert r.strategy.basket is None and "both directions" in r.log.tail(3)[-1]["message"]

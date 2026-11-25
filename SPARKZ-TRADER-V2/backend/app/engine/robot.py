@@ -79,6 +79,7 @@ class Robot:
             self.executor = SimulationExecutor(self.inst, settings.execution)
         self.live = not getattr(self.executor, "simulated", True)
         self._broker_warned = False
+        self._balance_synced = False
         self.ledger = TradeLedger(keep=keep_fills)
         self.log = log or EventLog()
         self.log_analysis = log_analysis
@@ -181,9 +182,15 @@ class Robot:
         if not self.live or self.last_tick is None:
             return
         tick = self.last_tick
+        self._sync_balance(tick.time)
         self._apply(self._process(tick))
         b, st = self.strategy.basket, self.strategy
         flat = self.executor.broker_flat()
+        if (b is None and flat is False and not st.pending_open and self.s.execution.adopt_mt5_positions
+                and self.executor.settled() and not self.executor.pending()):
+            if self._adopt(tick):
+                self._derive_status(tick.time)
+                return
         if b is not None and not (st.pending_close or st.pending_add) and flat:
             it = st.close_intent("BROKER_CLOSED", tick.time, "MT5 shows no SPARKZ position (protective stop or "
                                  "closed in MT5)")
@@ -191,11 +198,51 @@ class Robot:
                 self.log.add(tick.time, "BROKER_CLOSED", f"{b.uid}: MT5 has no open SPARKZ position any more; the "
                              "basket is booked as closed at the current price")
                 self._apply([self.executor.close_fill(it, tick)])
-        elif b is None and flat is False and not st.pending_open and not self._broker_warned:
+        elif (b is None and flat is False and not st.pending_open and not self._broker_warned
+              and not self.s.execution.adopt_mt5_positions):
             self._broker_warned = True
             self.log.add(tick.time, "WARNING", "MT5 holds SPARKZ positions the robot is not managing (opened before "
                          "a restart?). Manage or close them in MT5.")
         self._derive_status(tick.time)
+
+    def _sync_balance(self, when: datetime) -> None:
+        """Once, before any trade: the robot's account starts from the MT5 account's balance."""
+        if self._balance_synced or not self.s.execution.sync_mt5_balance:
+            return
+        acc = self.executor.book.account_report()
+        if acc is None or not acc.get("balance"):
+            return
+        self._balance_synced = True
+        if self.completed or self.strategy.basket is not None or self.ledger.to_list(1):
+            return
+        bal = float(acc["balance"])
+        a = self.account
+        a.initial_balance = a.balance = bal
+        a.dd.peak, a.dd.max_drawdown_pct, a.dd.max_drawdown_usd, a.dd.day = bal, 0.0, 0.0, None
+        self.log.add(when, "ACCOUNT_SYNCED", f"Robot account set to the MT5 balance: {bal:,.2f} "
+                     f"{acc.get('currency', '')} ({'demo' if acc.get('demo') else 'REAL'} account)")
+
+    def _adopt(self, tick: Tick) -> bool:
+        """SPARKZ positions open in MT5 while the robot holds none (a restart): take them over as one basket."""
+        acc = self.executor.book.account_report() or {}
+        pos = acc.get("positions") or []
+        sides = {p["side"] for p in pos}
+        if not pos or len(sides) != 1:
+            if not self._broker_warned:
+                self._broker_warned = True
+                self.log.add(tick.time, "WARNING", "MT5 holds SPARKZ positions in both directions; not taken over. "
+                             "Manage or close them in MT5.")
+            return False
+        side = sides.pop()
+        fills = [Fill(-(k + 1), IntentType.OPEN_BASKET if k == 0 else IntentType.ADD_POSITION, self.inst.symbol,
+                      side, float(p["volume"]), float(p["price_open"]), tick.mid, tick.spread, 0.0, 0.0, tick.time,
+                      None, "taken over from MT5") for k, p in enumerate(sorted(pos, key=lambda p: p["ticket"]))]
+        self._apply(fills)
+        b = self.strategy.basket
+        self.log.add(tick.time, "ADOPTED", f"Took over {len(pos)} SPARKZ position(s) open in MT5: {side} "
+                     f"{sum(float(p['volume']) for p in pos):g} lots, average {b.avg_entry if b else 0:.2f}; the robot "
+                     "now manages them (target and loss limit)", {"tickets": [p["ticket"] for p in pos]})
+        return True
 
     def _apply(self, fills: list[Fill]) -> None:
         for f in fills:
