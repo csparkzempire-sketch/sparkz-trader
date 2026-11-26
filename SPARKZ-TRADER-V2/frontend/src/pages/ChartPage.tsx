@@ -41,12 +41,23 @@ export default function ChartPage() {
   const extras = useRef<ISeriesApi<"Line">[]>([]);
   const fitted = useRef("");
 
+  const [catalog, setCatalog] = useState<Record<string, { symbol: string; name: string }[]>>({});
+  const [mine, setMine] = useState<string[]>(() => { try { return JSON.parse(localStorage.getItem("sparkz-chart-mine") ?? "[]"); } catch { return []; } });
+  const [adding, setAdding] = useState("");
   useEffect(() => {
     get("/api/chart/symbols").then((s) => {
-      setSymbols(s.symbols); setRobot(s.robot_symbol);
-      setSymbol((cur) => (cur && s.symbols.includes(cur) ? cur : s.robot_symbol));
+      setSymbols(s.symbols); setRobot(s.robot_symbol); setCatalog(s.catalog ?? {});
+      const known = new Set<string>([...s.symbols, ...Object.values(s.catalog ?? {}).flat().map((x: any) => x.symbol), ...mine]);
+      setSymbol((cur) => (cur && known.has(cur) ? cur : s.robot_symbol));
     }).catch((e) => setError((e as Error).message));
   }, []);
+  useEffect(() => { try { localStorage.setItem("sparkz-chart-mine", JSON.stringify(mine)); } catch { /* */ } }, [mine]);
+  const addSymbol = () => {
+    const v = adding.trim().toUpperCase();
+    if (!/^[A-Z0-9^][A-Z0-9.=\-^]{0,19}$/.test(v)) { setError("Type a Yahoo Finance symbol, e.g. AAPL, BTC-USD, EURUSD=X, CL=F or ^GSPC"); return; }
+    if (!mine.includes(v)) setMine([...mine, v]);
+    setSymbol(v); setAdding("");
+  };
   useEffect(() => { try { localStorage.setItem("sparkz-chart-layers", JSON.stringify(layers)); localStorage.setItem("sparkz-chart-only", only); } catch { /* private mode */ } }, [layers, only]);
   useEffect(() => { try { if (symbol) localStorage.setItem("sparkz-chart-symbol", symbol); localStorage.setItem("sparkz-chart-tf", tf); } catch { /* */ } }, [symbol, tf]);
 
@@ -176,9 +187,24 @@ export default function ChartPage() {
       <Page>
         <div className="flex flex-wrap items-center gap-2">
           <select value={symbol} onChange={(e) => setSymbol(e.target.value)} aria-label="Market"
-            className="bg-base-panel border border-base-border px-3 py-2 text-sm font-semibold">
-            {(symbols.length ? symbols : [symbol || robot]).map((s) => <option key={s} value={s}>{s}{s === robot ? " (robot)" : ""}</option>)}
+            className="bg-base-panel border border-base-border px-3 py-2 text-sm font-semibold max-w-[16rem]">
+            <optgroup label="Your MT5 (live broker prices)">
+              {(symbols.length ? symbols : [robot]).map((s) => <option key={s} value={s}>{s}{s === robot ? " (robot)" : ""}</option>)}
+            </optgroup>
+            {Object.entries(catalog).map(([cat, items]) => (
+              <optgroup key={cat} label={`${cat} · Yahoo`}>
+                {items.map((x) => <option key={x.symbol} value={x.symbol}>{x.name} ({x.symbol})</option>)}
+              </optgroup>
+            ))}
+            {mine.length > 0 && <optgroup label="My symbols · Yahoo">{mine.map((m) => <option key={m} value={m}>{m}</option>)}</optgroup>}
+            {symbol && ![...symbols, robot, ...mine, ...Object.values(catalog).flat().map((x) => x.symbol)].includes(symbol) && <option value={symbol}>{symbol}</option>}
           </select>
+          <form className="flex" onSubmit={(e) => { e.preventDefault(); addSymbol(); }}>
+            <input value={adding} onChange={(e) => setAdding(e.target.value)} placeholder="any symbol, e.g. NVDA"
+              aria-label="Add a symbol" className="bg-base-panel border border-base-border px-2 py-2 text-sm w-40" />
+            <button type="submit" className="px-3 py-2 text-sm border border-l-0 border-base-border text-base-muted hover:text-base-text">Add</button>
+          </form>
+          {mine.includes(symbol) && <button className="text-xs underline text-base-muted" onClick={() => { setMine(mine.filter((m) => m !== symbol)); setSymbol(robot); }}>remove {symbol}</button>}
           <div className="flex border border-base-border" role="group" aria-label="Timeframe">
             {TFS.map((t) => (
               <button key={t} onClick={() => setTf(t)}
@@ -187,7 +213,9 @@ export default function ChartPage() {
           </div>
           <span className="text-xs text-base-muted ml-auto">
             {data?.tick ? `bid ${num(data.tick.bid, data.digits)} · ask ${num(data.tick.ask, data.digits)} · ` : ""}
-            {data?.spread != null ? `spread ${num(data.spread, data.digits)}` : ""} · updates every 15 s
+            {data?.feed === "YAHOO" ? <span className="text-accent-warn">Yahoo · {data.category} · delayed for stocks &amp; futures · chart only · </span>
+              : data?.feed === "MT5" ? <span className="text-accent-up">MT5 live · </span> : null}
+            {data?.spread != null ? `spread ${data.spread_assumed ? "≈ " : ""}${num(data.spread, data.digits)}` : ""} · updates every 15 s
           </span>
         </div>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
@@ -208,11 +236,11 @@ export default function ChartPage() {
         {error && <ErrorBox error={error} />}
         <div className="panel p-0 overflow-hidden"><div ref={box} className="h-[420px] md:h-[560px] w-full" /></div>
         {symbols.length <= 1 && (
-          <p className="text-xs text-base-muted">More markets: start the MT5 bridge with <code>--watch EURUSDm,GBPUSDm,USDJPYm</code> (your broker's names).</p>
+          <p className="text-xs text-base-muted">Live broker prices for more markets: start the MT5 bridge with <code>--watch EURUSDm,BTCUSDm,USTECm</code> (your broker's names). The other lists come from Yahoo Finance.</p>
         )}
 
         <div className="grid gap-5 lg:grid-cols-2">
-          <Panel title={`Assistant on ${data?.symbol ?? symbol} ${tf}`} right={a.timeframes_read ? `reads ${a.timeframes_read.join(" · ")}` : undefined}>
+          <Panel title={`Assistant on ${data?.name ? `${data.name} (${data.symbol})` : data?.symbol ?? symbol} ${tf}`} right={a.timeframes_read ? `reads ${a.timeframes_read.join(" · ")}` : undefined}>
             {a.error ? <ErrorBox error={a.error} /> : !a.action ? <Empty>Waiting for candles.</Empty> : (
               <div className="grid gap-3">
                 <StatGrid cols={3}>
