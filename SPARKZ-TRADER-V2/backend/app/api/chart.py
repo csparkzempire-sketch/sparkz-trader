@@ -7,6 +7,8 @@ from __future__ import annotations
 import math
 import threading
 
+import pandas as pd
+
 from fastapi import APIRouter, HTTPException, Query
 
 from app.api.state import runner
@@ -17,6 +19,7 @@ from app.assistant.context import TF_MINUTES
 from app.backtest.metrics import clean
 from app.market.catalog import CATALOG, NAMES, YAHOO, assumed_spread, category_of, digits_for, valid
 from app.market.instruments import get_instrument
+from app.market.providers.bridge_provider import STORE
 from app.market.watch import WATCH, WATCH_TFS
 
 router = APIRouter(prefix="/api/chart", tags=["chart"])
@@ -39,6 +42,17 @@ def _robot_frames(symbol: str) -> tuple[dict, float, int]:
         if df is not None and len(df):
             frames[tf] = df
     return frames, r._spread(), _digits(r.robot.strategy.inst.point)
+
+
+def _live_quote(symbol: str, watch_tick: dict | None) -> dict | None:
+    """The freshest quote: the robot's own feed (every 2 s) for its symbol, else the watched market's tick."""
+    t = STORE.tick if STORE.symbol == symbol else None
+    if t is not None:
+        return {"time": t.time.isoformat(), "epoch": t.time.timestamp(), "bid": t.bid, "ask": t.ask}
+    if watch_tick:
+        ts = pd.Timestamp(watch_tick["time"])
+        return {**watch_tick, "epoch": ts.timestamp()}
+    return None
 
 
 def _digits(point: float) -> int:
@@ -65,7 +79,9 @@ def chart(symbol: str = Query("XAUUSD", max_length=20), tf: str = Query("1h"), b
     r = runner()
     display = None
     feed = "MT5"
-    if source == "yahoo" or (source == "auto" and not WATCH.has(symbol) and symbol != r.s.market.symbol.upper()):
+    robot_symbol = symbol == r.s.market.symbol.upper()
+    watch_ready = WATCH.has(symbol) and len(WATCH.frame(symbol, tf, closed_only=True)) >= 60
+    if source == "yahoo" or (source == "auto" and not WATCH.has(symbol) and not robot_symbol):
         if not valid(symbol):
             raise HTTPException(422, f"not a market symbol: {symbol!r}")
         try:
@@ -77,7 +93,7 @@ def chart(symbol: str = Query("XAUUSD", max_length=20), tf: str = Query("1h"), b
         last_price = float(full[tf]["close"].iloc[-1])
         display, tick, feed = full[tf], None, "YAHOO"
         spread, digits = assumed_spread(symbol, last_price), digits_for(last_price)
-    elif WATCH.has(symbol):
+    elif watch_ready or (WATCH.has(symbol) and not robot_symbol):
         frames = {t: WATCH.frame(symbol, t, closed_only=True) for t in CHART_TFS}
         display = WATCH.frame(symbol, tf)
         tick = WATCH.tick(symbol)
@@ -88,7 +104,7 @@ def chart(symbol: str = Query("XAUUSD", max_length=20), tf: str = Query("1h"), b
                 digits = _digits(get_instrument(symbol).point)
             except ValueError:
                 digits = 5 if len(frames[tf]) and frames[tf]["close"].iloc[-1] < 20 else 3
-    elif symbol == r.s.market.symbol.upper():
+    elif robot_symbol:
         feed = "MT5" if r.info.kind == "BRIDGE" else r.info.kind          # the robot's own feed (MOCK in tests)
         with r.lock:
             frames, spread, digits = _robot_frames(symbol)
@@ -114,6 +130,15 @@ def chart(symbol: str = Query("XAUUSD", max_length=20), tf: str = Query("1h"), b
         tail = candles_payload(display.tail(1), digits)
         if out.get("candles") and tail and tail[0]["time"] >= out["candles"][-1]["time"]:
             out["candles"] = [c for c in out["candles"] if c["time"] < tail[0]["time"]] + tail
+    if feed == "MT5" and out.get("candles"):                     # the forming candle follows the latest quote
+        q = _live_quote(symbol, tick)
+        last_c = out["candles"][-1]
+        if q is not None and last_c["time"] + TF_MINUTES[tf] * 60 > q["epoch"] >= last_c["time"]:
+            px = round(q["bid"], digits)
+            out["candles"] = out["candles"][:-1] + [{**last_c, "close": px, "high": max(last_c["high"], px),
+                                                     "low": min(last_c["low"], px)}]
+        if q is not None:
+            out["tick"] = tick = {"time": q["time"], "bid": q["bid"], "ask": q["ask"]}
     out["symbol"] = symbol
     out["feed"] = feed
     out["name"] = NAMES.get(symbol)

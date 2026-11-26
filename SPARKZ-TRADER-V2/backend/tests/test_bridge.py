@@ -277,3 +277,29 @@ def test_watch_rejects_unknown_timeframes(server):
     r = client.post("/api/bridge/watch", json={"broker_symbol": "EURUSDm", "bars": {"2m": []}},
                     headers={"X-Bridge-Token": "s3cret-bridge"})
     assert r.status_code == 422
+
+
+class FakeMT5Slow(FakeMT5Watch):
+    """A newly selected symbol: MT5 has no history for it on the first calls."""
+    def __init__(self, *a, **k):
+        super().__init__(*a, **k)
+        self.ready = False
+
+    def copy_rates_from_pos(self, symbol, tf, pos, count):
+        if symbol == "EURUSDm" and not self.ready and tf != 1:
+            return None
+        return super().copy_rates_from_pos(symbol, tf, pos, count)
+
+
+def test_bridge_watch_keeps_asking_until_mt5_has_the_history(server):
+    client, _ = server
+    logs, t = [], [NOW.timestamp()]
+    mt5 = FakeMT5Slow(minutes=600)
+    b = mb.Bridge(mt5, "XAUUSDm", "XAUUSD", "http://x", "s3cret-bridge", post=via_client(client),
+                  clock=lambda: t[0], sleep=lambda s: None, log=logs.append, history=600, watch=["EURUSDm"])
+    b.run(max_steps=1)
+    assert b.watch_sent["EURUSDm"] is False and any("waiting for MT5 to load EURUSDm" in m for m in logs)
+    mt5.ready = True
+    t[0] += mb.WATCH_EVERY
+    b.step()
+    assert b.watch_sent["EURUSDm"] is True and len(bridge_api.WATCH.frame("EURUSD", "1h")) == 1500
