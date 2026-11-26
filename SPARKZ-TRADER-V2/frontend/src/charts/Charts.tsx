@@ -55,7 +55,7 @@ export function EquityChart({ points, height = 220, initial }: { points: Dict[];
         <XAxis dataKey="time" tickFormatter={short} {...AXIS} minTickGap={60} />
         <YAxis domain={["auto", "auto"]} tickFormatter={(v) => money(v, 0)} {...AXIS} width={80} />
         <Tooltip {...TIP} labelFormatter={(v) => when(String(v))} formatter={(v: number) => money(v)} />
-        {initial && <ReferenceLine y={initial} stroke="rgb(170 152 152)" strokeDasharray="3 3" />}
+        {initial != null && <ReferenceLine y={initial} stroke="rgb(170 152 152)" strokeDasharray="3 3" />}
         <Area type="monotone" dataKey="equity" stroke="rgb(255 99 99)" fill="rgb(255 99 99 / 0.15)" isAnimationActive={false} />
         <Line type="monotone" dataKey="balance" stroke="rgb(240 234 232)" dot={false} isAnimationActive={false} />
       </AreaChart>

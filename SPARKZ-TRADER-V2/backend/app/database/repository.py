@@ -125,6 +125,31 @@ class Repository:
                              .limit(limit)).all()
             return [r.detail for r in reversed(rows)]
 
+    def trade_history(self, symbol: str, mode: str, limit: int = 5000) -> dict:
+        """Every closed basket of the paper runs on `symbol` with execution mode `mode` (SIMULATION, MT5_DEMO,
+        MT5_LIVE), across restarts, oldest first, and the balance the first of those runs started from (the MT5
+        balance when it synced, else the configured starting capital)."""
+        with self.Session() as s:
+            runs = [r for r in s.scalars(select(Run).where(Run.kind == "PAPER", Run.symbol == symbol)
+                                         .order_by(Run.id)).all()
+                    if (r.settings or {}).get("execution", {}).get("mode", "SIMULATION") == mode]
+            ids = [r.id for r in runs]
+            if not ids:
+                return {"runs": 0, "baskets": [], "starting_balance": None, "currency": "", "first_run": None}
+            rows = s.scalars(select(BasketRow).where(BasketRow.run_id.in_(ids)).order_by(BasketRow.closed_at)
+                             .limit(limit)).all()
+            sync = s.scalars(select(EventRow).where(EventRow.run_id.in_(ids), EventRow.type == "ACCOUNT_SYNCED")
+                             .order_by(EventRow.run_id, EventRow.seq).limit(1)).first()
+            first_run = runs[0]
+            start = (sync.data or {}).get("balance") if sync is not None else None
+            if start is None and rows:
+                start = (rows[0].detail or {}).get("start_equity")
+            if start is None:
+                start = (first_run.settings or {}).get("risk", {}).get("initial_capital")
+            return {"runs": len(ids), "baskets": [r.detail for r in rows], "starting_balance": start,
+                    "currency": (sync.data or {}).get("currency", "") if sync is not None else "",
+                    "first_run": first_run.started_at.isoformat()}
+
     def counts(self, run_id: int) -> dict:
         with self.Session() as s:
             return {"events": s.scalar(select(func.count()).where(EventRow.run_id == run_id)),

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { ErrorBox } from "./components/ui";
 import AssistantPage from "./pages/AssistantPage";
 import ChartPage from "./pages/ChartPage";
+import TradesPage from "./pages/TradesPage";
+import AssistantBacktestPage from "./pages/AssistantBacktestPage";
 import EventsPage from "./pages/EventsPage";
 import LivePage, { StatusWord } from "./pages/LivePage";
 import ResearchPage, { Kind } from "./pages/ResearchPage";
@@ -9,7 +11,8 @@ import SystemPage from "./pages/SystemPage";
 import { useLive } from "./hooks/useLive";
 import { post } from "./services/api";
 
-const NAV: [string, string][] = [["live", "Live"], ["chart", "Chart"], ["assistant", "Assistant"], ["events", "Event log"], ["run", "Backtest"], ["stress", "Stress tests"],
+const NAV: [string, string][] = [["live", "Live"], ["chart", "Chart"], ["trades", "Trade history"], ["assistant", "Assistant"], ["events", "Event log"],
+  ["assistant-backtest", "Assistant backtest"], ["run", "Backtest"], ["stress", "Stress tests"],
   ["walk-forward", "Walk-forward"], ["lab", "Parameter lab"], ["system", "System"]];
 
 function StopButton({ stopped, onDone }: { stopped: boolean; onDone: (e: string | null) => void }) {
@@ -26,6 +29,16 @@ function StopButton({ stopped, onDone }: { stopped: boolean; onDone: (e: string 
   ) : (
     <button onClick={act} disabled={busy} className="px-5 py-2.5 bg-accent-down text-white text-sm font-bold tracking-[0.12em] shadow-lg hover:opacity-90">STOP ROBOT</button>
   );
+}
+
+/** Where the robot's orders go: simulated, the MT5 demo, or a real MT5 account. */
+function ModeBadge({ kind, accountType }: { kind?: string; accountType?: string }) {
+  const base = "text-[11px] font-bold tracking-[0.14em] px-2 py-1 border";
+  if (kind === "MT5_LIVE" && accountType === "REAL")
+    return <span className={`${base} border-accent-down text-accent-down`}>REAL MT5 ACCOUNT · REAL MONEY · 0.01 LOT CAP</span>;
+  if (kind === "MT5_DEMO" || kind === "MT5_LIVE")
+    return <span className={`${base} border-accent-up text-accent-up`}>MT5 {accountType === "REAL" ? "REAL" : "DEMO"} ACCOUNT · ORDERS GO TO MT5</span>;
+  return <span className={`${base} border-accent-warn text-accent-warn`}>PAPER ACCOUNT · SIMULATION · NO ORDERS IN MT5</span>;
 }
 
 export default function App() {
@@ -52,7 +65,7 @@ export default function App() {
       </aside>
       <main className="min-w-0">
         <div className="sticky top-0 z-10 bg-base-bg/90 backdrop-blur border-b border-base-border px-4 md:px-6 py-2.5 flex flex-wrap items-center gap-x-5 gap-y-2">
-          <span className="text-[11px] font-bold tracking-[0.14em] px-2 py-1 border border-accent-warn text-accent-warn">PAPER ACCOUNT · SIMULATION · LIVE TRADING DISABLED</span>
+          <ModeBadge kind={data?.execution?.kind} accountType={data?.execution?.account_type} />
           {data && <span className="scale-75 origin-left -my-2"><StatusWord s={data.status} /></span>}
           <span className="text-xs text-base-muted">
             {conn === "live" ? "● live" : conn === "polling" ? "● polling" : conn === "offline" ? "○ offline" : "connecting"}
@@ -64,6 +77,8 @@ export default function App() {
         {err && <div className="px-4 md:px-6 pt-3"><ErrorBox error={err} /></div>}
         {page === "live" && <LivePage d={data} />}
         {page === "chart" && <ChartPage />}
+        {page === "trades" && <TradesPage />}
+        {page === "assistant-backtest" && <AssistantBacktestPage />}
         {page === "assistant" && <AssistantPage />}
         {page === "events" && <EventsPage live={data} />}
         {(["run", "stress", "walk-forward", "lab"] as Kind[]).includes(page as Kind) && <ResearchPage key={page} kind={page as Kind} />}

@@ -220,7 +220,8 @@ class Robot:
         a.initial_balance = a.balance = bal
         a.dd.peak, a.dd.max_drawdown_pct, a.dd.max_drawdown_usd, a.dd.day = bal, 0.0, 0.0, None
         self.log.add(when, "ACCOUNT_SYNCED", f"Robot account set to the MT5 balance: {bal:,.2f} "
-                     f"{acc.get('currency', '')} ({'demo' if acc.get('demo') else 'REAL'} account)")
+                     f"{acc.get('currency', '')} ({'demo' if acc.get('demo') else 'REAL'} account)",
+                     {"balance": bal, "currency": acc.get("currency", ""), "demo": bool(acc.get("demo"))})
 
     def _adopt(self, tick: Tick) -> bool:
         """SPARKZ positions open in MT5 while the robot holds none (a restart): take them over as one basket."""

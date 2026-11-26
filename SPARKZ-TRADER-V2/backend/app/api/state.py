@@ -53,7 +53,10 @@ class AppState:
 
         def work():
             try:
-                job["result"] = fn(*args)
+                if getattr(fn, "with_progress", False):
+                    job["result"] = fn(*args, progress=lambda m: job.__setitem__("progress", str(m)[:200]))
+                else:
+                    job["result"] = fn(*args)
                 job["status"] = "done"
             except Exception as e:  # reported to the UI, never swallowed
                 job["status"], job["error"] = "error", f"{type(e).__name__}: {e}"
