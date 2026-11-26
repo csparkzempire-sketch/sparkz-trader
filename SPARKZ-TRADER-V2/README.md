@@ -214,6 +214,23 @@ and the open trade's entry, target and loss limit).
 `STRUCTURE`), the Chart page and Telegram. Timeframes: `CHART_ALERT_TFS` (default `1h,4h,1d`; `off` disables).
 `GET /api/chart?symbol=EURUSD&tf=1h` returns the same data as JSON.
 
+### One-click start on Windows
+
+In the `SPARKZ-TRADER-V2` folder:
+
+- **`START_SPARKZ.bat`**: double-click to start. On the first run it asks a few questions (demo or paper, gold's
+  MT5 name, chart markets, Telegram) and saves them in `SPARKZ-TRADER-V2\.env`, which stays on your computer
+  (it is in `.gitignore`). Then it opens the server (window "SPARKZ 1 - server"), the MT5 bridge ("SPARKZ 2 -
+  MT5 bridge") and the dashboard. It builds the dashboard first if `frontend\dist` is missing, and does not
+  start a second copy of anything already running.
+- **`STOP_SPARKZ.bat`**: stops both. An open SPARKZ trade stays in MT5 with its stop loss.
+- **`SETUP_SPARKZ.bat`**: change the saved settings, then stop and start again.
+
+The server and the bridge read the same `.env`, so the bridge password is generated once and never typed.
+`.env` keys for the bridge: `BRIDGE_SYMBOL`, `BRIDGE_WATCH`, `BRIDGE_SERVER`, `BRIDGE_TRADE`, `BRIDGE_UTC_OFFSET`
+(command-line options still win). A real account still needs `--live` and the typed confirmation: it can never
+come from the file. MT5 must be open and logged in, with Algo Trading on.
+
 ### Orders on your MT5 account: demo or real (opt-in)
 
 By default every order is simulated. With `EXECUTION_MODE=MT5_DEMO` or `MT5_LIVE` the paper loop sends the robot's

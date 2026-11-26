@@ -351,6 +351,34 @@ def list_presets() -> dict[str, str]:
     return {p.stem: (yaml.safe_load(p.read_text()) or {}).get("name", p.stem) for p in sorted(PRESETS_DIR.glob("*.yaml"))}
 
 
+def parse_env_text(text: str) -> dict[str, str]:
+    """KEY=VALUE lines. A value in quotes is taken as is (it may contain # or spaces); otherwise a comment starts
+    at ` #`. Lines starting with # are comments."""
+    out: dict[str, str] = {}
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        k, v = line.split("=", 1)
+        k, v = k.strip(), v.strip()
+        if k.lower().startswith("export "):
+            k = k[7:].strip()
+        if v[:1] in ("'", '"') and v.find(v[0], 1) > 0:
+            v = v[1:v.find(v[0], 1)]
+        else:
+            v = v.split(" #", 1)[0].strip()
+        if k:
+            out[k] = v
+    return out
+
+
+def read_env_bytes(data: bytes) -> str:
+    """Text of a .env file as Windows tools save it: UTF-8 (with or without BOM) or UTF-16 (PowerShell 5)."""
+    if data.startswith((b"\xff\xfe", b"\xfe\xff")):
+        return data.decode("utf-16")
+    return data.decode("utf-8-sig", errors="replace")
+
+
 def load_env_file(path: Path | None = None) -> int:
     """Read KEY=VALUE lines from SPARKZ-TRADER-V2/.env into os.environ (real environment variables win).
     Values are never logged. Returns the number of variables set."""
@@ -358,13 +386,9 @@ def load_env_file(path: Path | None = None) -> int:
     if not p.exists():
         return 0
     n = 0
-    for line in p.read_text().splitlines():
-        line = line.split("#", 1)[0].strip() if not line.lstrip().startswith("#") else ""
-        if "=" not in line:
-            continue
-        k, v = (x.strip() for x in line.split("=", 1))
-        if k and v and k not in os.environ:
-            os.environ[k] = v.strip('"').strip("'")
+    for k, v in parse_env_text(read_env_bytes(p.read_bytes())).items():
+        if v and k not in os.environ:
+            os.environ[k] = v
             n += 1
     return n
 

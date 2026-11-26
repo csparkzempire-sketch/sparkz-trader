@@ -303,3 +303,32 @@ def test_bridge_watch_keeps_asking_until_mt5_has_the_history(server):
     t[0] += mb.WATCH_EVERY
     b.step()
     assert b.watch_sent["EURUSDm"] is True and len(bridge_api.WATCH.frame("EURUSD", "1h")) == 1500
+
+
+def test_bridge_reads_its_settings_from_the_env_file(tmp_path):
+    f = tmp_path / ".env"
+    f.write_bytes(('# saved by setup\r\nSPARKZ_BRIDGE_TOKEN="se#cret value"\r\nBRIDGE_SYMBOL=XAUUSDm\r\n'
+                   'BRIDGE_WATCH=EURUSDm,BTCUSDm\r\nBRIDGE_SERVER=http://127.0.0.1:8010\r\nBRIDGE_TRADE=true\r\n'
+                   'BRIDGE_UTC_OFFSET=2\r\n').encode("utf-16"))                  # as PowerShell 5 may save it
+    env = {"BRIDGE_SYMBOL": "GOLD"}                                         # a real environment variable wins
+    assert mb.load_env(str(f), env) == 5
+    assert env["SPARKZ_BRIDGE_TOKEN"] == "se#cret value" and env["BRIDGE_SYMBOL"] == "GOLD"
+    a = mb.parse_args([], env)
+    assert (a.symbol, a.server, a.watch, a.trade, a.utc_offset) == ("GOLD", "http://127.0.0.1:8010", "EURUSDm,BTCUSDm", True, 2.0)
+    assert not a.allow_real_account                                         # a real account is never from a file
+    b = mb.parse_args(["--symbol", "XAUUSD"], {})
+    assert (b.symbol, b.server, b.trade, b.watch) == ("XAUUSD", "http://127.0.0.1:8000", False, "")
+    assert mb.load_env(str(tmp_path / "missing.env"), {}) == 0
+
+
+def test_server_env_reader_keeps_quoted_values_and_reads_utf16(tmp_path, monkeypatch):
+    from app.config import load_env_file
+    f = tmp_path / ".env"
+    f.write_bytes('SPARKZ_TEST_A="x # y"\r\nSPARKZ_TEST_B=plain # comment\r\nSPARKZ_TEST_C=a#b\r\n'.encode("utf-16"))
+    for k in ("SPARKZ_TEST_A", "SPARKZ_TEST_B", "SPARKZ_TEST_C"):
+        monkeypatch.delenv(k, raising=False)
+    assert load_env_file(f) == 3
+    import os
+    assert (os.environ["SPARKZ_TEST_A"], os.environ["SPARKZ_TEST_B"], os.environ["SPARKZ_TEST_C"]) == ("x # y", "plain", "a#b")
+    for k in ("SPARKZ_TEST_A", "SPARKZ_TEST_B", "SPARKZ_TEST_C"):
+        monkeypatch.delenv(k, raising=False)
