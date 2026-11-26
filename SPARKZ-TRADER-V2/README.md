@@ -193,7 +193,14 @@ demand zones and trendlines. It also shows the assistant's decision for that tim
 stop loss, take profit, and how often the same setup reached its target first on this chart before. Labels use
 closed candles only; they read past and present prices and are not predictions.
 
-The robot's market is always there. For more markets, add `--watch` to the bridge with your broker's names:
+**Markets:** the robot's market (live from MT5); any market your MT5 bridge watches (`--watch`, live broker prices);
+and, from Yahoo Finance (free, no account; chart only, never traded), forex, commodity futures (gold, silver, oil,
+gas), index futures (S&P 500, Nasdaq, Dow), stocks (Apple, Nvidia, Tesla, ...) and crypto (Bitcoin, Ethereum, ...),
+plus any Yahoo symbol you type (`AAPL`, `BTC-USD`, `EURUSD=X`, `CL=F`, `^GSPC`). Yahoo is delayed about 10-20
+minutes for stocks and futures, has no bid/ask (the setups assume a typical spread for the kind of market), and
+stocks only move in their exchange's hours. The list is in `backend/app/market/catalog.py`.
+
+For live broker prices on more markets, add `--watch` to the bridge with your broker's names:
 
 ```
 python bridge\mt5_bridge.py --symbol XAUUSDm --server http://127.0.0.1:8010 --trade --watch EURUSDm,GBPUSDm,USDJPYm

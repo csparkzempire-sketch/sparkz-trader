@@ -268,8 +268,8 @@ def test_bridge_watch_sends_chart_markets_and_skips_unknown_ones(server):
 
 
 def test_canonical_symbol_names():
-    assert [canonical(s) for s in ("XAUUSDm", "EURUSD.raw", "usdjpy", "GBPUSD#", "GOLD")] == \
-        ["XAUUSD", "EURUSD", "USDJPY", "GBPUSD", "GOLD"]
+    assert [canonical(s) for s in ("XAUUSDm", "EURUSD.raw", "usdjpy", "GBPUSD#", "GOLD", "BTCUSDm", "USTECm", "AAPLm",
+                                   "US30m")] == ["XAUUSD", "EURUSD", "USDJPY", "GBPUSD", "GOLD", "BTCUSD", "USTEC", "AAPL", "US30"]
 
 
 def test_watch_rejects_unknown_timeframes(server):

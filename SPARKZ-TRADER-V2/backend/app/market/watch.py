@@ -20,9 +20,10 @@ COLUMNS = ["timestamp", "open", "high", "low", "close", "volume"]
 
 
 def canonical(broker_symbol: str) -> str:
-    """Broker name -> plain name: XAUUSDm -> XAUUSD, EURUSD.raw -> EURUSD, GOLD stays GOLD."""
+    """Broker name -> plain name: the upper-case head before a broker's suffix. XAUUSDm -> XAUUSD,
+    EURUSD.raw -> EURUSD, BTCUSDm -> BTCUSD, USTECm -> USTEC, AAPLm -> AAPL; all lower case (usdjpy) -> USDJPY."""
     s = broker_symbol.strip()
-    m = re.match(r"^([A-Za-z]{6})(?:[^A-Za-z].*|[a-z]+.*)?$", s)
+    m = re.match(r"^([A-Z0-9]{2,})(?:[a-z.#_\-+!].*)?$", s)
     return (m.group(1) if m else s).upper()
 
 
