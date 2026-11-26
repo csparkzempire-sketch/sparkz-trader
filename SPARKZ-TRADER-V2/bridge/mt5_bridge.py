@@ -44,7 +44,9 @@ HTF = {"1h": ("TIMEFRAME_H1", 2000), "4h": ("TIMEFRAME_H4", 1000), "1d": ("TIMEF
 HTF_EVERY = 15 * 60          # seconds between higher-timeframe refreshes
 WATCH_TF = {"5m": ("TIMEFRAME_M5", 2000), "15m": ("TIMEFRAME_M15", 1500), "1h": ("TIMEFRAME_H1", 1500),
             "4h": ("TIMEFRAME_H4", 1000), "1d": ("TIMEFRAME_D1", 600)}
-WATCH_EVERY = 20             # seconds between chart updates (the latest candles of each watched market)
+WATCH_EVERY = 5              # seconds between chart updates (the latest candles of each watched market)
+WATCH_MIN = 120              # candles per timeframe before a market's history counts as loaded (MT5 downloads a
+                             # newly selected symbol's history in the background: until then, ask again)
 WATCH_UPDATE = 3             # candles per timeframe in an update (the forming one and the last closed ones)
 
 
@@ -103,6 +105,7 @@ class Bridge:
         self.watch = list(dict.fromkeys([symbol] + [w for w in (watch or []) if w]))   # chart markets
         self.watch_url = server.rstrip("/") + "/api/bridge/watch"
         self.watch_sent: dict[str, bool] = {}            # symbol -> full history sent
+        self.watch_tries: dict[str, int] = {}
         self.watch_at: float | None = None
 
     def connect(self) -> None:
@@ -152,17 +155,18 @@ class Bridge:
                                              "tick": None, "bars_1m": [], "bars_htf": htf})
 
     def send_watch(self) -> None:
-        """Chart data for each watched market: the full history once, then the latest candles. A market the
-        terminal does not have is reported once and dropped; nothing here stops the price feed."""
+        """Chart data for each watched market: the full history until MT5 has it, then the latest candles. A market
+        the terminal does not have is reported once and dropped; nothing here stops the price feed."""
         self.watch_at = self.clock()
         for sym in list(self.watch):
             try:
                 if sym not in self.watch_sent:
                     if not self.mt5.symbol_select(sym, True):
-                        self.log(f"--watch: {sym!r} not in this terminal (check the broker's name), skipped")
+                        self.log(f"--watch: {sym!r} not in this terminal (check the name in MT5's Market Watch), skipped")
                         self.watch.remove(sym)
                         continue
-                full = not self.watch_sent.get(sym)
+                    self.watch_sent[sym] = False
+                full = not self.watch_sent[sym]
                 bars = {}
                 for tf, (const, count) in WATCH_TF.items():
                     code = getattr(self.mt5, const, None)
@@ -179,8 +183,16 @@ class Bridge:
                         "digits": int(info.digits) if info is not None and hasattr(info, "digits") else None}
                 self.post(self.watch_url, self.token, body)
                 if full:
-                    self.log(f"chart: sent {sym} ({', '.join(f'{tf} {len(v)}' for tf, v in bars.items())})")
-                self.watch_sent[sym] = True
+                    loaded = sum(len(v) >= WATCH_MIN for v in bars.values())
+                    sizes = ", ".join(f"{tf} {len(v)}" for tf, v in bars.items()) or "no candles yet"
+                    if loaded >= 3:
+                        self.watch_sent[sym] = True
+                        self.log(f"chart: sent {sym} ({sizes})")
+                    else:
+                        self.watch_tries[sym] = self.watch_tries.get(sym, 0) + 1
+                        if self.watch_tries[sym] in (1, 12, 60):
+                            self.log(f"chart: waiting for MT5 to load {sym} history ({sizes}); open its chart in MT5 "
+                                     "once if this lasts")
             except Exception as e:
                 self.log(f"chart update for {sym} failed: {e}")
 

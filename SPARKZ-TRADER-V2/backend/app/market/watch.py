@@ -68,7 +68,7 @@ class WatchStore:
     def symbols(self) -> list[dict]:
         with self.lock:
             now = self.clock()
-            return [{"symbol": k, "broker_symbol": v["broker_symbol"], "timeframes": sorted(v["bars"], key=_tf_order),
+            return [{"symbol": k, "broker_symbol": v["broker_symbol"], "timeframes": {tf: len(v["bars"][tf]) for tf in sorted(v["bars"], key=_tf_order)},
                      "age_seconds": None if v["updated"] is None else round(now - v["updated"], 1)}
                     for k, v in sorted(self.data.items())]
 

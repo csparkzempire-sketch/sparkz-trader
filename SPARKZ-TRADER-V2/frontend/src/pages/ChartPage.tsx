@@ -28,6 +28,7 @@ function loadLayers(): Record<string, boolean> {
 
 export default function ChartPage() {
   const [symbols, setSymbols] = useState<string[]>([]);
+  const [watched, setWatched] = useState<Dict[]>([]);
   const [robot, setRobot] = useState("XAUUSD");
   const [symbol, setSymbol] = useState(() => { try { return localStorage.getItem("sparkz-chart-symbol") ?? ""; } catch { return ""; } });
   const [tf, setTf] = useState(() => { try { return localStorage.getItem("sparkz-chart-tf") ?? "1h"; } catch { return "1h"; } });
@@ -45,11 +46,18 @@ export default function ChartPage() {
   const [mine, setMine] = useState<string[]>(() => { try { return JSON.parse(localStorage.getItem("sparkz-chart-mine") ?? "[]"); } catch { return []; } });
   const [adding, setAdding] = useState("");
   useEffect(() => {
-    get("/api/chart/symbols").then((s) => {
-      setSymbols(s.symbols); setRobot(s.robot_symbol); setCatalog(s.catalog ?? {});
-      const known = new Set<string>([...s.symbols, ...Object.values(s.catalog ?? {}).flat().map((x: any) => x.symbol), ...mine]);
-      setSymbol((cur) => (cur && known.has(cur) ? cur : s.robot_symbol));
+    let first = true;
+    const refresh = () => get("/api/chart/symbols").then((s) => {
+      setSymbols(s.symbols); setRobot(s.robot_symbol); setCatalog(s.catalog ?? {}); setWatched(s.watched ?? []);
+      if (first) {
+        const known = new Set<string>([...s.symbols, ...Object.values(s.catalog ?? {}).flat().map((x: any) => x.symbol), ...mine]);
+        setSymbol((cur) => (cur && known.has(cur) ? cur : s.robot_symbol));
+        first = false;
+      }
     }).catch((e) => setError((e as Error).message));
+    refresh();
+    const t = setInterval(refresh, 20_000);                // markets added by the bridge appear without a reload
+    return () => clearInterval(t);
   }, []);
   useEffect(() => { try { localStorage.setItem("sparkz-chart-mine", JSON.stringify(mine)); } catch { /* */ } }, [mine]);
   const addSymbol = () => {
@@ -66,7 +74,9 @@ export default function ChartPage() {
     try { const d = await get(`/api/chart?symbol=${encodeURIComponent(symbol)}&tf=${tf}&bars=300`); setData(d); setError(d.error ?? null); }
     catch (e) { setError((e as Error).message); }
   }, [symbol, tf]);
-  useEffect(() => { setData(null); load(); const t = setInterval(load, 15_000); return () => clearInterval(t); }, [load]);
+  const fast = data?.feed === "MT5";
+  useEffect(() => { setData(null); load(); }, [load]);
+  useEffect(() => { const t = setInterval(load, fast ? 5_000 : 30_000); return () => clearInterval(t); }, [load, fast]);
 
   // the chart object, once
   useEffect(() => {
@@ -215,7 +225,7 @@ export default function ChartPage() {
             {data?.tick ? `bid ${num(data.tick.bid, data.digits)} · ask ${num(data.tick.ask, data.digits)} · ` : ""}
             {data?.feed === "YAHOO" ? <span className="text-accent-warn">Yahoo · {data.category} · delayed for stocks &amp; futures · chart only · </span>
               : data?.feed === "MT5" ? <span className="text-accent-up">MT5 live · </span> : null}
-            {data?.spread != null ? `spread ${data.spread_assumed ? "≈ " : ""}${num(data.spread, data.digits)}` : ""} · updates every 15 s
+            {data?.spread != null ? `spread ${data.spread_assumed ? "≈ " : ""}${num(data.spread, data.digits)}` : ""} · updates every {fast ? 5 : 30} s
           </span>
         </div>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
@@ -235,9 +245,14 @@ export default function ChartPage() {
         </div>
         {error && <ErrorBox error={error} />}
         <div className="panel p-0 overflow-hidden"><div ref={box} className="h-[420px] md:h-[560px] w-full" /></div>
-        {symbols.length <= 1 && (
-          <p className="text-xs text-base-muted">Live broker prices for more markets: start the MT5 bridge with <code>--watch EURUSDm,BTCUSDm,USTECm</code> (your broker's names). The other lists come from Yahoo Finance.</p>
-        )}
+        <p className="text-xs text-base-muted">
+          MT5 markets received from the bridge: {watched.length ? watched.map((w) => {
+            const n: number = Math.min(...Object.values(w.timeframes ?? {}).map(Number).concat([Infinity]));
+            return <span key={w.symbol} className={`mr-3 ${w.age_seconds != null && w.age_seconds < 60 && n >= 60 ? "text-accent-up" : "text-accent-warn"}`}>
+              {w.symbol} ({n === Infinity ? "no candles yet" : n < 60 ? "loading history" : w.age_seconds != null && w.age_seconds < 60 ? "live" : `no update for ${Math.round(w.age_seconds)} s`})</span>;
+          }) : <span className="text-accent-warn">none. Start window 2 (the bridge) with <code>--watch EURUSDm,GBPUSDm,USDJPYm</code>, using the names in MT5's Market Watch.</span>}
+          {" "}Forex, commodities, index futures, stocks and crypto in the other lists come from Yahoo Finance.
+        </p>
 
         <div className="grid gap-5 lg:grid-cols-2">
           <Panel title={`Assistant on ${data?.name ? `${data.name} (${data.symbol})` : data?.symbol ?? symbol} ${tf}`} right={a.timeframes_read ? `reads ${a.timeframes_read.join(" · ")}` : undefined}>

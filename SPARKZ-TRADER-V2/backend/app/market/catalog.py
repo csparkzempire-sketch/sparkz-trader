@@ -72,12 +72,50 @@ def _resample(df: pd.DataFrame, rule: str) -> pd.DataFrame:
         subset=["open"]).reset_index()
 
 
+CHART_URL = "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
+
+
+def yahoo_chart(symbol: str, interval: str, period: str, client=None) -> pd.DataFrame:
+    """Candles from Yahoo's public chart endpoint (no yfinance needed: old yfinance versions stop working when
+    Yahoo changes, this keeps working with plain HTTPS)."""
+    import httpx
+
+    get = (client or httpx).get
+    r = get(CHART_URL.format(symbol=symbol), params={"interval": interval, "range": period, "includePrePost": "false"},
+            headers={"User-Agent": "Mozilla/5.0"}, timeout=20)
+    if r.status_code == 404:
+        raise LookupError(f"Yahoo does not know {symbol}")
+    r.raise_for_status()
+    res = (r.json().get("chart") or {}).get("result") or []
+    if not res or not res[0].get("timestamp"):
+        raise LookupError(f"Yahoo returned no {interval} candles for {symbol}")
+    q = res[0]["indicators"]["quote"][0]
+    df = pd.DataFrame({"timestamp": pd.to_datetime(res[0]["timestamp"], unit="s", utc=True), "open": q.get("open"),
+                       "high": q.get("high"), "low": q.get("low"), "close": q.get("close"),
+                       "volume": q.get("volume") or 0.0})
+    df = df.dropna(subset=["open", "high", "low", "close"])
+    if interval == "1d":                                         # daily candles labelled by their UTC date
+        df["timestamp"] = df["timestamp"].dt.floor("D")
+    df["volume"] = df["volume"].fillna(0.0).astype(float)
+    return df.drop_duplicates("timestamp", keep="last").sort_values("timestamp").reset_index(drop=True)
+
+
+def _download_any(symbol: str, interval: str, period: str) -> pd.DataFrame:
+    try:
+        return yahoo_chart(symbol, interval, period)
+    except LookupError:
+        raise
+    except Exception as first:                                   # network hiccup or a changed endpoint: try yfinance
+        try:
+            from app.market.providers.yahoo_provider import _download
+            return _download(symbol, interval, period)
+        except Exception:
+            raise LookupError(f"Yahoo download failed for {symbol} {interval}: {first}") from None
+
+
 class YahooCharts:
     def __init__(self, downloader=None, clock=time.time):
-        if downloader is None:
-            from app.market.providers.yahoo_provider import _download
-            downloader = _download
-        self.dl, self.clock = downloader, clock
+        self.dl, self.clock = downloader or _download_any, clock
         self.cache: dict[tuple[str, str], tuple[float, pd.DataFrame]] = {}
         self.lock = threading.Lock()
 
