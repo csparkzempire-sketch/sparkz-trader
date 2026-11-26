@@ -894,7 +894,8 @@ Reading:
 - 4h is break-even. Its longs make what its shorts lose, the pattern of riding gold's rise rather than timing
   it.
 - The daily assistant is the first result in this project that is positive after costs with t above 2:
-  - 14 of 19 years are positive, the profit factor is 1.28, and it made +6,359 USD at 0.01 lot;
+  - 14 of 19 years are positive, the profit factor is 1.28, and it made +6,359 USD with every trade risking
+    100 USD (about +3,500 USD at a fixed 0.01 lot, where the typical stop of 55 USD of price move risks about 55 USD);
   - its shorts are slightly positive in a market that rose about 4×.
 - It is not proven:
   - three timeframes were tried, so t = 2.38 is only just past a multiple-testing bar of about 2.4;
@@ -914,21 +915,27 @@ The assistant ranks its nine strategies by **fit %** (how well current condition
 `TOP_STRATEGY` (`ASSISTANT_DECISION=TOP_STRATEGY`, `app/assistant/engine.py`) trades the setup of the
 highest-ranked strategy among the top N that has one near the execution timeframe, unless the higher timeframes
 point the other way; the vote's confidence no longer decides. Same study as section 21 (daily chart, 1h/4h/1d
-candles, 2008–2026, spread 0.24, the plan's stop, 2R target, 480 h time stop):
+candles, 2008–2026, spread 0.24, the plan's stop, 2R target, 480 h time stop, plans risking up to 1000 USD of price
+move as in section 21):
 
-| rule | trades | win % | net R per trade | t | net USD (0.01 lot) | worst drawdown | positive years |
+| rule | trades | win % | net R per trade | t | net USD (risking 100 USD a trade) | worst drawdown | positive years |
 |---|---|---|---|---|---|---|---|
 | VOTE (section 21, the default) | 488 | 45.5 | +0.130 | 2.38 | +6,359 | −8.4 % | 14 / 19 |
-| TOP_STRATEGY, top 1 | 148 | 46.6 | +0.162 | 1.60 | +2,392 | −6.3 % | 13 / 18 |
-| TOP_STRATEGY, top 3 | 403 | 43.7 | +0.087 | 1.45 | +3,501 | −14.3 % | 10 / 18 |
+| TOP_STRATEGY, top 1 | 195 | 44.6 | +0.143 | 1.79 | +2,795 | −6.5 % | 13 / 18 |
+| TOP_STRATEGY, top 3 | 435 | 43.7 | +0.058 | 1.08 | +2,538 | −12.7 % | 12 / 18 |
 
 Results: `reports/studies/assistant_dukascopy_1d_top1.json` and `_top3.json`.
 
-- Top 1 earns a little more per trade but trades a third as often (about 8 a year), so it made less in total
-  and its evidence is weaker (t 1.6, below the 2 usually asked for). Top 3 is worse than the vote on every line.
-- The difference between top 1 and the vote (+0.03 R) is far smaller than the uncertainty of either.
-- In both, the trades where the vote was unsure (55–65 % confidence) lost money (−0.13 R for top 1); the high-
-  confidence trades carried the result. Following one strategy without the others' agreement adds weak trades.
+- Top 1 earns about the same per trade (+0.01 R more) but trades 40 % as often (about 11 a year), so it made
+  less in total and its evidence is weaker (t 1.8, below the 2 usually asked for). Top 3 is worse than the vote
+  on every line.
+- The difference between top 1 and the vote is far smaller than the uncertainty of either.
+- In both, the trades where the vote was unsure (55–65 % confidence) lost money (−0.16 R for top 1, −0.08 R for
+  top 3; +0.27 R in the vote); following one strategy without the others' agreement adds weak trades.
+
+Correction: the first version of this section compared the vote (plans risking up to 1000) with TOP_STRATEGY
+runs that used the study script's default cap of 80, which dropped the trades with wider stops. The table above
+uses the same cap for all three; the conclusion did not change.
 
 The vote stays the default; `TOP_STRATEGY` is available for a side-by-side demo test and is not recommended
 over the vote on this evidence.

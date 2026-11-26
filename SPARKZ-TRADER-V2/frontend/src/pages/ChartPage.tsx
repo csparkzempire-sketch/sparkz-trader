@@ -9,7 +9,7 @@ import { Dict, get } from "../services/api";
 const TFS = ["5m", "15m", "1h", "4h", "1d"];
 const LAYERS: [string, string][] = [["structure", "BOS / CHoCH"], ["swings", "HH / HL / LH / LL"], ["sweeps", "Liquidity sweeps"],
   ["signals", "Strategy setups"], ["levels", "Support / resistance"], ["zones", "Supply / demand"], ["trendlines", "Trendlines"],
-  ["plan", "Entry / stop / target"]];
+  ["plan", "Entry / stop / target"], ["robot", "SPARKZ trades"]];
 const NAMES: Record<string, string> = {
   trend_following: "Trend following", market_structure: "Market structure", support_resistance: "Support & resistance",
   supply_demand: "Supply & demand", trendline_break: "Trendline break", sr_flip: "S/R flip", range_trading: "Range trading",
@@ -124,6 +124,23 @@ export default function ChartPage() {
       markers.push({ time: T(g.time), position: buy ? "belowBar" : "aboveBar", color: buy ? C.up : C.down, shape: buy ? "arrowUp" : "arrowDown",
         text: g.short });
     }
+    if (layers.robot && data.robot_trades?.length) {
+      const times: number[] = data.candles.map((k: Dict) => k.time);
+      const snap = (iso: string) => {                     // the candle a trade time falls in
+        const t = Date.parse(iso) / 1000;
+        let lo = 0, hi = times.length - 1;
+        if (t < times[0]) return null;
+        while (lo < hi) { const mid = (lo + hi + 1) >> 1; if (times[mid] <= t) lo = mid; else hi = mid - 1; }
+        return times[lo];
+      };
+      for (const tr of data.robot_trades) {
+        const a = snap(tr.opened_at), b = snap(tr.closed_at);
+        const buy = tr.direction === "BUY";
+        if (a != null) markers.push({ time: T(a), position: buy ? "belowBar" : "aboveBar", color: C.entry, shape: buy ? "arrowUp" : "arrowDown", text: `SPARKZ ${tr.direction}` });
+        if (b != null) markers.push({ time: T(b), position: "aboveBar", color: tr.pnl > 0 ? C.up : C.down, shape: "square", size: 0.6, text: `${tr.pnl > 0 ? "+" : ""}${tr.pnl.toFixed(2)}` });
+        if (a != null && b != null && b > a && tr.entry != null && tr.exit != null) segment([[a, tr.entry], [b, tr.exit]], tr.pnl > 0 ? C.up : C.down, LineStyle.Dotted, 2);
+      }
+    }
     markers.sort((a, b) => (a.time as number) - (b.time as number));
     s.setMarkers(markers);
 
@@ -135,6 +152,12 @@ export default function ChartPage() {
     }
     if (layers.trendlines) for (const tl of data.trendlines ?? [])
       segment(tl.points.map((p: Dict) => [p.time, p.price] as [number, number]), tl.kind === "support" ? C.up : C.down, LineStyle.Solid, 2);
+    const ro = data.robot_open;
+    if (layers.robot && ro?.average_entry != null) {
+      line(ro.average_entry, C.entry, `SPARKZ ${ro.direction} ${ro.total_lots ?? ""}`, LineStyle.Solid, 2);
+      if (ro.target_price != null) line(ro.target_price, C.up, "SPARKZ TARGET", LineStyle.Dashed);
+      if (ro.stop_price != null) line(ro.stop_price, C.down, "SPARKZ LOSS LIMIT", LineStyle.Dashed);
+    }
     if (layers.plan && plan) {
       line(plan.entry, C.entry, `${plan.action} ENTRY`, LineStyle.Solid, 2);
       line(plan.stop, C.down, "STOP LOSS", LineStyle.Solid, 2);
@@ -217,6 +240,14 @@ export default function ChartPage() {
             )}
           </Panel>
         </div>
+
+        <Panel title="Structure alerts on this market" right={data?.alert_timeframes?.length ? `new BOS / CHoCH on ${data.alert_timeframes.join(" · ")}` : "off"}>
+          {!(data?.alerts ?? []).length ? <Empty>None since the server started. A new break of structure or change of character on a closed candle shows here, in the Event log and on Telegram.</Empty> : (
+            <ul className="text-sm grid gap-1">{data!.alerts.map((x: Dict) => (
+              <li key={x.timeframe + x.candle}><span className="text-base-muted">{new Date(x.time).toLocaleString()}</span> · <b className={x.event.endsWith("UP") ? "text-accent-up" : "text-accent-down"}>{x.message}</b></li>
+            ))}</ul>
+          )}
+        </Panel>
 
         <div className="grid gap-5 lg:grid-cols-2">
           <Panel title="Strategy ranking (fit to the market now)">

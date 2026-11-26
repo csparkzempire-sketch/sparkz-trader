@@ -127,3 +127,18 @@ def test_chart_endpoint_robot_market_and_watched_market(client):
         assert client.get("/api/chart?symbol=EURUSD&tf=2h").status_code == 422
     finally:
         WATCH.reset()
+
+
+def test_trades_endpoint(client):
+    d = client.get("/api/trades").json()
+    assert d["mode"] == "SIMULATION" and d["current_mode"] == "SIMULATION"
+    for k in ("starting_balance", "summary", "trades", "now", "r_unit_usd"):
+        assert k in d
+    running = 0.0
+    for t in reversed(d["trades"]):
+        running += t["pnl"]
+        assert abs(t["running_total"] - running) < 0.05
+    assert client.get("/api/trades?mode=MT5_LIVE").json()["now"] is None
+    assert client.get("/api/trades?mode=REAL").status_code == 422
+    c = client.get("/api/chart?symbol=XAUUSD&tf=15m").json()
+    assert "robot_trades" in c and "alerts" in c

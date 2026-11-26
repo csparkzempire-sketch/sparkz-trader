@@ -175,8 +175,27 @@ def watch(body: WatchIn, x_bridge_token: str | None = Header(default=None)):
     if latest is not None and latest - now > MAX_FUTURE:
         raise HTTPException(422, "data is ahead of UTC: check the bridge's --utc-offset")
     tick = {"time": body.tick.time.isoformat(), "bid": body.tick.bid, "ask": body.tick.ask} if body.tick else None
-    return WATCH.push(body.broker_symbol, tick, {tf: [b.model_dump() for b in v] for tf, v in body.bars.items()},
-                      body.digits)
+    out = WATCH.push(body.broker_symbol, tick, {tf: [b.model_dump() for b in v] for tf, v in body.bars.items()},
+                     body.digits)
+    _structure_alerts(out["symbol"])
+    return out
+
+
+def _structure_alerts(symbol: str) -> None:
+    """A new BOS / CHoCH on a watched market goes to the robot's event log (and Telegram, when set up)."""
+    from app.api.state import STATE
+    from app.assistant.structure_alerts import ALERTS
+
+    def emit(a: dict) -> None:
+        r = STATE.runner
+        if r is not None:
+            with r.lock:
+                r.robot.log.add(datetime.fromisoformat(a["time"]), "STRUCTURE", a["message"], {"structure": a})
+
+    try:
+        ALERTS.check(symbol, lambda tf: WATCH.frame(symbol, tf, closed_only=True), emit)
+    except Exception:                                   # alerts never break the price feed
+        pass
 
 
 @router.get("/orders")

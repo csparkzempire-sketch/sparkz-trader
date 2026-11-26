@@ -11,6 +11,7 @@ from fastapi import APIRouter, HTTPException, Query
 from app.api.state import runner
 from app.assistant.chart import analyse_chart
 from app.assistant.live import gather_frames
+from app.assistant.structure_alerts import ALERTS
 from app.assistant.context import TF_MINUTES
 from app.backtest.metrics import clean
 from app.market.instruments import get_instrument
@@ -92,6 +93,18 @@ def chart(symbol: str = Query("XAUUSD", max_length=16), tf: str = Query("1h"), b
         if out.get("candles") and tail and tail[0]["time"] >= out["candles"][-1]["time"]:
             out["candles"] = [c for c in out["candles"] if c["time"] < tail[0]["time"]] + tail
     out["symbol"] = symbol
+    out["alerts"] = [a for a in ALERTS.recent if a["symbol"] == symbol][-10:][::-1]
+    out["alert_timeframes"] = list(ALERTS.timeframes)
+    if symbol == r.s.market.symbol.upper():                      # the robot's own trades on its market
+        try:
+            from app.api.trades import trades
+            h = trades(mode=r.s.execution.mode)
+            out["robot_trades"] = h["trades"][:100]
+            ob = h.get("open_trade")
+            out["robot_open"] = None if not ob else {k: ob.get(k) for k in (
+                "direction", "average_entry", "total_lots", "opened_at", "floating_pnl", "target_price", "stop_price")}
+        except Exception:
+            out["robot_trades"], out["robot_open"] = [], None
     out["robot_symbol"] = r.s.market.symbol.upper()
     out["tick"] = tick
     out["seconds_per_candle"] = TF_MINUTES[tf] * 60

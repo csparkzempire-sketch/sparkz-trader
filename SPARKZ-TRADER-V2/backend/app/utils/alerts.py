@@ -8,7 +8,8 @@ Telegram alerts: the robot's important events sent to your phone.
 
 What is sent: trades opened, added and closed (with the result), orders MT5 refused (including the daily loss
 stop), a basket MT5 closed by itself, emergency stop / drawdown halt / resume, stale or lost market data (the
-bridge or MT5 stopped) and its recovery, warnings, and the start of the robot.
+bridge or MT5 stopped) and its recovery, warnings, the start of the robot, and new BOS / CHoCH on watched
+markets (app/assistant/structure_alerts.py).
 
 Sending never slows or stops the robot: messages go through a queue and a background thread; a failed send is
 counted and dropped. Repeated messages of the same type are limited to one per `repeat_seconds` (trades are
@@ -24,11 +25,14 @@ import time
 from typing import Callable
 
 ALERT_TYPES = ("STARTED", "POSITION_OPENED", "POSITION_ADDED", "BASKET_CLOSED", "BROKER_CLOSED", "ORDER_REJECTED",
-               "EMERGENCY_STOP", "HALT", "RESUMED", "DATA_STALE", "DATA_OK", "WARNING", "ADOPTED", "ACCOUNT_SYNCED")
-NEVER_LIMITED = {"POSITION_OPENED", "POSITION_ADDED", "BASKET_CLOSED", "BROKER_CLOSED", "EMERGENCY_STOP", "HALT"}
+               "EMERGENCY_STOP", "HALT", "RESUMED", "DATA_STALE", "DATA_OK", "WARNING", "ADOPTED", "ACCOUNT_SYNCED",
+               "STRUCTURE")
+NEVER_LIMITED = {"POSITION_OPENED", "POSITION_ADDED", "BASKET_CLOSED", "BROKER_CLOSED", "EMERGENCY_STOP", "HALT",
+                 "STRUCTURE"}
 ICONS = {"POSITION_OPENED": "🟢", "POSITION_ADDED": "➕", "BASKET_CLOSED": "🏁", "BROKER_CLOSED": "⚠️",
          "ORDER_REJECTED": "⛔", "EMERGENCY_STOP": "🛑", "HALT": "🛑", "RESUMED": "▶️", "DATA_STALE": "📡",
-         "DATA_OK": "📡", "WARNING": "⚠️", "STARTED": "🤖", "ADOPTED": "🔄", "ACCOUNT_SYNCED": "🔄"}
+         "DATA_OK": "📡", "WARNING": "⚠️", "STARTED": "🤖", "ADOPTED": "🔄", "ACCOUNT_SYNCED": "🔄",
+         "STRUCTURE": "📐"}
 
 
 def telegram_sender(token: str, chat_id: str, timeout: float = 10.0) -> Callable[[str], None]:

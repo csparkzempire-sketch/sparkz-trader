@@ -173,6 +173,17 @@ next to the 0.54 the backtests assume. Rerun a study with your figure, e.g.
 are blocked until they return. The server rejects pushes without the secret, malformed prices, and times in
 the future (the usual sign of a wrong `--utc-offset`).
 
+### Trade history and assistant backtest pages
+
+- **Trade history** lists every closed SPARKZ trade on the robot's market for one account type (MT5 demo, MT5 real,
+  paper simulation), across restarts (from the SQLite database), with won / lost, win rate, best / worst, the
+  balance after each trade, and the running total against the starting balance: the MT5 balance when the
+  robot first synced to it. `GET /api/trades?mode=MT5_DEMO`.
+- **Assistant backtest** runs the assistant robot over hourly gold history (free Dukascopy data, downloaded and
+  stored on first use, then topped up) for a 1h, 4h or 1d robot, with your spread, confidence threshold and
+  decision rule: the study of the technical report, sections 21–22, from the dashboard. `POST /api/backtest/assistant`.
+  The older Backtest, Stress tests, Walk-forward and Parameter lab pages test the grid / basket presets.
+
 ### Chart page: candles with the strategy labels
 
 The dashboard's **Chart** page draws live candles (5m, 15m, 1h, 4h, 1d) with what the assistant's detectors see:
@@ -189,6 +200,11 @@ python bridge\mt5_bridge.py --symbol XAUUSDm --server http://127.0.0.1:8010 --tr
 ```
 
 `--watch` sends market data only (`POST /api/bridge/watch`); the robot still trades only `--symbol`.
+On the robot's market the chart also draws the robot's own SPARKZ trades (entry arrow, exit with the result,
+and the open trade's entry, target and loss limit).
+
+**Structure alerts:** a new BOS or CHoCH on a closed candle of a watched market goes to the Event log (type
+`STRUCTURE`), the Chart page and Telegram. Timeframes: `CHART_ALERT_TFS` (default `1h,4h,1d`; `off` disables).
 `GET /api/chart?symbol=EURUSD&tf=1h` returns the same data as JSON.
 
 ### Orders on your MT5 account: demo or real (opt-in)

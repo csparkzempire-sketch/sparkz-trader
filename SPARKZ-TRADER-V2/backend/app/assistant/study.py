@@ -60,53 +60,49 @@ def index_at(ctx, t: pd.Timestamp) -> int:
     return int(np.searchsorted(close, t.tz_convert(None).to_datetime64(), side="right")) - 1
 
 
-def main(argv=None) -> None:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--source", default="dukascopy", choices=["yahoo", "oanda", "mt5", "dukascopy"])
-    ap.add_argument("--start", default=None, help="first decision date (default: 30 days into the data)")
-    ap.add_argument("--every", type=int, default=4, help="decide every N 15m candles")
-    ap.add_argument("--spread", type=float, default=0.54)
-    ap.add_argument("--min-confidence", type=float, default=0.55)
-    ap.add_argument("--base-tf", default="1m", choices=["1m", "1h"])
-    ap.add_argument("--execution-tf", default="15m", choices=["15m", "1h", "4h", "1d"])
-    ap.add_argument("--max-hold-hours", type=float, default=8.0)
-    ap.add_argument("--max-risk", type=float, default=80.0)
-    ap.add_argument("--decision", default="VOTE", choices=["VOTE", "TOP_STRATEGY"])
-    ap.add_argument("--top", type=int, default=1, help="TOP_STRATEGY: how many of the top-ranked strategies to consider")
-    a = ap.parse_args(argv)
+def run_study(base: pd.DataFrame, base_tf: str = "1m", execution_tf: str = "15m", every: int = 4, spread: float = 0.54,
+              min_confidence: float = 0.55, max_hold_hours: float = 8.0, max_risk: float = 80.0, decision: str = "VOTE",
+              top: int = 1, start: str | None = None, end: str | None = None, source: str = "", progress=None,
+              trades_out: int = 0) -> dict:
+    """The study on `base` candles (1m or 1h). `progress(text)` is called now and then; `trades_out` > 0 adds the
+    latest that many trades to the result."""
     t0 = time.time()
-    m1 = load_history("XAUUSD", a.base_tf, a.source).reset_index(drop=True)
-    ctx = contexts(m1, a.base_tf)
-    print(f"contexts built ({time.time() - t0:.0f}s): " + ", ".join(f"{tf} {len(c)}" for tf, c in ctx.items()), flush=True)
-    eng = Assistant(a.min_confidence, decision=a.decision, top_strategies=a.top)
-    ex = a.execution_tf
+    say = progress or (lambda m: None)
+    base = base.reset_index(drop=True)
+    ctx = contexts(base, base_tf)
+    say("candles ready: " + ", ".join(f"{tf} {len(c)}" for tf, c in ctx.items()))
+    eng = Assistant(min_confidence, decision=decision, top_strategies=top)
+    ex = execution_tf
     c15 = ctx[ex]
-    warm = pd.Timedelta(days=30 if a.base_tf == "1m" else 365)
-    first = pd.Timestamp(a.start, tz="UTC") if a.start else c15.f["timestamp"].iat[0] + warm
+    warm = pd.Timedelta(days=30 if base_tf == "1m" else 365)
+    first = pd.Timestamp(start, tz="UTC") if start else c15.f["timestamp"].iat[0] + warm
     times = (c15.f["timestamp"] + pd.Timedelta(minutes=TF_MINUTES[ex]))
-    times = times[times >= first].iloc[::a.every]
+    times = times[times >= first]
+    if end:
+        times = times[times < pd.Timestamp(end, tz="UTC")]
+    times = times.iloc[::every]
     rows = []
     for n, t in enumerate(times):
         idx = {tf: i for tf, c in ctx.items() if (i := index_at(c, t)) >= 60}    # as live: a timeframe needs 60 candles
         if ex not in idx:
             continue
-        rep = eng.analyze_at({tf: ctx[tf] for tf in idx}, idx, a.spread, ex, with_history=False)
+        rep = eng.analyze_at({tf: ctx[tf] for tf in idx}, idx, spread, ex, with_history=False)
         if rep["action"] in ("BUY", "SELL") and rep["plan"]:
             p = rep["plan"]
             rows.append({"time": t, "dir": 1 if rep["action"] == "BUY" else -1, "stop": p["stop"],
                          "confidence": rep["confidence_pct"], "strategy": p["strategy"], "tf": p["tf"]})
-        if n % 500 == 0:
-            print(f"  {n}/{len(times)} decisions, {len(rows)} trades ({time.time() - t0:.0f}s)", flush=True)
+        if n % 250 == 0:
+            say(f"{n}/{len(times)} decisions, {len(rows)} calls ({time.time() - t0:.0f} s)")
     sig = pd.DataFrame(rows)
-    p = ScalpParams(spread=a.spread, rr=2.0, max_hold_min=int(a.max_hold_hours * 60), max_risk=a.max_risk)
-    tr = simulate(m1, sig[["time", "dir", "stop"]], p) if len(sig) else pd.DataFrame()
-    out = {"meta": {"source": a.source, "first_decision": str(times.iloc[0]) if len(times) else None,
+    p = ScalpParams(spread=spread, rr=2.0, max_hold_min=int(max_hold_hours * 60), max_risk=max_risk)
+    tr = simulate(base, sig[["time", "dir", "stop"]], p) if len(sig) else pd.DataFrame()
+    out = {"meta": {"source": source, "first_decision": str(times.iloc[0]) if len(times) else None,
                     "last_decision": str(times.iloc[-1]) if len(times) else None, "decisions": int(len(times)),
-                    "base_tf": a.base_tf, "execution_tf": ex, "every_execution_candles": a.every,
-                    "spread": a.spread, "min_confidence": a.min_confidence,
-                    "decision": a.decision if a.decision == "VOTE" else f"TOP_STRATEGY top {a.top}",
-                    "exits": f"assistant's stop, 2R target, {a.max_hold_hours:g} h time stop, checked on "
-                             f"{a.base_tf} candles at bid/ask",
+                    "base_tf": base_tf, "execution_tf": ex, "every_execution_candles": every,
+                    "spread": spread, "min_confidence": min_confidence,
+                    "decision": decision if decision == "VOTE" else f"TOP_STRATEGY top {top}",
+                    "exits": f"assistant's stop, 2R target, {max_hold_hours:g} h time stop, checked on "
+                             f"{base_tf} candles at bid/ask",
                     "calls": int(len(sig))},
            "overall": summarize(tr, p) if len(tr) else {"trades": 0}}
     if len(tr):
@@ -122,8 +118,41 @@ def main(argv=None) -> None:
         se = float(tr["r"].std() / np.sqrt(len(tr)))
         out["overall"]["standard_error_r"] = round(se, 3)
         out["overall"]["t_stat"] = round(float(tr["r"].mean()) / se, 2) if se > 0 else None
+        if trades_out:
+            eq = tr["pnl_usd"].cumsum()
+            out["equity_curve"] = [{"time": str(t), "equity": round(float(e), 2)}
+                                   for t, e in zip(tr["exit_time"], eq)]
+            last = tr.tail(trades_out).iloc[::-1]
+            out["trades"] = [{"entry_time": str(r.entry_time), "exit_time": str(r.exit_time),
+                              "side": "BUY" if r.dir == 1 else "SELL", "entry": round(float(r.entry), 5),
+                              "stop": round(float(r.stop), 5), "target": round(float(r.target), 5),
+                              "exit": round(float(r.exit), 5), "r": round(float(r.r), 3),
+                              "pnl_usd": round(float(r.pnl_usd), 2), "exit_reason": r.reason,
+                              "strategy": r.strategy, "tf": r.tf, "confidence": r.confidence} for r in last.itertuples()]
+    say(f"done: {out['overall'].get('trades', 0)} trades ({time.time() - t0:.0f} s)")
+    return out
+
+
+def main(argv=None) -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--source", default="dukascopy", choices=["yahoo", "oanda", "mt5", "dukascopy"])
+    ap.add_argument("--start", default=None, help="first decision date (default: 30 days into the data)")
+    ap.add_argument("--every", type=int, default=4, help="decide every N 15m candles")
+    ap.add_argument("--spread", type=float, default=0.54)
+    ap.add_argument("--min-confidence", type=float, default=0.55)
+    ap.add_argument("--base-tf", default="1m", choices=["1m", "1h"])
+    ap.add_argument("--execution-tf", default="15m", choices=["15m", "1h", "4h", "1d"])
+    ap.add_argument("--max-hold-hours", type=float, default=8.0)
+    ap.add_argument("--max-risk", type=float, default=80.0)
+    ap.add_argument("--decision", default="VOTE", choices=["VOTE", "TOP_STRATEGY"])
+    ap.add_argument("--top", type=int, default=1, help="TOP_STRATEGY: how many of the top-ranked strategies to consider")
+    a = ap.parse_args(argv)
+    t0 = time.time()
+    base = load_history("XAUUSD", a.base_tf, a.source)
+    out = run_study(base, a.base_tf, a.execution_tf, a.every, a.spread, a.min_confidence, a.max_hold_hours, a.max_risk,
+                    a.decision, a.top, a.start, source=a.source, progress=lambda m: print("  " + m, flush=True))
     (REPORTS_DIR / "studies").mkdir(parents=True, exist_ok=True)
-    name = f"assistant_{a.source}" + ("" if a.base_tf == "1m" else f"_{ex}") + \
+    name = f"assistant_{a.source}" + ("" if a.base_tf == "1m" else f"_{a.execution_tf}") + \
         ("" if a.decision == "VOTE" else f"_top{a.top}")
     (REPORTS_DIR / "studies" / f"{name}.json").write_text(json.dumps(out, indent=1, default=str))
     o = out["overall"]

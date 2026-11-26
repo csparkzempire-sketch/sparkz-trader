@@ -66,7 +66,76 @@ def _lab(b: RunBody):
     return parameter_lab(s, df, b.space, label=label)
 
 
+class AssistantBody(BaseModel):
+    execution_tf: str = Field(default="1d", pattern="^(1h|4h|1d)$")
+    start: str = "2008-01-01"
+    end: str | None = None
+    spread: float = Field(default=0.24, ge=0, le=5)
+    min_confidence: float = Field(default=0.55, ge=0, le=1)
+    decision: str = Field(default="VOTE", pattern="^(VOTE|TOP_STRATEGY)$")
+    top: int = Field(default=1, ge=1, le=9)
+    max_hold_hours: float | None = Field(default=None, gt=0, le=2000)
+    max_risk: float | None = Field(default=None, gt=0, le=5000)
+    download: bool = True
+
+
+# the settings of the history studies in reports/TECHNICAL_REPORT.md (sections 21-22), per execution timeframe
+ASSISTANT_DEFAULTS = {"1h": (24.0, 200.0), "4h": (120.0, 400.0), "1d": (480.0, 1000.0)}
+
+
+def gold_1h(start: str, download: bool, progress):
+    """Stored Dukascopy hourly gold, topped up from the free feed (cached month files) when allowed."""
+    import pandas as pd
+
+    from app.config import DATA_DIR
+    from app.market.history import load_history, merge_into_store
+
+    try:
+        have = load_history("XAUUSD", "1h", "dukascopy")
+    except FileNotFoundError:
+        have = None
+    want = pd.Timestamp(start, tz="UTC")
+    last_month = pd.Timestamp.now(tz="UTC").floor("D") - pd.Timedelta(days=2)
+    fresh = have is not None and len(have) and have["timestamp"].iloc[0] <= want + pd.Timedelta(days=7) \
+        and have["timestamp"].iloc[-1] >= last_month
+    if fresh or not download:
+        if have is None or not len(have):
+            raise FileNotFoundError("no stored hourly gold history: tick 'download' to fetch it (free, Dukascopy)")
+        return have
+    from app.market.dukascopy import download_1h
+
+    first = want if have is None or not len(have) or have["timestamp"].iloc[0] > want else \
+        have["timestamp"].iloc[-1] - pd.Timedelta(days=31)
+    progress(f"downloading hourly gold from {first:%Y-%m} (free Dukascopy feed, cached month by month)")
+    df, _ = download_1h("XAUUSD", first.strftime("%Y-%m"), cache_dir=DATA_DIR / "cache" / "dukascopy",
+                        progress=lambda i, m: progress(f"downloading hourly gold: {m} ({i} months)"))
+    out, _ = merge_into_store(df, "XAUUSD", "1h", "dukascopy")
+    return out
+
+
+def _assistant(b: AssistantBody, progress=lambda m: None):
+    import pandas as pd
+
+    from app.assistant.study import run_study
+
+    base = gold_1h(b.start, b.download, progress)
+    hold, risk = ASSISTANT_DEFAULTS[b.execution_tf]
+    start = max(pd.Timestamp(b.start, tz="UTC"), base["timestamp"].iloc[0] + pd.Timedelta(days=365))   # a year of warm-up
+    out = run_study(base, "1h", b.execution_tf, 1, b.spread, b.min_confidence, b.max_hold_hours or hold,
+                    b.max_risk or risk, b.decision, b.top, str(start.date()), b.end, "dukascopy", progress, trades_out=200)
+    out["meta"]["max_risk"] = b.max_risk or risk
+    out["meta"]["symbol"] = "XAUUSD"
+    return out
+
+
+_assistant.with_progress = True
 JOBS = {"run": _backtest, "stress": _stress, "walk-forward": _wf, "lab": _lab}
+
+
+@router.post("/assistant")
+def start_assistant(body: AssistantBody):
+    """The assistant robot on hourly gold history (the study of the technical report, sections 21-22)."""
+    return {"job": STATE.submit("assistant", _assistant, body)}
 
 
 @router.post("/{kind}")
