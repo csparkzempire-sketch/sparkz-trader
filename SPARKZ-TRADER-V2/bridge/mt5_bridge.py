@@ -229,29 +229,70 @@ class Bridge:
             self.sleep(self.interval)
 
 
-def main(argv=None) -> None:
-    ap = argparse.ArgumentParser(description="Read-only MT5 price bridge for SPARKZ TRADER V2")
-    ap.add_argument("--symbol", default="XAUUSD")
+ENV_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env")
+
+
+def load_env(path: str = ENV_FILE, environ=os.environ) -> int:
+    """SPARKZ-TRADER-V2/.env (written by setup_sparkz.ps1) into the environment; variables already set win. Same
+    rules as the server's reader: quoted values are taken as is, ` #` starts a comment, UTF-8 or UTF-16."""
+    if not os.path.exists(path):
+        return 0
+    with open(path, "rb") as f:
+        data = f.read()
+    text = data.decode("utf-16") if data.startswith((b"\xff\xfe", b"\xfe\xff")) else data.decode("utf-8-sig", "replace")
+    n = 0
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        k, v = (x.strip() for x in line.split("=", 1))
+        if v[:1] in ("'", '"') and v.find(v[0], 1) > 0:
+            v = v[1:v.find(v[0], 1)]
+        else:
+            v = v.split(" #", 1)[0].strip()
+        if k and v and k not in environ:
+            environ[k] = v
+            n += 1
+    return n
+
+
+def _flag(value: str | None) -> bool:
+    return (value or "").strip().lower() in ("1", "true", "yes", "on")
+
+
+def parse_args(argv=None, environ=os.environ) -> argparse.Namespace:
+    env = environ.get
+    ap = argparse.ArgumentParser(description="Read-only MT5 price bridge for SPARKZ TRADER V2. Defaults come from "
+                                             "SPARKZ-TRADER-V2/.env (BRIDGE_SYMBOL, BRIDGE_SERVER, BRIDGE_WATCH, "
+                                             "BRIDGE_TRADE, BRIDGE_UTC_OFFSET) when it has them.")
+    ap.add_argument("--symbol", default=env("BRIDGE_SYMBOL") or "XAUUSD")
     ap.add_argument("--as", dest="as_symbol", default="XAUUSD")
-    ap.add_argument("--server", default="http://127.0.0.1:8000")
-    ap.add_argument("--utc-offset", type=float, default=None)
+    ap.add_argument("--server", default=env("BRIDGE_SERVER") or "http://127.0.0.1:8000")
+    ap.add_argument("--utc-offset", type=float, default=float(env("BRIDGE_UTC_OFFSET")) if env("BRIDGE_UTC_OFFSET") else None)
     ap.add_argument("--history", type=int, default=20000)
     ap.add_argument("--interval", type=float, default=2.0)
-    ap.add_argument("--watch", default="", help="more markets for the Chart page, e.g. EURUSDm,GBPUSDm,USDJPYm")
-    ap.add_argument("--trade", action="store_true", help="execute the robot's orders (DEMO account only)")
+    ap.add_argument("--watch", default=env("BRIDGE_WATCH") or "", help="more markets for the Chart page, e.g. EURUSDm,GBPUSDm,USDJPYm")
+    ap.add_argument("--trade", action="store_true", default=_flag(env("BRIDGE_TRADE")),
+                    help="execute the robot's orders (DEMO account only; .env BRIDGE_TRADE=true)")
     ap.add_argument("--max-lots", type=float, default=0.01)
     ap.add_argument("--live", "--allow-real-account", dest="allow_real_account", action="store_true",
                     help="with --trade: also allow a REAL account (typed confirmation)")
-    a = ap.parse_args(argv)
+    return ap.parse_args(argv)
+
+
+def main(argv=None, environ=os.environ) -> None:
+    load_env(environ=environ)
+    env = environ.get
+    a = parse_args(argv, environ)
     if a.allow_real_account and not a.trade:
         sys.exit("--live only makes sense with --trade")
     if a.allow_real_account:
         print("WARNING: REAL MONEY. Every study of this robot lost money after costs; you can lose what you trade.")
         if input("Type I ACCEPT THE RISK to allow a real account: ").strip().upper() != "I ACCEPT THE RISK":
             sys.exit("not confirmed: nothing started")
-    token = os.getenv("SPARKZ_BRIDGE_TOKEN", "")
+    token = env("SPARKZ_BRIDGE_TOKEN", "")
     if not token:
-        sys.exit("set SPARKZ_BRIDGE_TOKEN in the environment (the same secret as the server)")
+        sys.exit("set SPARKZ_BRIDGE_TOKEN in the environment or in SPARKZ-TRADER-V2/.env (run setup_sparkz.ps1)")
     try:
         import MetaTrader5 as mt5
     except ImportError:
