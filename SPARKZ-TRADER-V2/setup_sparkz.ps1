@@ -49,7 +49,10 @@ if ($old["EXECUTION_MODE"] -eq "MT5_LIVE") {
 
 $preset = Ask "Robot (assistant_daily = the daily gold robot)" "SPARKZ_PRESET" "assistant_daily"
 $symbol = Ask "Gold's name in your MT5 Market Watch" "BRIDGE_SYMBOL" "XAUUSDm"
-$watch = Ask "More MT5 markets for the Chart page (comma separated, no spaces)" "BRIDGE_WATCH" "EURUSDm,GBPUSDm,USDJPYm"
+Write-Host "Markets for the chart and for trade proposals, as named in MT5's Market Watch, e.g."
+Write-Host "  forex EURUSDm,GBPUSDm,USDJPYm  crypto BTCUSDm,ETHUSDm  indices USTECm,US30m  oil USOILm  stocks AAPLm"
+$watch = Ask "Markets (comma separated, no spaces)" "BRIDGE_WATCH" "EURUSDm,GBPUSDm,USDJPYm"
+$risk = Ask "Risk per trade you approve, in your account currency (lost if the stop loss is hit)" "APPROVAL_RISK" "10"
 $tgToken = Ask "Telegram bot token from @BotFather" "TELEGRAM_BOT_TOKEN" "" -Secret
 $tgChat = Ask "Telegram chat id (a number; Enter = skip)" "TELEGRAM_CHAT_ID" ""
 
@@ -63,7 +66,8 @@ if (-not $token) {
 
 function Q([string]$v) { if ($v.Contains('"')) { return "'" + $v + "'" } return '"' + $v + '"' }
 $managed = @("MARKET_DATA_PROVIDER", "EXECUTION_MODE", "SPARKZ_PRESET", "SPARKZ_BRIDGE_TOKEN", "TELEGRAM_BOT_TOKEN",
-             "TELEGRAM_CHAT_ID", "BRIDGE_SYMBOL", "BRIDGE_WATCH", "BRIDGE_SERVER", "BRIDGE_TRADE", "_MODE")
+             "TELEGRAM_CHAT_ID", "BRIDGE_SYMBOL", "BRIDGE_WATCH", "BRIDGE_SERVER", "BRIDGE_TRADE", "_MODE",
+             "APPROVAL_RISK")
 $lines = @(
     "# SPARKZ TRADER V2 settings, written by setup_sparkz.ps1. Private: never share or upload this file.",
     "MARKET_DATA_PROVIDER=BRIDGE",
@@ -73,7 +77,8 @@ $lines = @(
     "BRIDGE_SYMBOL=$symbol",
     "BRIDGE_WATCH=$watch",
     "BRIDGE_SERVER=http://127.0.0.1:8010",
-    "BRIDGE_TRADE=$(if ($mode -eq 'SIMULATION') { 'false' } else { 'true' })"
+    "BRIDGE_TRADE=$(if ($mode -eq 'SIMULATION') { 'false' } else { 'true' })",
+    "APPROVAL_RISK=$risk"
 )
 if ($tgToken) { $lines += "TELEGRAM_BOT_TOKEN=$(Q $tgToken)" }
 if ($tgChat) { $lines += "TELEGRAM_CHAT_ID=$(Q $tgChat)" }
@@ -84,6 +89,6 @@ foreach ($k in $old.Keys) {                       # anything else you added by h
 
 Write-Host ""
 Write-Host "Saved to $envFile" -ForegroundColor Green
-Write-Host ("Orders: " + $mode + " | robot: " + $preset + " | gold: " + $symbol + " | chart markets: " + $watch)
+Write-Host ("Orders: " + $mode + " | robot: " + $preset + " | gold: " + $symbol + " | markets: " + $watch + " | risk per approved trade: " + $risk)
 Write-Host ("Telegram: " + $(if ($tgToken -and $tgChat) { "on" } else { "off" }))
 Write-Host "Start SPARKZ with START_SPARKZ.bat"

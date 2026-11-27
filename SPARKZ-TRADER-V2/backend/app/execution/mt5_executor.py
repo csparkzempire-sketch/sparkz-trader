@@ -68,33 +68,37 @@ class OrderBook:
 
     # ---------------------------------------------------------------- robot side
     def add(self, order: dict) -> None:
+        """`owner`: "robot" (the gold robot, default) or "approval" (trades you approve): each reads only the
+        results of its own orders."""
         with self.lock:
-            self.orders[order["id"]] = {**order, "state": "QUEUED", "queued_at": self.clock()}
+            self.orders[order["id"]] = {"owner": "robot", **order, "state": "QUEUED", "queued_at": self.clock()}
 
-    def expire(self) -> list[dict]:
+    def expire(self, owner: str = "robot") -> list[dict]:
         """Orders the bridge never collected in time: dropped, never sent late."""
         now = self.clock()
         with self.lock:
-            old = [o for o in self.orders.values() if o["state"] == "QUEUED" and now - o["queued_at"] > ORDER_TTL]
+            old = [o for o in self.orders.values() if o["state"] == "QUEUED" and o["owner"] == owner
+                   and now - o["queued_at"] > ORDER_TTL]
             for o in old:
                 del self.orders[o["id"]]
         return old
 
-    def cancel_queued(self) -> list[dict]:
+    def cancel_queued(self, owner: str = "robot") -> list[dict]:
         with self.lock:
-            q = [o for o in self.orders.values() if o["state"] == "QUEUED"]
+            q = [o for o in self.orders.values() if o["state"] == "QUEUED" and o["owner"] == owner]
             for o in q:
                 del self.orders[o["id"]]
         return q
 
-    def take_results(self) -> list[dict]:
+    def take_results(self, owner: str = "robot") -> list[dict]:
         with self.lock:
-            out, self.results = self.results, []
+            out = [r for r in self.results if r["order"].get("owner", "robot") == owner]
+            self.results = [r for r in self.results if r["order"].get("owner", "robot") != owner]
         return out
 
-    def open_orders(self) -> list[dict]:
+    def open_orders(self, owner: str | None = "robot") -> list[dict]:
         with self.lock:
-            return list(self.orders.values())
+            return [o for o in self.orders.values() if owner is None or o["owner"] == owner]
 
     def account_report(self) -> dict | None:
         with self.lock:
@@ -110,7 +114,7 @@ class OrderBook:
             for o in self.orders.values():
                 if o["state"] == "QUEUED":
                     o["state"], o["sent_at"] = "SENT", now
-                    out.append({k: v for k, v in o.items() if k not in ("state", "queued_at", "sent_at")}
+                    out.append({k: v for k, v in o.items() if k not in ("state", "queued_at", "sent_at", "owner")}
                                | {"age_seconds": round(now - o["queued_at"], 1)})
             return out
 

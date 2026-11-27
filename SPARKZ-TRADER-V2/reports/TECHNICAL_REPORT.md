@@ -939,3 +939,25 @@ uses the same cap for all three; the conclusion did not change.
 
 The vote stays the default; `TOP_STRATEGY` is available for a side-by-side demo test and is not recommended
 over the vote on this evidence.
+
+## 23. The daily assistant on EURUSD, GBPUSD and USDJPY
+
+The same study as section 21 (daily robot, 1h/4h/1d candles built from Dukascopy hourly candles, 2008–2026, the
+plan's stop, 2R target, 20-day time stop, nothing tuned), with typical retail costs: EURUSD spread 1.2 pips plus
+0.2 slippage, GBPUSD 1.5 + 0.3, USDJPY 1.5 + 0.3. Results: `reports/studies/assistant_eurusd_1d.json`,
+`assistant_gbpusd_1d.json`, `assistant_usdjpy_1d.json`.
+
+| market | trades | win % | net R per trade | gross R | t | worst drawdown (R x 100 USD) | positive years |
+|---|---|---|---|---|---|---|---|
+| gold (section 21) | 488 | 45.5 | +0.130 | +0.144 | 2.38 | −8.4 % | 14 / 19 |
+| EURUSD | 521 | 40.9 | +0.053 | +0.069 | 0.98 | −17.3 % | 13 / 18 |
+| GBPUSD | 534 | 38.6 | −0.061 | −0.046 | −1.22 | −44.1 % | 6 / 18 |
+| USDJPY | 527 | 41.2 | +0.006 | +0.028 | 0.11 | −32.3 % | 7 / 18 |
+
+None of the three currency pairs shows an edge: every t is far below 2, and GBPUSD loses even before costs. The
+gold result does not carry over to currencies. (A first run of this study charged gold's 0.05 slippage, 500
+pips on EURUSD, and is not reported; the study now takes the slippage per market.)
+
+This is why trades on other markets are not automatic: `app/approvals` (the Trade approvals page) only
+PROPOSES them, and each one needs your approval. Crypto, indices, stocks and commodities other than gold are
+untested.

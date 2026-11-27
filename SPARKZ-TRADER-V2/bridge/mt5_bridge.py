@@ -275,6 +275,8 @@ def parse_args(argv=None, environ=os.environ) -> argparse.Namespace:
     ap.add_argument("--trade", action="store_true", default=_flag(env("BRIDGE_TRADE")),
                     help="execute the robot's orders (DEMO account only; .env BRIDGE_TRADE=true)")
     ap.add_argument("--max-lots", type=float, default=0.01)
+    ap.add_argument("--max-approval-lots", type=float, default=float(env("BRIDGE_MAX_APPROVAL_LOTS") or 0.1),
+                    help="largest lot size for a trade you approve on the dashboard (default 0.1)")
     ap.add_argument("--live", "--allow-real-account", dest="allow_real_account", action="store_true",
                     help="with --trade: also allow a REAL account (typed confirmation)")
     return ap.parse_args(argv)
@@ -302,7 +304,7 @@ def main(argv=None, environ=os.environ) -> None:
         if a.trade:
             from mt5_trader import Trader
             trader = Trader(mt5, a.symbol, a.server, token, http_post, allow_real=a.allow_real_account,
-                            max_lots=a.max_lots)
+                            max_lots=a.max_lots, max_approval_lots=a.max_approval_lots)
         Bridge(mt5, a.symbol, a.as_symbol, a.server, token, a.utc_offset, a.history, a.interval,
                trader=trader, watch=[w.strip() for w in a.watch.split(",") if w.strip()]).run()
     except KeyboardInterrupt:

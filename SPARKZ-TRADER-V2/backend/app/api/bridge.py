@@ -72,6 +72,20 @@ class PositionIn(BaseModel):
     profit: float = 0.0
 
 
+class ApprovedPositionIn(BaseModel):
+    """A trade you approved, open in MT5 (magic MAGIC_APPROVED)."""
+    ticket: int
+    symbol: str = Field(max_length=32)
+    side: str = Field(pattern="^(BUY|SELL)$")
+    volume: float = Field(ge=0)
+    price_open: float = Field(ge=0)
+    sl: float = 0.0
+    tp: float = 0.0
+    profit: float = 0.0
+    comment: str = Field(default="", max_length=32)
+    price_current: float = 0.0
+
+
 class AccountIn(BaseModel):
     """The MT5 account as the trading bridge sees it (never the login or password)."""
     demo: bool
@@ -83,6 +97,8 @@ class AccountIn(BaseModel):
     margin_free: float = 0.0
     leverage: int = 0
     positions: list[PositionIn] = Field(default_factory=list, max_length=200)    # SPARKZ positions only
+    approved_positions: list[ApprovedPositionIn] = Field(default_factory=list, max_length=200)
+    features: list[str] = Field(default_factory=list, max_length=20)     # what this bridge version can do
 
 
 class ResultIn(BaseModel):

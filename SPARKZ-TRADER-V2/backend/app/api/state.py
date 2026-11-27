@@ -22,6 +22,8 @@ class AppState:
         self.settings: Settings | None = None
         self.jobs: dict[str, dict] = {}
         self.lock = threading.Lock()
+        self.approvals = None          # app.approvals.manager.ApprovalManager
+        self.approval_bot = None       # app.approvals.telegram_bot.TelegramApprovals
 
     def build(self, preset: str | None = None, overrides: dict | None = None) -> None:
         self.settings = load_settings(preset or os.getenv("SPARKZ_PRESET") or None, overrides=overrides)
@@ -29,12 +31,36 @@ class AppState:
             self.repo = Repository(os.getenv("SPARKZ_V2_DB_URL") or None)
         self.runner = PaperRunner(self.settings, make_provider(self.settings), self.repo)
         self.runner.start()
+        self._build_approvals()
+
+    def _build_approvals(self) -> None:
+        from app.approvals.manager import ApprovalConfig, ApprovalManager
+        from app.approvals.telegram_bot import TelegramApprovals
+
+        cfg = ApprovalConfig.from_env()
+        if self.approvals is not None:
+            self.approvals.stop()
+        if self.approval_bot is not None:
+            self.approval_bot.stop()
+        r = self.runner
+        self.approvals = ApprovalManager(cfg, executor_fn=lambda: r.robot.executor if getattr(r.robot, "live", False)
+                                         else None, robot_symbol=self.settings.market.symbol)
+        self.approval_bot = TelegramApprovals.from_env(self.approvals) if cfg.enabled else None
+        self.approvals.notify = self.approval_bot
 
     async def start_loop(self) -> None:
         if self.runner and (self.task is None or self.task.done()):
             self.task = asyncio.create_task(self.runner.run())
+        if self.approvals is not None and os.getenv("SPARKZ_NO_APPROVAL_LOOP") != "1":
+            self.approvals.start()
+            if self.approval_bot is not None:
+                self.approval_bot.start()
 
     async def stop_loop(self) -> None:
+        if self.approvals is not None:
+            self.approvals.stop()
+        if self.approval_bot is not None:
+            self.approval_bot.stop()
         if self.runner:
             self.runner.stop_loop()
         if self.task:
