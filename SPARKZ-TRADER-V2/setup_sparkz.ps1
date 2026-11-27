@@ -47,7 +47,13 @@ if ($old["EXECUTION_MODE"] -eq "MT5_LIVE") {
     if ((Read-Host) -match '^[yY]') { $mode = "MT5_LIVE" }
 }
 
-$preset = Ask "Robot (assistant_daily = the daily gold robot)" "SPARKZ_PRESET" "assistant_daily"
+$presets = @(Get-ChildItem (Join-Path $root "config\presets") -Filter *.yaml | ForEach-Object { $_.BaseName })
+if ($old["SPARKZ_PRESET"] -and $presets -notcontains $old["SPARKZ_PRESET"]) { $old.Remove("SPARKZ_PRESET") }
+while ($true) {
+    $preset = Ask "Robot name (assistant_daily = the daily gold robot)" "SPARKZ_PRESET" "assistant_daily"
+    if ($presets -contains $preset) { break }
+    Write-Host ("'" + $preset + "' is not a robot name. Type one of: " + ($presets -join ", ")) -ForegroundColor Yellow
+}
 $symbol = Ask "Gold's name in your MT5 Market Watch" "BRIDGE_SYMBOL" "XAUUSDm"
 Write-Host "Markets for the chart and for trade proposals, as named in MT5's Market Watch, e.g."
 Write-Host "  forex EURUSDm,GBPUSDm,USDJPYm  crypto BTCUSDm,ETHUSDm  indices USTECm,US30m  oil USOILm  stocks AAPLm"
