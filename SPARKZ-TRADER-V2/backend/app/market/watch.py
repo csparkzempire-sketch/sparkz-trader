@@ -93,6 +93,17 @@ class WatchStore:
             d = self.data.get(symbol.upper())
             return dict(d["tick"]) if d and d["tick"] else None
 
+    def age(self, symbol: str) -> float | None:
+        """Seconds since the bridge last sent this market."""
+        with self.lock:
+            d = self.data.get(symbol.upper())
+            return None if not d or d["updated"] is None else self.clock() - d["updated"]
+
+    def broker_symbol(self, symbol: str) -> str | None:
+        with self.lock:
+            d = self.data.get(symbol.upper())
+            return d["broker_symbol"] if d else None
+
     def digits(self, symbol: str) -> int | None:
         with self.lock:
             d = self.data.get(symbol.upper())

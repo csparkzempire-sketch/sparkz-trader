@@ -63,7 +63,7 @@ def index_at(ctx, t: pd.Timestamp) -> int:
 def run_study(base: pd.DataFrame, base_tf: str = "1m", execution_tf: str = "15m", every: int = 4, spread: float = 0.54,
               min_confidence: float = 0.55, max_hold_hours: float = 8.0, max_risk: float = 80.0, decision: str = "VOTE",
               top: int = 1, start: str | None = None, end: str | None = None, source: str = "", progress=None,
-              trades_out: int = 0) -> dict:
+              trades_out: int = 0, slippage: float | None = None) -> dict:
     """The study on `base` candles (1m or 1h). `progress(text)` is called now and then; `trades_out` > 0 adds the
     latest that many trades to the result."""
     t0 = time.time()
@@ -94,12 +94,13 @@ def run_study(base: pd.DataFrame, base_tf: str = "1m", execution_tf: str = "15m"
         if n % 250 == 0:
             say(f"{n}/{len(times)} decisions, {len(rows)} calls ({time.time() - t0:.0f} s)")
     sig = pd.DataFrame(rows)
-    p = ScalpParams(spread=spread, rr=2.0, max_hold_min=int(max_hold_hours * 60), max_risk=max_risk)
+    p = ScalpParams(spread=spread, rr=2.0, max_hold_min=int(max_hold_hours * 60), max_risk=max_risk,
+                    **({} if slippage is None else {"slippage": slippage}))     # default: gold's 0.05
     tr = simulate(base, sig[["time", "dir", "stop"]], p) if len(sig) else pd.DataFrame()
     out = {"meta": {"source": source, "first_decision": str(times.iloc[0]) if len(times) else None,
                     "last_decision": str(times.iloc[-1]) if len(times) else None, "decisions": int(len(times)),
                     "base_tf": base_tf, "execution_tf": ex, "every_execution_candles": every,
-                    "spread": spread, "min_confidence": min_confidence,
+                    "spread": spread, "slippage": p.slippage, "min_confidence": min_confidence,
                     "decision": decision if decision == "VOTE" else f"TOP_STRATEGY top {top}",
                     "exits": f"assistant's stop, 2R target, {max_hold_hours:g} h time stop, checked on "
                              f"{base_tf} candles at bid/ask",

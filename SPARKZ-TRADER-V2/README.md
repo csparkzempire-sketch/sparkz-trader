@@ -214,6 +214,27 @@ and the open trade's entry, target and loss limit).
 `STRUCTURE`), the Chart page and Telegram. Timeframes: `CHART_ALERT_TFS` (default `1h,4h,1d`; `off` disables).
 `GET /api/chart?symbol=EURUSD&tf=1h` returns the same data as JSON.
 
+### Trade approvals: other markets, only with your permission
+
+The **Trade approvals** page: the assistant scans every market the MT5 bridge watches (`BRIDGE_WATCH` /
+`--watch`: forex, crypto, indices, stocks, commodities, as your broker names them) and, when an `APPROVAL_TF`
+candle (default `1d`) closes with a clear BUY or SELL, **proposes** the trade: entry, stop loss, take profit,
+confidence, the strategies behind it. Nothing is placed until you press **Approve** on the dashboard or on the
+proposal's Telegram message (only your `TELEGRAM_CHAT_ID` counts).
+
+On approval it checks again (not expired; the MT5 account is fit to trade, with the same checks and daily loss stop
+as the robot; at most `APPROVAL_MAX_OPEN` open; the price is fresh, still between stop and target, has not run more
+than half the risk past the entry, and still offers 1:1) and sends one market order. The bridge sizes it from MT5's
+own contract data so the stop loss costs about `APPROVAL_RISK` in the account currency (never above
+`--max-approval-lots`, default 0.1) and sets the stop loss and take profit in MT5 (magic 26112027, comment
+`SPARKZ-A<id>`). You can close it early from the page. Needs `EXECUTION_MODE=MT5_DEMO` (or `MT5_LIVE`) and the
+bridge with `--trade`. Settings: `APPROVALS`, `APPROVAL_TF`, `APPROVAL_RISK`, `APPROVAL_MAX_OPEN`,
+`APPROVAL_MIN_CONFIDENCE`, `APPROVAL_EXPIRY_MINUTES`, `APPROVAL_MAX_DRIFT_R`, `APPROVAL_INCLUDE_ROBOT_SYMBOL`,
+`APPROVAL_TELEGRAM_BUTTONS`; see `backend/app/approvals/manager.py`.
+
+Evidence: the daily assistant is positive on gold (not yet proven) and shows no edge on EURUSD, GBPUSD or USDJPY
+(technical report, section 23); other markets are untested. That is why these trades need your approval.
+
 ### One-click start on Windows
 
 In the `SPARKZ-TRADER-V2` folder:

@@ -3,6 +3,7 @@ import { ErrorBox } from "./components/ui";
 import AssistantPage from "./pages/AssistantPage";
 import ChartPage from "./pages/ChartPage";
 import TradesPage from "./pages/TradesPage";
+import ApprovalsPage from "./pages/ApprovalsPage";
 import AssistantBacktestPage from "./pages/AssistantBacktestPage";
 import EventsPage from "./pages/EventsPage";
 import LivePage, { StatusWord } from "./pages/LivePage";
@@ -11,7 +12,7 @@ import SystemPage from "./pages/SystemPage";
 import { useLive } from "./hooks/useLive";
 import { post } from "./services/api";
 
-const NAV: [string, string][] = [["live", "Live"], ["chart", "Chart"], ["trades", "Trade history"], ["assistant", "Assistant"], ["events", "Event log"],
+const NAV: [string, string][] = [["live", "Live"], ["chart", "Chart"], ["approvals", "Trade approvals"], ["trades", "Trade history"], ["assistant", "Assistant"], ["events", "Event log"],
   ["assistant-backtest", "Assistant backtest"], ["run", "Backtest"], ["stress", "Stress tests"],
   ["walk-forward", "Walk-forward"], ["lab", "Parameter lab"], ["system", "System"]];
 
@@ -78,6 +79,7 @@ export default function App() {
         {page === "live" && <LivePage d={data} />}
         {page === "chart" && <ChartPage />}
         {page === "trades" && <TradesPage />}
+        {page === "approvals" && <ApprovalsPage />}
         {page === "assistant-backtest" && <AssistantBacktestPage />}
         {page === "assistant" && <AssistantPage />}
         {page === "events" && <EventsPage live={data} />}
